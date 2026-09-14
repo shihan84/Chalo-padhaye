@@ -1,0 +1,11 @@
+{
+  "board": "Maharashtra State Board",
+  "class": 5,
+  "medium": "English",
+  "sources": [
+    {"id":"evs1","title":"Environmental Studies Part One - Standard Five","url":"https://books.ebalbharati.in/pdfs/503000541.pdf"},
+    {"id":"evs2","title":"Environmental Studies Part Two - Standard Five","url":"https://books.ebalbharati.in/pdfs/503000542.pdf"},
+    {"id":"math","title":"Mathematics - Standard Five","url":"https://books.ebalbharati.in/pdfs/503020004.pdf"},
+    {"id":"english","title":"English Balbharati - Standard Five","url":"https://books.ebalbharati.in/pdfs/503020001.pdf"}
+  ]
+}
