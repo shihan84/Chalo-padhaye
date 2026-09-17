@@ -1,7 +1,7 @@
 create table if not exists students (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
-  grade integer not null check (grade in (3,5)),
+  grade integer not null check (grade between 1 and 12),
   medium text not null default 'English',
   board text not null default 'Maharashtra State Board',
   parent_id uuid references auth.users(id) on delete cascade,
