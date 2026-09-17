@@ -1,6 +1,6 @@
 import os
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -19,6 +19,10 @@ FISH_AUDIO_API_KEY = os.getenv("FISH_AUDIO_API_KEY", "")
 FISH_AUDIO_VOICE_ID = os.getenv("FISH_AUDIO_VOICE_ID", "")
 FISH_AUDIO_MODEL = os.getenv("FISH_AUDIO_MODEL", "s2.1-pro-free")
 
+RECORD_TYPES = {"assignment", "reading", "project", "field_trip", "physical", "art", "life_skill", "other"}
+RECORD_STATUS = {"planned", "completed"}
+ACTIVITIES = {"teach", "practice", "quiz", "revision", "reading", "project"}
+
 
 class ChatIn(BaseModel):
     message: str
@@ -36,6 +40,24 @@ class TTSIn(BaseModel):
 class EndSessionIn(BaseModel):
     student_id: str
     session_id: str
+
+
+class PortfolioIn(BaseModel):
+    student_id: str
+    record_type: str = "other"
+    title: str
+    curriculum: str = "nios"
+    subject: Optional[str] = None
+    notes: Optional[str] = None
+    minutes: int = 0
+    status: str = "completed"
+    occurred_on: Optional[str] = None
+    due_date: Optional[str] = None
+
+
+class PortfolioStatusIn(BaseModel):
+    student_id: str
+    status: str
 
 
 def _headers(token: str, prefer: Optional[str] = None):
@@ -95,8 +117,13 @@ def _insert(token: str, table: str, payload: dict):
 
 
 def _patch(token: str, table: str, params: dict, payload: dict, quiet: bool = False):
-    headers = _headers(token, "return=representation")
-    r = requests.patch(f"{SUPABASE_URL}/rest/v1/{table}", headers=headers, params=params, json=payload, timeout=10)
+    r = requests.patch(
+        f"{SUPABASE_URL}/rest/v1/{table}",
+        headers=_headers(token, "return=representation"),
+        params=params,
+        json=payload,
+        timeout=10,
+    )
     if not r.ok:
         if quiet:
             return None
@@ -179,7 +206,7 @@ def _get_progress(token: str, student_id: str):
             "student_id": f"eq.{student_id}",
             "select": "id,subject,chapter,topic,score,attempts,status,updated_at",
             "order": "updated_at.desc",
-            "limit": "60",
+            "limit": "100",
         },
         timeout=10,
     )
@@ -194,48 +221,195 @@ def _get_sessions(token: str, student_id: str):
             "student_id": f"eq.{student_id}",
             "select": "id,subject,chapter,started_at,ended_at",
             "order": "started_at.desc",
-            "limit": "30",
+            "limit": "60",
         },
         timeout=10,
     )
     return r.json() if r.ok else []
 
 
+def _get_records(token: str, student_id: str, limit: int = 80):
+    r = requests.get(
+        f"{SUPABASE_URL}/rest/v1/homeschool_records",
+        headers=_headers(token),
+        params={
+            "student_id": f"eq.{student_id}",
+            "select": "id,record_type,title,curriculum,subject,notes,minutes,status,occurred_on,due_date,created_at,updated_at",
+            "order": "created_at.desc",
+            "limit": str(limit),
+        },
+        timeout=10,
+    )
+    if r.status_code == 404:
+        return False, []
+    if not r.ok:
+        return False, []
+    return True, r.json()
+
+
+def _as_dt(value):
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+
+def _as_day(value):
+    if not value:
+        return None
+    try:
+        return date.fromisoformat(str(value)[:10])
+    except Exception:
+        return None
+
+
+def _week_metrics(sessions: list, records: list):
+    now = datetime.now(timezone.utc)
+    cutoff = now - timedelta(days=7)
+    session_minutes = 0
+    weekly_sessions = 0
+    active_days = set()
+    subjects = set()
+
+    for row in sessions:
+        started = _as_dt(row.get("started_at"))
+        if not started or started < cutoff:
+            continue
+        weekly_sessions += 1
+        active_days.add(started.date())
+        if row.get("subject"):
+            subjects.add(row["subject"])
+        ended = _as_dt(row.get("ended_at"))
+        if ended and ended >= started:
+            session_minutes += min(180, max(0, round((ended - started).total_seconds() / 60)))
+
+    offline_minutes = 0
+    completed_records = 0
+    cutoff_day = cutoff.date()
+    for row in records:
+        if row.get("status") != "completed":
+            continue
+        day = _as_day(row.get("occurred_on")) or _as_day(row.get("created_at"))
+        if not day or day < cutoff_day:
+            continue
+        completed_records += 1
+        offline_minutes += max(0, min(600, int(row.get("minutes") or 0)))
+        active_days.add(day)
+        if row.get("subject"):
+            subjects.add(f"offline:{row['subject']}")
+
+    today = now.date()
+    cursor = today if today in active_days else today - timedelta(days=1)
+    streak = 0
+    while cursor in active_days:
+        streak += 1
+        cursor -= timedelta(days=1)
+
+    return {
+        "sessions": weekly_sessions,
+        "study_minutes": session_minutes,
+        "offline_minutes": offline_minutes,
+        "total_minutes": session_minutes + offline_minutes,
+        "active_days": len(active_days),
+        "subjects": len(subjects),
+        "portfolio_items": completed_records,
+        "streak_days": streak,
+    }
+
+
+def _subject_progress(progress: list, curriculum: str):
+    grouped = {}
+    for row in progress:
+        raw = row.get("subject", "")
+        if ":" in raw:
+            c, sid = raw.split(":", 1)
+        else:
+            c, sid = "maharashtra", raw
+        if c != curriculum:
+            continue
+        grouped.setdefault(sid, []).append(row)
+    return grouped
+
+
 def _daily_plan_for(student: dict, curriculum: str, progress: list):
     grade = int(student["grade"])
-    if curriculum == "nios":
-        items = (
-            [("math", "Mathematics", 20), ("english", "English / Reading", 15), ("evs", "Environmental Studies", 20), ("computer", "Computer Skills", 15), ("life", "Life Skills", 15)]
-            if grade == 3
-            else [("math", "Mathematics", 30), ("english", "English / Reading", 20), ("evs", "Environmental Studies", 25), ("computer", "Computer Skills", 20), ("life", "Life Skills", 15)]
-        )
-    else:
-        items = (
-            [("math", "Mathematics", 25), ("english", "English", 20)]
-            if grade == 3
-            else [("math", "Mathematics", 30), ("english", "English", 25), ("evs1", "EVS Part 1", 25), ("evs2", "EVS Part 2", 20)]
-        )
+    catalog = tutor.kb.catalog()
+    subjects = [x for x in (catalog.get(curriculum, {}).get(str(grade), [])) if x.get("available", True)]
+    durations = {
+        3: {"math": 20, "english": 15, "evs": 20, "computer": 15, "life": 15, "evs1": 20, "evs2": 20},
+        5: {"math": 30, "english": 20, "evs": 25, "computer": 20, "life": 15, "evs1": 25, "evs2": 20},
+    }
+    grouped = _subject_progress(progress, curriculum)
 
-    weak = {}
-    for row in progress:
-        try:
-            raw_subject = row.get("subject", "")
-            c, sid = raw_subject.split(":", 1) if ":" in raw_subject else ("maharashtra", raw_subject)
-            if c == curriculum:
-                weak[sid] = min(weak.get(sid, 101), int(row.get("score") or 0))
-        except Exception:
-            pass
-    items = sorted(items, key=lambda item: weak.get(item[0], 101))
-    return [
-        {
+    scored = []
+    for item in subjects:
+        sid = item["id"]
+        rows = grouped.get(sid, [])
+        attempts = sum(int(x.get("attempts") or 0) for x in rows)
+        avg = round(sum(int(x.get("score") or 0) for x in rows) / len(rows)) if rows else None
+        priority = avg if avg is not None else 101
+        scored.append((priority, sid, item, attempts, avg))
+    scored.sort(key=lambda x: x[0])
+
+    items = []
+    for _, sid, item, attempts, avg in scored:
+        if avg is None:
+            act, reason = "teach", "New learning block"
+        elif avg < 45:
+            act, reason = "revision", "Needs revision"
+        elif avg < 80:
+            act, reason = "practice", "Build confidence"
+        else:
+            act, reason = "quiz", "Quick mastery check"
+        items.append({
+            "kind": "lesson",
             "subject": sid,
-            "title": title,
-            "minutes": minutes,
-            "activity": "revision" if weak.get(sid, 100) < 45 else "teach",
-            "reason": "Needs revision" if weak.get(sid, 100) < 45 else "Today's learning block",
-        }
-        for sid, title, minutes in items
-    ]
+            "title": item.get("label", sid),
+            "minutes": durations.get(grade, {}).get(sid, 20),
+            "activity": act,
+            "reason": reason,
+            "supplemental": bool(item.get("supplemental")),
+        })
+
+    if curriculum == "nios":
+        items.append({"kind": "offline_suggestion", "record_type": "reading", "title": "Independent reading / read aloud", "minutes": 15 if grade == 3 else 20, "reason": "Daily reading habit"})
+        items.append({"kind": "offline_suggestion", "record_type": "physical", "title": "Movement / outdoor play", "minutes": 20 if grade == 3 else 25, "reason": "Daily physical activity"})
+    return items
+
+
+def _roadmap_for(student: dict, curriculum: str, progress: list):
+    grade = int(student["grade"])
+    grouped = _subject_progress(progress, curriculum)
+    catalog = tutor.kb.catalog().get(curriculum, {}).get(str(grade), [])
+    out = []
+    for item in catalog:
+        rows = grouped.get(item["id"], [])
+        attempts = sum(int(x.get("attempts") or 0) for x in rows)
+        scores = [int(x.get("score") or 0) for x in rows]
+        mastery = round(sum(scores) / len(scores)) if scores else 0
+        weak = sorted(rows, key=lambda x: int(x.get("score") or 0))[:3]
+        if not item.get("available", True):
+            action, reason = "unavailable", "Source is not currently available"
+        elif not rows:
+            action, reason = "teach", "Start this subject"
+        elif mastery < 45:
+            action, reason = "revision", "Review weak topics"
+        elif mastery < 80:
+            action, reason = "practice", "Keep practising"
+        else:
+            action, reason = "quiz", "Check retention"
+        out.append({
+            **item,
+            "mastery": mastery,
+            "attempts": attempts,
+            "topics": len(rows),
+            "weak_topics": [{"topic": x.get("topic"), "score": int(x.get("score") or 0)} for x in weak],
+            "recommended_activity": action,
+            "recommendation": reason,
+        })
+    return out
 
 
 @app.get("/api/config")
@@ -267,6 +441,7 @@ def dashboard(student_id: str, authorization: Optional[str] = Header(default=Non
     student = _student(token, student_id)
     progress = _get_progress(token, student_id)
     sessions = _get_sessions(token, student_id)
+    portfolio_available, records = _get_records(token, student_id)
     scores = [int(x.get("score") or 0) for x in progress if x.get("score") is not None]
     weak = sorted([x for x in progress if int(x.get("attempts") or 0) > 0], key=lambda x: int(x.get("score") or 0))[:5]
     mastered = [x for x in progress if int(x.get("score") or 0) >= 80]
@@ -278,10 +453,27 @@ def dashboard(student_id: str, authorization: Optional[str] = Header(default=Non
             "mastered": len(mastered),
             "average_mastery": round(sum(scores) / len(scores)) if scores else 0,
         },
+        "week": _week_metrics(sessions, records),
         "progress": progress,
         "weak_topics": weak,
         "recent_sessions": sessions[:8],
         "last_session": sessions[0] if sessions else None,
+        "portfolio_available": portfolio_available,
+        "recent_portfolio": records[:8],
+    }
+
+
+@app.get("/api/roadmap")
+def roadmap(student_id: str, curriculum: str = "nios", authorization: Optional[str] = Header(default=None)):
+    token = _token(authorization)
+    student = _student(token, student_id)
+    if curriculum not in ("maharashtra", "nios"):
+        raise HTTPException(400, "Unknown curriculum")
+    progress = _get_progress(token, student_id)
+    return {
+        "curriculum": curriculum,
+        "level": "NIOS Level A" if curriculum == "nios" and int(student["grade"]) == 3 else "NIOS Level B" if curriculum == "nios" else f"Grade {student['grade']}",
+        "subjects": _roadmap_for(student, curriculum, progress),
     }
 
 
@@ -293,13 +485,118 @@ def daily_plan(student_id: str, curriculum: str = "nios", authorization: Optiona
         raise HTTPException(400, "Unknown curriculum")
     progress = _get_progress(token, student_id)
     items = _daily_plan_for(student, curriculum, progress)
+    portfolio_available, records = _get_records(token, student_id)
+    today = date.today()
+    planned = []
+    if portfolio_available:
+        for row in records:
+            if row.get("status") != "planned":
+                continue
+            due = _as_day(row.get("due_date"))
+            if due and due > today:
+                continue
+            planned.append({
+                "kind": "portfolio",
+                "record_id": row.get("id"),
+                "record_type": row.get("record_type"),
+                "title": row.get("title"),
+                "minutes": int(row.get("minutes") or 0),
+                "reason": "Parent-planned activity",
+                "subject": row.get("subject"),
+            })
+            if len(planned) >= 3:
+                break
+    items = planned + items
     return {
         "curriculum": curriculum,
         "level": "NIOS Level A" if curriculum == "nios" and int(student["grade"]) == 3 else "NIOS Level B" if curriculum == "nios" else f"Grade {student['grade']}",
         "items": items,
-        "total_minutes": sum(x["minutes"] for x in items),
-        "note": "This is a Chalo Padhaye home-study plan, not an official NIOS timetable.",
+        "total_minutes": sum(max(0, int(x.get("minutes") or 0)) for x in items),
+        "portfolio_available": portfolio_available,
+        "note": "This is a Chalo Padhaye home-study plan, not an official NIOS timetable. Include breaks and adjust the pace to the child.",
     }
+
+
+@app.get("/api/portfolio")
+def portfolio(student_id: str, authorization: Optional[str] = Header(default=None)):
+    token = _token(authorization)
+    _student(token, student_id)
+    available, records = _get_records(token, student_id)
+    return {
+        "available": available,
+        "records": records,
+        "migration": "supabase/003_homeschool_records.sql" if not available else None,
+    }
+
+
+@app.post("/api/portfolio")
+def create_portfolio(data: PortfolioIn, authorization: Optional[str] = Header(default=None)):
+    token = _token(authorization)
+    _student(token, data.student_id)
+    if data.record_type not in RECORD_TYPES:
+        raise HTTPException(400, "Unknown record type")
+    if data.status not in RECORD_STATUS:
+        raise HTTPException(400, "Unknown record status")
+    if data.curriculum not in ("maharashtra", "nios", "general"):
+        raise HTTPException(400, "Unknown curriculum")
+    title = data.title.strip()[:160]
+    if not title:
+        raise HTTPException(400, "Title is required")
+    occurred_on = data.occurred_on or date.today().isoformat()
+    try:
+        date.fromisoformat(occurred_on)
+        if data.due_date:
+            date.fromisoformat(data.due_date)
+    except Exception:
+        raise HTTPException(400, "Use YYYY-MM-DD for dates")
+    payload = {
+        "student_id": data.student_id,
+        "record_type": data.record_type,
+        "title": title,
+        "curriculum": data.curriculum,
+        "subject": (data.subject or "")[:80] or None,
+        "notes": (data.notes or "")[:1500] or None,
+        "minutes": max(0, min(600, int(data.minutes or 0))),
+        "status": data.status,
+        "occurred_on": occurred_on,
+        "due_date": data.due_date or None,
+    }
+    r = requests.post(
+        f"{SUPABASE_URL}/rest/v1/homeschool_records",
+        headers=_headers(token, "return=representation"),
+        json=payload,
+        timeout=10,
+    )
+    if r.status_code == 404:
+        raise HTTPException(503, "Portfolio storage is not installed yet. Run supabase/003_homeschool_records.sql once in Supabase.")
+    if not r.ok:
+        raise HTTPException(502, "Could not save homeschool record")
+    rows = r.json()
+    return rows[0] if rows else payload
+
+
+@app.patch("/api/portfolio/{record_id}")
+def update_portfolio(record_id: str, data: PortfolioStatusIn, authorization: Optional[str] = Header(default=None)):
+    token = _token(authorization)
+    _student(token, data.student_id)
+    if data.status not in RECORD_STATUS:
+        raise HTTPException(400, "Unknown record status")
+    r = requests.get(
+        f"{SUPABASE_URL}/rest/v1/homeschool_records",
+        headers=_headers(token),
+        params={"id": f"eq.{record_id}", "student_id": f"eq.{data.student_id}", "select": "id,status"},
+        timeout=10,
+    )
+    if r.status_code == 404:
+        raise HTTPException(503, "Portfolio storage is not installed yet")
+    rows = r.json() if r.ok else []
+    if not rows:
+        raise HTTPException(404, "Record not found")
+    payload = {"status": data.status, "updated_at": datetime.now(timezone.utc).isoformat()}
+    if data.status == "completed":
+        payload["occurred_on"] = date.today().isoformat()
+    saved = _patch(token, "homeschool_records", {"id": f"eq.{record_id}", "student_id": f"eq.{data.student_id}"}, payload)
+    return saved or {"id": record_id, **payload}
 
 
 @app.post("/api/end-session")
@@ -347,7 +644,7 @@ def chat(data: ChatIn, authorization: Optional[str] = Header(default=None)):
     student = _student(token, data.student_id)
     if data.curriculum not in ("maharashtra", "nios"):
         raise HTTPException(400, "Unknown curriculum")
-    if data.activity not in ("teach", "practice", "quiz", "revision"):
+    if data.activity not in ACTIVITIES:
         raise HTTPException(400, "Unknown activity")
 
     expected_subject = f"{data.curriculum}:{data.subject}"
