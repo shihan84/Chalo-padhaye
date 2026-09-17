@@ -39,6 +39,12 @@ CBSE_SUBJECTS = {
             "prefix": "jess1",
             "chapters": 7,
         },
+        "civics": {
+            "label": "Social Science — Political Science",
+            "title": "NCERT Democratic Politics II - Class X",
+            "prefix": "jess4",
+            "chapters": 5,
+        },
         "economics": {
             "label": "Social Science — Economics",
             "title": "NCERT Understanding Economic Development - Class X",
