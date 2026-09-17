@@ -15,6 +15,7 @@ SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL") or os.getenv("SUPABASE_URL"
 SUPABASE_ANON_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY") or os.getenv("SUPABASE_ANON_KEY", "")
 
 router = APIRouter(prefix="/api", tags=["lessons"])
+VALID_CURRICULA = {"maharashtra", "nios", "cbse"}
 
 
 def _load_plan():
@@ -261,7 +262,7 @@ class OverrideIn(StartLessonIn):
 def lessons(student_id: str, curriculum: str, subject: str, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, student_id)
-    if curriculum not in {"maharashtra", "nios"}:
+    if curriculum not in VALID_CURRICULA:
         raise HTTPException(400, "Unknown curriculum")
     definitions = _subject_lessons(curriculum, int(student["grade"]), subject)
     available, rows = _progress_rows(token, student_id, curriculum, subject)
@@ -312,6 +313,8 @@ def lessons(student_id: str, curriculum: str, subject: str, authorization: Optio
 def start_lesson(data: StartLessonIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, data.student_id)
+    if data.curriculum not in VALID_CURRICULA:
+        raise HTTPException(400, "Unknown curriculum")
     lesson, definitions = _lesson_definition(student, data.curriculum, data.subject, data.lesson_id)
     progress = _ensure_progress(token, student, data.curriculum, data.subject, lesson, definitions)
     if progress.get("status") == "available":
