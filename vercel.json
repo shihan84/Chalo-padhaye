@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/book-proxy/ncert/:file",
+      "destination": "https://www.ncert.nic.in/textbook/pdf/:file"
+    },
+    {
+      "source": "/book-proxy/balbharati/:file",
+      "destination": "https://books.ebalbharati.in/pdfs/:file"
+    },
+    {
+      "source": "/book-proxy/nios/:path*",
+      "destination": "https://cdn.nios.ac.in/:path*"
+    }
+  ]
+}
