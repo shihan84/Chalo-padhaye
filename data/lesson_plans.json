@@ -1,0 +1,158 @@
+{
+  "version": 1,
+  "mastery": {
+    "pass_score": 70,
+    "steps": [
+      {"id": "learn", "title": "Learn", "order": 1, "activity": "teach", "minimum_checks": 2},
+      {"id": "practice", "title": "Practice", "order": 2, "activity": "practice", "minimum_checks": 3},
+      {"id": "revision", "title": "Revision", "order": 3, "activity": "revision", "minimum_checks": 2},
+      {"id": "test", "title": "Chapter Test", "order": 4, "activity": "quiz", "question_count": 5, "pass_score": 70}
+    ]
+  },
+  "curricula": {
+    "maharashtra": {
+      "3": {
+        "math": [
+          "Introduction to Geometrical Figures",
+          "Number Work",
+          "Addition without Carrying Over",
+          "Subtraction without Borrowing",
+          "Multiplication - Part 1",
+          "Coins and Currency Notes",
+          "Measurement - Part 1",
+          "Patterns",
+          "Symmetry",
+          "Addition by Carrying Over",
+          "Subtraction by Borrowing",
+          "Multiplication - Part 2",
+          "Division",
+          "Measurement of Time",
+          "The Calendar",
+          "Fractions",
+          "Handling Data"
+        ],
+        "english": [
+          "Unit 1 - Play Time",
+          "Unit 2 - Can You...?",
+          "Unit 3 - Plant Magic",
+          "Unit 4 - Three Little Kittens",
+          "Unit 5 - Mary Had a Little Lamb",
+          "Unit 6 - In the World of Letters"
+        ]
+      },
+      "5": {
+        "math": [
+          "Roman Numerals",
+          "Number Work",
+          "Addition and Subtraction",
+          "Multiplication and Division",
+          "Fractions",
+          "Angles",
+          "Circles",
+          "Multiples and Factors",
+          "Decimal Fractions",
+          "Measuring Time",
+          "Problems on Measurement",
+          "Perimeter and Area",
+          "Three Dimensional Objects and Nets",
+          "Pictographs",
+          "Patterns",
+          "Preparation for Algebra"
+        ],
+        "evs1": [
+          "Our Earth and Our Solar System",
+          "Motions of the Earth",
+          "The Earth and its Living World",
+          "Environmental Balance",
+          "Family Values",
+          "Rules Are for Everyone",
+          "Let us Solve our own Problems",
+          "Public Facilities and My School",
+          "Maps - our Companions",
+          "Getting to Know India",
+          "Our Home and Environment",
+          "Food for All",
+          "Methods of Preserving Food",
+          "Transport",
+          "Communication and Mass Media",
+          "Water",
+          "Clothes - our Necessity",
+          "The Environment and Us",
+          "Constituents of Food",
+          "Our Emotional World",
+          "Busy at Work - our Internal Organs",
+          "Growth and Personality Development",
+          "Infectious Diseases and how to Prevent them",
+          "Substances, Objects and Energy",
+          "Community Health and Hygiene"
+        ],
+        "evs2": [
+          "What is History?",
+          "History and the Concept of Time",
+          "Life on Earth",
+          "Evolution",
+          "Evolution of Mankind",
+          "Stone Age: Stone Tools",
+          "From Shelters to Village-settlements",
+          "Beginning of Settled Life",
+          "Settled Life and Urban Civilization",
+          "Historic Period"
+        ],
+        "english": [
+          "What a Bird Thought",
+          "Daydreams",
+          "Be a Good Listener",
+          "Strawberries",
+          "The Twelve Months",
+          "Announcements",
+          "Major Dhyan Chand",
+          "Peer Profile",
+          "The Triantiwontigongolope",
+          "Three Sacks of Rice",
+          "Be a Good Speaker",
+          "Count your Garden",
+          "The Adventures of Gulliver",
+          "A Lesson for All",
+          "Bird Bath",
+          "Write your own Story",
+          "On the Water",
+          "Weeds in the Garden",
+          "Be a Good Host and Guest",
+          "Only One Mother",
+          "The Journey to the Great Oz",
+          "A Book Review",
+          "Write your own Poem",
+          "Senses Alert",
+          "The Man in the Moon",
+          "Water in the Well",
+          "The Legend of Marathon",
+          "All about Money",
+          "A Lark",
+          "Be a Netizen",
+          "Give your Mind a Workout!",
+          "Helen Keller",
+          "Rangoli"
+        ]
+      }
+    },
+    "nios": {
+      "3": {
+        "evs": [
+          "Concept of Family and Interpersonal Relations",
+          "Our Social Environment",
+          "Our Festivals",
+          "The Environment",
+          "Conservation of Environment",
+          "Sun-Moon-Stars, Day-Night and Seasons",
+          "Our Basic Needs",
+          "Food",
+          "Care and Cleanliness of External Organs",
+          "Transport and Communication",
+          "National Identity",
+          "Our Social and Economic Environment"
+        ]
+      },
+      "5": {}
+    }
+  }
+}
