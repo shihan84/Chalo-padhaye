@@ -8,6 +8,70 @@ from .knowledge import KnowledgeBase as LegacyKnowledgeBase, chunks, tokenize
 
 
 CBSE_SUBJECTS = {
+    1: {
+        "math": {
+            "label": "Mathematics — Joyful Mathematics",
+            "title": "NCERT Joyful Mathematics - Grade 1",
+            "prefix": "bejm1",
+            "chapters": 13,
+        },
+        "english": {
+            "label": "English — Mridang",
+            "title": "NCERT Mridang - Grade 1",
+            "prefix": "bemr1",
+            "chapters": 9,
+        },
+    },
+    9: {
+        "math": {
+            "label": "Mathematics — CBSE Class 9",
+            "title": "NCERT Mathematics / Ganita Manjari - Class IX",
+            "prefix": "iemh1",
+            "chapters": 15,
+        },
+        "science": {
+            "label": "Science — CBSE Class 9",
+            "title": "NCERT Science - Class IX",
+            "prefix": "iesc1",
+            "chapters": 12,
+        },
+        "english": {
+            "label": "English — Beehive",
+            "title": "NCERT Beehive - Class IX",
+            "prefix": "iebe1",
+            "chapters": 11,
+        },
+        "english_supplementary": {
+            "label": "English — Moments",
+            "title": "NCERT Moments Supplementary Reader - Class IX",
+            "prefix": "iemo1",
+            "chapters": 10,
+        },
+        "history": {
+            "label": "Social Science — History",
+            "title": "NCERT India and the Contemporary World I - Class IX",
+            "prefix": "iess3",
+            "chapters": 5,
+        },
+        "geography": {
+            "label": "Social Science — Geography",
+            "title": "NCERT Contemporary India I - Class IX",
+            "prefix": "iess1",
+            "chapters": 6,
+        },
+        "civics": {
+            "label": "Social Science — Political Science",
+            "title": "NCERT Democratic Politics I - Class IX",
+            "prefix": "iess4",
+            "chapters": 5,
+        },
+        "economics": {
+            "label": "Social Science — Economics",
+            "title": "NCERT Economics - Class IX",
+            "prefix": "iess2",
+            "chapters": 4,
+        },
+    },
     10: {
         "math": {
             "label": "Mathematics — NCERT Class 10",
