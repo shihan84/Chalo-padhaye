@@ -21,7 +21,7 @@ TEACH LIKE A GOOD HUMAN TUTOR, NOT LIKE AN ARTICLE OR LECTURE:
 - Ask EXACTLY ONE short question at the end, then STOP and wait.
 - Never answer your own question in the same turn.
 - Never reveal the answer before the child attempts it.
-- Use recent conversation to notice the child's behaviour: confidence, hesitation, repeated guessing, frustration, very short answers, or strong understanding.
+- Use recent conversation to notice confidence, hesitation, repeated guessing, frustration, very short answers, or strong understanding.
 - Adapt difficulty immediately. If the child is uncertain, slow down, use simpler words and one concrete example. If confident, make the next question slightly more challenging.
 - If the first answer is wrong, do NOT give the answer. Give one small hint and ask one easier or rephrased question.
 - If the child is still struggling after repeated attempts, explain gently with one tiny example, then ask one easier checking question.
@@ -35,6 +35,18 @@ TEACH LIKE A GOOD HUMAN TUTOR, NOT LIKE AN ARTICLE OR LECTURE:
 - Never shame, pressure, compare siblings, or use marks as punishment.
 - Do not encourage the child to browse the open web or contact strangers. Keep activities age-appropriate and parent-safe.
 - Do not use markdown headings. Avoid markdown formatting in the child-facing reply.
+
+INTERACTION DESIGN:
+- Prefer an interaction instead of forcing the child to type every answer.
+- Allowed interaction types are: choice, true_false, short_answer, number, voice, none.
+- For choice, provide 2 to 4 short options and make the spoken reply ask the same single question.
+- For true_false, options must be ["True", "False"].
+- Use number for a short numeric answer.
+- Use voice when saying the answer aloud is especially suitable, such as reading/pronunciation or very young learners.
+- Use short_answer for a brief written answer.
+- Use none only when there is genuinely nothing for the child to answer yet.
+- For Grade 1, strongly prefer choice, true_false, number, or voice over typing.
+- For Grades 9 and 10, mix choice with short-answer, number, and next-step reasoning.
 '''
 
 ACTIVITY_RULES = {
@@ -53,11 +65,17 @@ JSON_RULES = '''Return ONLY valid JSON with this shape:
   "topic": "short topic name",
   "confidence": 0.0,
   "student_state": "confident|engaged|uncertain|struggling|frustrated|neutral",
-  "delivery": "normal|gentle|slow|encouraging|focused"
+  "delivery": "normal|gentle|slow|encouraging|focused",
+  "interaction": {
+    "type": "choice|true_false|short_answer|number|voice|none",
+    "prompt": "one short question or instruction",
+    "options": ["option 1", "option 2"]
+  }
 }
 Use assessment=not_answer when the child's message is a new question/request rather than an attempt to answer your previous question.
 Choose student_state from observable conversation evidence only. Do not diagnose personality, intelligence, health, or ability.
 Use delivery=slow or gentle when the learner is uncertain/struggling, focused for secondary exam-style work, and normal otherwise.
+For interaction types other than choice/true_false, return an empty options array.
 Do not put markdown fences around the JSON.'''
 
 
@@ -102,12 +120,27 @@ class Tutor:
         )
 
     def _groq_reply(self, messages):
+        payload = {
+            "model": GROQ_MODEL,
+            "messages": messages,
+            "temperature": 0.16,
+            "max_tokens": 420,
+            "response_format": {"type": "json_object"},
+        }
         r = requests.post(
             GROQ_URL,
             headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
-            json={"model": GROQ_MODEL, "messages": messages, "temperature": 0.16, "max_tokens": 280},
+            json=payload,
             timeout=60,
         )
+        if r.status_code in {400, 422}:
+            payload.pop("response_format", None)
+            r = requests.post(
+                GROQ_URL,
+                headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=60,
+            )
         r.raise_for_status()
         return r.json()["choices"][0]["message"]["content"].strip()
 
@@ -115,6 +148,24 @@ class Tutor:
         r = requests.post(OLLAMA_URL, json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False}, timeout=120)
         r.raise_for_status()
         return r.json()["response"].strip()
+
+    def _normalise_interaction(self, value):
+        value = value if isinstance(value, dict) else {}
+        kind = str(value.get("type", "short_answer")).lower()
+        allowed = {"choice", "true_false", "short_answer", "number", "voice", "none"}
+        if kind not in allowed:
+            kind = "short_answer"
+        prompt = str(value.get("prompt", "")).strip()[:300]
+        options = value.get("options") if isinstance(value.get("options"), list) else []
+        options = [str(x).strip()[:100] for x in options if str(x).strip()][:4]
+        if kind == "true_false":
+            options = ["True", "False"]
+        if kind not in {"choice", "true_false"}:
+            options = []
+        if kind == "choice" and len(options) < 2:
+            kind = "short_answer"
+            options = []
+        return {"type": kind, "prompt": prompt, "options": options}
 
     def _parse(self, raw: str):
         cleaned = raw.strip()
@@ -143,16 +194,32 @@ class Tutor:
                     "confidence": confidence,
                     "student_state": state,
                     "delivery": delivery,
+                    "interaction": self._normalise_interaction(data.get("interaction")),
+                    "_parse_ok": True,
                 }
         except Exception:
             pass
+
+        # Recover a readable reply from a truncated JSON response instead of
+        # showing raw {"reply":... text to the learner.
+        fragment = ""
+        match = re.search(r'"reply"\s*:\s*"((?:\\.|[^"\\])*)', cleaned, flags=re.S)
+        if match:
+            try:
+                fragment = json.loads('"' + match.group(1).rstrip("\\") + '"')
+            except Exception:
+                fragment = match.group(1).replace('\\n', ' ').replace('\\"', '"')
+        if not fragment and not cleaned.startswith("{"):
+            fragment = cleaned
         return {
-            "text": raw.strip(),
+            "text": fragment.strip(),
             "assessment": "not_answer",
             "topic": "General",
             "confidence": 0.0,
             "student_state": "neutral",
             "delivery": "normal",
+            "interaction": {"type": "none", "prompt": "", "options": []},
+            "_parse_ok": False,
         }
 
     def reply(
@@ -184,7 +251,19 @@ class Tutor:
 
         if GROQ_API_KEY:
             try:
-                parsed = self._parse(self._groq_reply(messages))
+                raw = self._groq_reply(messages)
+                parsed = self._parse(raw)
+                if not parsed.get("_parse_ok") or len(parsed.get("text", "")) < 12:
+                    retry_messages = list(messages)
+                    retry_messages.append({
+                        "role": "user",
+                        "content": "Your last response was incomplete. Return one complete, SHORT tutor turn as valid JSON only. Ask exactly one question and include one interaction object.",
+                    })
+                    parsed = self._parse(self._groq_reply(retry_messages))
+                parsed.pop("_parse_ok", None)
+                if not parsed.get("text"):
+                    parsed["text"] = "I couldn't finish that explanation. Let's try this step again."
+                    parsed["interaction"] = {"type": "short_answer", "prompt": "Tell me what part you want me to explain first.", "options": []}
                 parsed.update({"sources": sources, "model": GROQ_MODEL, "provider": "groq", "supplemental": supplemental})
                 return parsed
             except Exception as e:
@@ -195,6 +274,7 @@ class Tutor:
         prompt = "\n\n".join(f"{m['role'].upper()}: {m['content']}" for m in messages)
         try:
             parsed = self._parse(self._ollama_reply(prompt))
+            parsed.pop("_parse_ok", None)
             parsed.update({"sources": sources, "model": OLLAMA_MODEL, "provider": "ollama", "supplemental": supplemental})
             return parsed
         except Exception as e:
@@ -206,5 +286,6 @@ class Tutor:
                 "confidence": 0.0,
                 "student_state": "neutral",
                 "delivery": "normal",
+                "interaction": {"type": "none", "prompt": "", "options": []},
                 "error": f"Groq: {groq_error}; Ollama: {e}",
             }
