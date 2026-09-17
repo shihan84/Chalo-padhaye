@@ -2,7 +2,7 @@ import json
 import os
 import re
 import requests
-from .knowledge import KnowledgeBase
+from .combined_knowledge import KnowledgeBase
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
@@ -60,17 +60,29 @@ class Tutor:
         self.kb = KnowledgeBase()
 
     def _system(self, student_name: str, grade: int, subject: str, curriculum: str = "maharashtra", activity: str = "teach"):
-        if grade == 3:
+        if grade <= 3:
             grade_rules = (
-                "For Grade 3 / NIOS Level A, use very short sentences, concrete objects, and very easy checking questions. "
+                "For primary learners, use very short sentences, concrete objects, and very easy checking questions. "
                 "Keep the child-facing reply under about 45 words whenever possible."
             )
-        else:
+        elif grade <= 5:
             grade_rules = (
-                "For Grade 5 / NIOS Level B, explain clearly but still one small step at a time. "
+                "For upper-primary learners, explain clearly but still one small step at a time. "
                 "Keep the child-facing reply under about 65 words whenever possible."
             )
-        curriculum_name = "NIOS Open Basic Education homeschool track" if curriculum == "nios" else "Maharashtra State Board school track"
+        elif grade >= 9:
+            grade_rules = (
+                "For secondary learners, use correct subject terminology and exam-relevant reasoning, but still teach interactively one step at a time. "
+                "Keep spoken replies concise, normally under about 90 words, and check understanding with one question."
+            )
+        else:
+            grade_rules = "Use age-appropriate language and teach one small step at a time."
+
+        curriculum_name = {
+            "nios": "NIOS Open Basic Education homeschool track",
+            "cbse": "CBSE school track using official NCERT textbook material",
+            "maharashtra": "Maharashtra State Board school track",
+        }.get(curriculum, curriculum)
         activity_rule = ACTIVITY_RULES.get(activity, ACTIVITY_RULES["teach"])
         return (
             f"{BASE_RULES}\nThe student is {student_name}, Grade {grade}, English medium. "
@@ -82,7 +94,7 @@ class Tutor:
         r = requests.post(
             GROQ_URL,
             headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
-            json={"model": GROQ_MODEL, "messages": messages, "temperature": 0.12, "max_tokens": 220},
+            json={"model": GROQ_MODEL, "messages": messages, "temperature": 0.12, "max_tokens": 260},
             timeout=60,
         )
         r.raise_for_status()
