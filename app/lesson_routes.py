@@ -7,7 +7,7 @@ from typing import Optional
 
 import requests
 from fastapi import APIRouter, Header, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_FILE = ROOT / "data" / "lesson_plans.json"
@@ -60,6 +60,11 @@ def _student(token: str, student_id: str):
     if not rows:
         raise HTTPException(403, "Student is not available to this parent")
     return rows[0]
+
+
+def _validate_curriculum(curriculum: str):
+    if curriculum not in VALID_CURRICULA:
+        raise HTTPException(400, "Unknown curriculum")
 
 
 def _slug(value: str):
@@ -176,7 +181,62 @@ def _can_open(order: int, lessons: list, progress_by_id: dict):
         return True
     previous = lessons[order - 2]
     row = progress_by_id.get(previous["id"])
-    return bool(row and row.get("status") in {"mastered", "parent_unlocked"})
+    # A parent may unlock a chapter out of sequence, but that does not count as
+    # mastering it and therefore must not automatically unlock the next chapter.
+    return bool(row and row.get("status") == "mastered")
+
+
+def _ensure_steps(token: str, student_id: str, progress: dict):
+    """Create any missing step rows and keep parent/master overrides coherent."""
+    if not progress or not progress.get("id"):
+        return []
+    templates = _step_template()
+    existing = _step_rows(token, student_id, [progress["id"]])
+    by_step = {x.get("step_id"): x for x in existing}
+    current_step = progress.get("current_step") or "learn"
+    order_by_id = {x["id"]: int(x["order"]) for x in templates}
+    current_order = order_by_id.get(current_step, 1)
+    now = datetime.now(timezone.utc).isoformat()
+
+    for template in templates:
+        if template["id"] in by_step:
+            continue
+        order = int(template["order"])
+        if progress.get("status") == "mastered":
+            status = "completed"
+        elif order < current_order:
+            status = "completed"
+        elif order == current_order:
+            status = "available"
+        else:
+            status = "locked"
+        row = _post(
+            token,
+            "lesson_step_records",
+            {
+                "lesson_progress_id": progress["id"],
+                "student_id": student_id,
+                "step_id": template["id"],
+                "step_order": order,
+                "step_title": template["title"],
+                "status": status,
+                "completed_at": now if status == "completed" else None,
+            },
+        )
+        by_step[template["id"]] = row
+
+    if progress.get("status") == "mastered":
+        for row in by_step.values():
+            if row.get("status") != "completed":
+                saved = _patch(
+                    token,
+                    "lesson_step_records",
+                    {"id": f"eq.{row['id']}"},
+                    {"status": "completed", "completed_at": row.get("completed_at") or now, "updated_at": now},
+                )
+                if saved:
+                    by_step[row["step_id"]] = saved
+    return sorted(by_step.values(), key=lambda x: int(x.get("step_order") or 0))
 
 
 def _ensure_progress(token: str, student: dict, curriculum: str, subject: str, lesson: dict, lessons: list):
@@ -191,6 +251,7 @@ def _ensure_progress(token: str, student: dict, curriculum: str, subject: str, l
         },
     )
     if row:
+        _ensure_steps(token, student["id"], row)
         return row
 
     available, rows = _progress_rows(token, student["id"], curriculum, subject)
@@ -218,19 +279,7 @@ def _ensure_progress(token: str, student: dict, curriculum: str, subject: str, l
             "updated_at": now,
         },
     )
-    for step in _step_template():
-        _post(
-            token,
-            "lesson_step_records",
-            {
-                "lesson_progress_id": row["id"],
-                "student_id": student["id"],
-                "step_id": step["id"],
-                "step_order": int(step["order"]),
-                "step_title": step["title"],
-                "status": "available" if int(step["order"]) == 1 else "locked",
-            },
-        )
+    _ensure_steps(token, student["id"], row)
     return row
 
 
@@ -248,10 +297,10 @@ class StepEventIn(StartLessonIn):
 
 
 class TestAttemptIn(StartLessonIn):
-    score: int
+    score: int = 0
     correct_count: int = 0
     question_count: int = 5
-    summary: dict = {}
+    summary: dict = Field(default_factory=dict)
 
 
 class OverrideIn(StartLessonIn):
@@ -262,8 +311,7 @@ class OverrideIn(StartLessonIn):
 def lessons(student_id: str, curriculum: str, subject: str, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, student_id)
-    if curriculum not in VALID_CURRICULA:
-        raise HTTPException(400, "Unknown curriculum")
+    _validate_curriculum(curriculum)
     definitions = _subject_lessons(curriculum, int(student["grade"]), subject)
     available, rows = _progress_rows(token, student_id, curriculum, subject)
     by_id = {x["lesson_id"]: x for x in rows}
@@ -281,18 +329,26 @@ def lessons(student_id: str, curriculum: str, subject: str, authorization: Optio
         else:
             status = "available" if _can_open(item["order"], definitions, by_id) else "locked"
             record_steps = [
-                {**s, "status": "available" if s["order"] == 1 and status == "available" else "locked", "attempts": 0, "correct_count": 0, "score": None}
+                {
+                    **s,
+                    "status": "available" if s["order"] == 1 and status == "available" else "locked",
+                    "attempts": 0,
+                    "correct_count": 0,
+                    "score": None,
+                }
                 for s in _step_template()
             ]
-        result.append({
-            **item,
-            "status": status,
-            "percent_complete": int((row or {}).get("percent_complete") or 0),
-            "test_score": (row or {}).get("test_score"),
-            "test_attempts": int((row or {}).get("test_attempts") or 0),
-            "current_step": (row or {}).get("current_step") or ("learn" if status == "available" else None),
-            "steps": record_steps,
-        })
+        result.append(
+            {
+                **item,
+                "status": status,
+                "percent_complete": int((row or {}).get("percent_complete") or 0),
+                "test_score": (row or {}).get("test_score"),
+                "test_attempts": int((row or {}).get("test_attempts") or 0),
+                "current_step": (row or {}).get("current_step") or ("learn" if status == "available" else None),
+                "steps": record_steps,
+            }
+        )
 
     mastered = sum(1 for x in result if x["status"] == "mastered")
     return {
@@ -313,12 +369,18 @@ def lessons(student_id: str, curriculum: str, subject: str, authorization: Optio
 def start_lesson(data: StartLessonIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, data.student_id)
-    if data.curriculum not in VALID_CURRICULA:
-        raise HTTPException(400, "Unknown curriculum")
+    _validate_curriculum(data.curriculum)
     lesson, definitions = _lesson_definition(student, data.curriculum, data.subject, data.lesson_id)
     progress = _ensure_progress(token, student, data.curriculum, data.subject, lesson, definitions)
     if progress.get("status") == "available":
-        progress = _patch(token, "lesson_progress", {"id": f"eq.{progress['id']}"}, {"status": "in_progress", "started_at": datetime.now(timezone.utc).isoformat(), "updated_at": datetime.now(timezone.utc).isoformat()}) or progress
+        now = datetime.now(timezone.utc).isoformat()
+        progress = _patch(
+            token,
+            "lesson_progress",
+            {"id": f"eq.{progress['id']}"},
+            {"status": "in_progress", "started_at": progress.get("started_at") or now, "updated_at": now},
+        ) or progress
+    _ensure_steps(token, student["id"], progress)
     return {"ok": True, "lesson": lesson, "progress": progress}
 
 
@@ -326,6 +388,7 @@ def start_lesson(data: StartLessonIn, authorization: Optional[str] = Header(defa
 def lesson_step(data: StepEventIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, data.student_id)
+    _validate_curriculum(data.curriculum)
     lesson, definitions = _lesson_definition(student, data.curriculum, data.subject, data.lesson_id)
     progress = _ensure_progress(token, student, data.curriculum, data.subject, lesson, definitions)
     template = next((x for x in _step_template() if x["id"] == data.step_id), None)
@@ -334,7 +397,12 @@ def lesson_step(data: StepEventIn, authorization: Optional[str] = Header(default
     if data.step_id == "test":
         raise HTTPException(400, "Use /api/lessons/test for the chapter test")
 
-    step = _get_one(token, "lesson_step_records", {"lesson_progress_id": f"eq.{progress['id']}", "step_id": f"eq.{data.step_id}"})
+    _ensure_steps(token, student["id"], progress)
+    step = _get_one(
+        token,
+        "lesson_step_records",
+        {"lesson_progress_id": f"eq.{progress['id']}", "step_id": f"eq.{data.step_id}"},
+    )
     if not step:
         raise HTTPException(404, "Lesson step record not found")
     if step.get("status") == "locked":
@@ -372,10 +440,29 @@ def lesson_step(data: StepEventIn, authorization: Optional[str] = Header(default
         percent = round(completed_count * 100 / len(templates)) if templates else 0
         lesson_status = "test_ready" if next_step and next_step["id"] == "test" else "in_progress"
         if next_step:
-            next_record = _get_one(token, "lesson_step_records", {"lesson_progress_id": f"eq.{progress['id']}", "step_id": f"eq.{next_step['id']}"})
+            next_record = _get_one(
+                token,
+                "lesson_step_records",
+                {"lesson_progress_id": f"eq.{progress['id']}", "step_id": f"eq.{next_step['id']}"},
+            )
             if next_record and next_record.get("status") == "locked":
-                _patch(token, "lesson_step_records", {"id": f"eq.{next_record['id']}"}, {"status": "available", "updated_at": now})
-        progress = _patch(token, "lesson_progress", {"id": f"eq.{progress['id']}"}, {"status": lesson_status, "current_step": next_step["id"] if next_step else data.step_id, "percent_complete": percent, "updated_at": now}) or progress
+                _patch(
+                    token,
+                    "lesson_step_records",
+                    {"id": f"eq.{next_record['id']}"},
+                    {"status": "available", "updated_at": now},
+                )
+        progress = _patch(
+            token,
+            "lesson_progress",
+            {"id": f"eq.{progress['id']}"},
+            {
+                "status": lesson_status,
+                "current_step": next_step["id"] if next_step else data.step_id,
+                "percent_complete": percent,
+                "updated_at": now,
+            },
+        ) or progress
 
     return {"ok": True, "step": saved_step, "progress": progress}
 
@@ -384,37 +471,57 @@ def lesson_step(data: StepEventIn, authorization: Optional[str] = Header(default
 def lesson_test(data: TestAttemptIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, data.student_id)
+    _validate_curriculum(data.curriculum)
     lesson, definitions = _lesson_definition(student, data.curriculum, data.subject, data.lesson_id)
     progress = _ensure_progress(token, student, data.curriculum, data.subject, lesson, definitions)
     if progress.get("status") not in {"test_ready", "parent_unlocked", "mastered"}:
         raise HTTPException(403, "Complete Learn, Practice and Revision before the chapter test")
 
-    score = max(0, min(100, int(data.score)))
+    expected_questions = int(next((x.get("question_count") for x in _step_template() if x["id"] == "test"), 5) or 5)
+    question_count = max(1, min(expected_questions, int(data.question_count or expected_questions)))
+    correct_count = max(0, min(question_count, int(data.correct_count or 0)))
+    # Derive the displayed score from the recorded result rather than trusting a
+    # browser-provided percentage. Individual test answers will be server-scored
+    # when the dedicated test-session UI is added.
+    score = round(correct_count * 100 / question_count)
     pass_score = int((PLAN.get("mastery") or {}).get("pass_score") or 70)
     passed = score >= pass_score
     attempt_no = int(progress.get("test_attempts") or 0) + 1
     now = datetime.now(timezone.utc).isoformat()
-    _post(token, "lesson_test_attempts", {
-        "student_id": student["id"],
-        "lesson_progress_id": progress["id"],
-        "attempt_no": attempt_no,
-        "score": score,
-        "passed": passed,
-        "correct_count": max(0, int(data.correct_count or 0)),
-        "question_count": max(1, int(data.question_count or 5)),
-        "summary": data.summary or {},
-    })
-    test_step = _get_one(token, "lesson_step_records", {"lesson_progress_id": f"eq.{progress['id']}", "step_id": "eq.test"})
-    if test_step:
-        _patch(token, "lesson_step_records", {"id": f"eq.{test_step['id']}"}, {
-            "status": "completed" if passed else "in_progress",
-            "attempts": attempt_no,
-            "correct_count": max(int(test_step.get("correct_count") or 0), int(data.correct_count or 0)),
+    _post(
+        token,
+        "lesson_test_attempts",
+        {
+            "student_id": student["id"],
+            "lesson_progress_id": progress["id"],
+            "attempt_no": attempt_no,
             "score": score,
-            "started_at": test_step.get("started_at") or now,
-            "completed_at": now if passed else None,
-            "updated_at": now,
-        })
+            "passed": passed,
+            "correct_count": correct_count,
+            "question_count": question_count,
+            "summary": data.summary or {},
+        },
+    )
+    test_step = _get_one(
+        token,
+        "lesson_step_records",
+        {"lesson_progress_id": f"eq.{progress['id']}", "step_id": "eq.test"},
+    )
+    if test_step:
+        _patch(
+            token,
+            "lesson_step_records",
+            {"id": f"eq.{test_step['id']}"},
+            {
+                "status": "completed" if passed else "in_progress",
+                "attempts": attempt_no,
+                "correct_count": max(int(test_step.get("correct_count") or 0), correct_count),
+                "score": score,
+                "started_at": test_step.get("started_at") or now,
+                "completed_at": now if passed else None,
+                "updated_at": now,
+            },
+        )
     progress_payload = {
         "status": "mastered" if passed else "test_ready",
         "current_step": "test",
@@ -429,62 +536,97 @@ def lesson_test(data: TestAttemptIn, authorization: Optional[str] = Header(defau
     next_lesson = None
     if passed and lesson["order"] < len(definitions):
         next_lesson = definitions[lesson["order"]]
-        existing = _get_one(token, "lesson_progress", {
-            "student_id": f"eq.{student['id']}",
-            "curriculum": f"eq.{data.curriculum}",
-            "subject": f"eq.{data.subject}",
-            "lesson_id": f"eq.{next_lesson['id']}",
-        })
+        existing = _get_one(
+            token,
+            "lesson_progress",
+            {
+                "student_id": f"eq.{student['id']}",
+                "curriculum": f"eq.{data.curriculum}",
+                "subject": f"eq.{data.subject}",
+                "lesson_id": f"eq.{next_lesson['id']}",
+            },
+        )
         if not existing:
-            _post(token, "lesson_progress", {
-                "student_id": student["id"],
-                "curriculum": data.curriculum,
-                "subject": data.subject,
-                "lesson_id": next_lesson["id"],
-                "lesson_order": next_lesson["order"],
-                "lesson_title": next_lesson["title"],
-                "status": "available",
-                "current_step": "learn",
-                "percent_complete": 0,
-                "updated_at": now,
-            })
+            existing = _post(
+                token,
+                "lesson_progress",
+                {
+                    "student_id": student["id"],
+                    "curriculum": data.curriculum,
+                    "subject": data.subject,
+                    "lesson_id": next_lesson["id"],
+                    "lesson_order": next_lesson["order"],
+                    "lesson_title": next_lesson["title"],
+                    "status": "available",
+                    "current_step": "learn",
+                    "percent_complete": 0,
+                    "updated_at": now,
+                },
+            )
+        _ensure_steps(token, student["id"], existing)
 
-    return {"ok": True, "passed": passed, "pass_score": pass_score, "progress": progress, "next_lesson": next_lesson if passed else None}
+    return {
+        "ok": True,
+        "passed": passed,
+        "pass_score": pass_score,
+        "score": score,
+        "progress": progress,
+        "next_lesson": next_lesson if passed else None,
+    }
 
 
 @router.post("/lessons/override")
 def lesson_override(data: OverrideIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, data.student_id)
+    _validate_curriculum(data.curriculum)
     lesson, definitions = _lesson_definition(student, data.curriculum, data.subject, data.lesson_id)
     if data.action not in {"unlock", "master"}:
         raise HTTPException(400, "Action must be unlock or master")
-    progress = _ensure_progress(token, student, data.curriculum, data.subject, lesson, definitions) if lesson["order"] == 1 else _get_one(token, "lesson_progress", {
-        "student_id": f"eq.{student['id']}",
-        "curriculum": f"eq.{data.curriculum}",
-        "subject": f"eq.{data.subject}",
-        "lesson_id": f"eq.{data.lesson_id}",
-    })
+
+    progress = _get_one(
+        token,
+        "lesson_progress",
+        {
+            "student_id": f"eq.{student['id']}",
+            "curriculum": f"eq.{data.curriculum}",
+            "subject": f"eq.{data.subject}",
+            "lesson_id": f"eq.{data.lesson_id}",
+        },
+    )
     now = datetime.now(timezone.utc).isoformat()
     if not progress:
-        progress = _post(token, "lesson_progress", {
-            "student_id": student["id"],
-            "curriculum": data.curriculum,
-            "subject": data.subject,
-            "lesson_id": lesson["id"],
-            "lesson_order": lesson["order"],
-            "lesson_title": lesson["title"],
-            "status": "parent_unlocked" if data.action == "unlock" else "mastered",
-            "current_step": "learn" if data.action == "unlock" else "test",
-            "percent_complete": 0 if data.action == "unlock" else 100,
-            "mastered_at": now if data.action == "master" else None,
-            "updated_at": now,
-        })
+        progress = _post(
+            token,
+            "lesson_progress",
+            {
+                "student_id": student["id"],
+                "curriculum": data.curriculum,
+                "subject": data.subject,
+                "lesson_id": lesson["id"],
+                "lesson_order": lesson["order"],
+                "lesson_title": lesson["title"],
+                "status": "parent_unlocked" if data.action == "unlock" else "mastered",
+                "current_step": "learn" if data.action == "unlock" else "test",
+                "percent_complete": 0 if data.action == "unlock" else 100,
+                "started_at": now if data.action == "unlock" else None,
+                "mastered_at": now if data.action == "master" else None,
+                "updated_at": now,
+            },
+        )
     else:
-        progress = _patch(token, "lesson_progress", {"id": f"eq.{progress['id']}"}, {
-            "status": "parent_unlocked" if data.action == "unlock" else "mastered",
-            "percent_complete": 0 if data.action == "unlock" else 100,
-            "mastered_at": now if data.action == "master" else progress.get("mastered_at"),
-            "updated_at": now,
-        }) or progress
-    return {"ok": True, "progress": progress}
+        progress = _patch(
+            token,
+            "lesson_progress",
+            {"id": f"eq.{progress['id']}"},
+            {
+                "status": "parent_unlocked" if data.action == "unlock" else "mastered",
+                "current_step": "learn" if data.action == "unlock" else "test",
+                "percent_complete": 0 if data.action == "unlock" else 100,
+                "started_at": progress.get("started_at") or (now if data.action == "unlock" else None),
+                "mastered_at": now if data.action == "master" else progress.get("mastered_at"),
+                "updated_at": now,
+            },
+        ) or progress
+    steps = _ensure_steps(token, student["id"], progress)
+    return {"ok": True, "progress": progress, "steps": steps}
