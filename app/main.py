@@ -23,6 +23,8 @@ FISH_AUDIO_MODEL = os.getenv("FISH_AUDIO_MODEL", "s2.1-pro-free")
 RECORD_TYPES = {"assignment", "reading", "project", "field_trip", "physical", "art", "life_skill", "other"}
 RECORD_STATUS = {"planned", "completed"}
 ACTIVITIES = {"teach", "practice", "quiz", "revision", "reading", "project"}
+CURRICULA = {"maharashtra", "nios", "cbse"}
+PORTFOLIO_CURRICULA = CURRICULA | {"general"}
 
 
 class ChatIn(BaseModel):
@@ -334,13 +336,30 @@ def _subject_progress(progress: list, curriculum: str):
     return grouped
 
 
+def _level_label(student: dict, curriculum: str):
+    grade = int(student["grade"])
+    if curriculum == "nios":
+        if grade == 3:
+            return "NIOS Level A"
+        if grade == 5:
+            return "NIOS Level B"
+        return f"NIOS / Grade {grade}"
+    if curriculum == "cbse":
+        return f"CBSE Class {grade}"
+    return f"Grade {grade}"
+
+
 def _daily_plan_for(student: dict, curriculum: str, progress: list):
     grade = int(student["grade"])
     catalog = tutor.kb.catalog()
     subjects = [x for x in (catalog.get(curriculum, {}).get(str(grade), [])) if x.get("available", True)]
     durations = {
+        1: {"math": 15, "english": 15, "evs": 15},
+        2: {"math": 20, "english": 15, "evs": 15},
         3: {"math": 20, "english": 15, "evs": 20, "computer": 15, "life": 15, "evs1": 20, "evs2": 20},
+        4: {"math": 25, "english": 20, "evs": 20},
         5: {"math": 30, "english": 20, "evs": 25, "computer": 20, "life": 15, "evs1": 25, "evs2": 20},
+        10: {"math": 40, "science": 40, "english": 30, "history": 30, "geography": 30, "economics": 30},
     }
     grouped = _subject_progress(progress, curriculum)
 
@@ -368,15 +387,15 @@ def _daily_plan_for(student: dict, curriculum: str, progress: list):
             "kind": "lesson",
             "subject": sid,
             "title": item.get("label", sid),
-            "minutes": durations.get(grade, {}).get(sid, 20),
+            "minutes": durations.get(grade, {}).get(sid, 25 if grade >= 6 else 20),
             "activity": act,
             "reason": reason,
             "supplemental": bool(item.get("supplemental")),
         })
 
     if curriculum == "nios":
-        items.append({"kind": "offline_suggestion", "record_type": "reading", "title": "Independent reading / read aloud", "minutes": 15 if grade == 3 else 20, "reason": "Daily reading habit"})
-        items.append({"kind": "offline_suggestion", "record_type": "physical", "title": "Movement / outdoor play", "minutes": 20 if grade == 3 else 25, "reason": "Daily physical activity"})
+        items.append({"kind": "offline_suggestion", "record_type": "reading", "title": "Independent reading / read aloud", "minutes": 15 if grade <= 3 else 20, "reason": "Daily reading habit"})
+        items.append({"kind": "offline_suggestion", "record_type": "physical", "title": "Movement / outdoor play", "minutes": 20 if grade <= 3 else 25, "reason": "Daily physical activity"})
     return items
 
 
@@ -468,12 +487,12 @@ def dashboard(student_id: str, authorization: Optional[str] = Header(default=Non
 def roadmap(student_id: str, curriculum: str = "nios", authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, student_id)
-    if curriculum not in ("maharashtra", "nios"):
+    if curriculum not in CURRICULA:
         raise HTTPException(400, "Unknown curriculum")
     progress = _get_progress(token, student_id)
     return {
         "curriculum": curriculum,
-        "level": "NIOS Level A" if curriculum == "nios" and int(student["grade"]) == 3 else "NIOS Level B" if curriculum == "nios" else f"Grade {student['grade']}",
+        "level": _level_label(student, curriculum),
         "subjects": _roadmap_for(student, curriculum, progress),
     }
 
@@ -482,7 +501,7 @@ def roadmap(student_id: str, curriculum: str = "nios", authorization: Optional[s
 def daily_plan(student_id: str, curriculum: str = "nios", authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, student_id)
-    if curriculum not in ("maharashtra", "nios"):
+    if curriculum not in CURRICULA:
         raise HTTPException(400, "Unknown curriculum")
     progress = _get_progress(token, student_id)
     items = _daily_plan_for(student, curriculum, progress)
@@ -510,11 +529,11 @@ def daily_plan(student_id: str, curriculum: str = "nios", authorization: Optiona
     items = planned + items
     return {
         "curriculum": curriculum,
-        "level": "NIOS Level A" if curriculum == "nios" and int(student["grade"]) == 3 else "NIOS Level B" if curriculum == "nios" else f"Grade {student['grade']}",
+        "level": _level_label(student, curriculum),
         "items": items,
         "total_minutes": sum(max(0, int(x.get("minutes") or 0)) for x in items),
         "portfolio_available": portfolio_available,
-        "note": "This is a Chalo Padhaye home-study plan, not an official NIOS timetable. Include breaks and adjust the pace to the child.",
+        "note": "This is a Chalo Padhaye study plan. Include breaks and adjust the pace to the child.",
     }
 
 
@@ -538,7 +557,7 @@ def create_portfolio(data: PortfolioIn, authorization: Optional[str] = Header(de
         raise HTTPException(400, "Unknown record type")
     if data.status not in RECORD_STATUS:
         raise HTTPException(400, "Unknown record status")
-    if data.curriculum not in ("maharashtra", "nios", "general"):
+    if data.curriculum not in PORTFOLIO_CURRICULA:
         raise HTTPException(400, "Unknown curriculum")
     title = data.title.strip()[:160]
     if not title:
@@ -643,7 +662,7 @@ def tts(data: TTSIn, authorization: Optional[str] = Header(default=None)):
 def chat(data: ChatIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, data.student_id)
-    if data.curriculum not in ("maharashtra", "nios"):
+    if data.curriculum not in CURRICULA:
         raise HTTPException(400, "Unknown curriculum")
     if data.activity not in ACTIVITIES:
         raise HTTPException(400, "Unknown activity")
