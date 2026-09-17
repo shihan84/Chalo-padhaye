@@ -17,23 +17,10 @@ const CBSE_PREFIXES={
   10:{math:'jemh1',science:'jesc1',english:'jeff1',history:'jess3',geography:'jess1',civics:'jess4',economics:'jess2'}
 };
 
-function proxyForOfficialPdf(url){
-  try{
-    const u=new URL(url);
-    if(u.hostname==='www.ncert.nic.in'&&u.pathname.startsWith('/textbook/pdf/')){
-      const file=u.pathname.split('/').pop();
-      return `/book-proxy/ncert/${encodeURIComponent(file)}`;
-    }
-    if(u.hostname==='books.ebalbharati.in'&&u.pathname.startsWith('/pdfs/')){
-      const file=u.pathname.split('/').pop();
-      return `/book-proxy/balbharati/${encodeURIComponent(file)}`;
-    }
-    if(u.hostname==='cdn.nios.ac.in'){
-      const path=u.pathname.replace(/^\/+/, '').split('/').map(encodeURIComponent).join('/');
-      return `/book-proxy/nios/${path}`;
-    }
-  }catch{}
-  return url;
+function embeddedPdfViewer(url,page=1){
+  // NCERT/Balbharati can block cross-site PDF framing. Google Viewer fetches the
+  // public official PDF itself, so the book can stay visible inside the lesson.
+  return `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(url)}#page=${Math.max(1,Number(page||1))}`;
 }
 
 function ensureBookViewer(){
@@ -43,7 +30,7 @@ function ensureBookViewer(){
   document.head.appendChild(style);
   const card=document.createElement('div');
   card.id='bookViewerCard';card.className='card bookviewer hidden';
-  card.innerHTML=`<div class="section-title"><div><h2>📖 Textbook Pages</h2><p id="bookMeta" class="sub">Official book pages for the selected chapter.</p></div><button id="hideBook">Hide</button></div><div id="bookHint" class="bookhint small"></div><div class="booktoolbar"><button id="bookPrev">◀ Previous page</button><label class="small">Page <input id="bookPage" type="number" min="1" value="1"></label><button id="bookNext">Next page ▶</button><button id="teachBookPage" class="primary">Tutor: explain this page</button><button id="quizBookPage">Ask me from this page</button><a id="openBookPdf" target="_blank" rel="noopener"><button>Open official PDF ↗</button></a><span id="bookStatus" class="bookstatus"></span></div><iframe id="bookFrame" class="bookframe" title="Official textbook page viewer"></iframe>`;
+  card.innerHTML=`<div class="section-title"><div><h2>📖 Textbook Pages</h2><p id="bookMeta" class="sub">Official book pages for the selected chapter.</p></div><button id="hideBook">Hide</button></div><div id="bookHint" class="bookhint small"></div><div class="booktoolbar"><button id="bookPrev">◀ Tutor page</button><label class="small">Tutor page <input id="bookPage" type="number" min="1" value="1"></label><button id="bookNext">Tutor page ▶</button><button id="teachBookPage" class="primary">Tutor: explain this page</button><button id="quizBookPage">Ask me from this page</button><a id="openBookPdf" target="_blank" rel="noopener"><button>Open official PDF ↗</button></a><span id="bookStatus" class="bookstatus"></span></div><iframe id="bookFrame" class="bookframe" title="Official textbook page viewer" referrerpolicy="no-referrer"></iframe>`;
   const anchor=$('#lessonCard');if(anchor)anchor.insertAdjacentElement('afterend',card);else $('#learnPanel').prepend(card);
   $('#hideBook').onclick=()=>card.classList.add('hidden');
   $('#bookPrev').onclick=()=>setBookPage(Math.max(1,bookViewerState.page-1));
@@ -51,7 +38,8 @@ function ensureBookViewer(){
   $('#bookPage').onchange=e=>setBookPage(Math.max(1,Number(e.target.value||1)));
   $('#teachBookPage').onclick=()=>sendBookPrompt('teach');
   $('#quizBookPage').onclick=()=>sendBookPrompt('quiz');
-  $('#bookFrame').onload=()=>{$('#bookStatus').textContent='Book loaded inside Chalo Padhaye.'};
+  $('#bookFrame').onload=()=>{$('#bookStatus').textContent=`Book viewer loaded • tutor focus page ${bookViewerState.page}.`};
+  $('#bookFrame').onerror=()=>{$('#bookStatus').textContent='Embedded viewer could not load. Use Open official PDF.'};
 }
 
 function sourceForLesson(lesson){
@@ -60,30 +48,29 @@ function sourceForLesson(lesson){
   if(curriculum==='cbse'){
     const prefix=(CBSE_PREFIXES[grade]||{})[subject];if(!prefix)return null;
     const chapter=Number(lesson.order||1);
-    return {title:`${subjectLabel(subject,'cbse',grade)} — ${lesson.title}`,url:`https://www.ncert.nic.in/textbook/pdf/${prefix}${String(chapter).padStart(2,'0')}.pdf`,chapter,official:true,chapterPdf:true};
+    return {title:`${subjectLabel(subject,'cbse',grade)} — ${lesson.title}`,url:`https://www.ncert.nic.in/textbook/pdf/${prefix}${String(chapter).padStart(2,'0')}.pdf`,chapter,grade,subject,official:true,chapterPdf:true};
   }
   const row=(((BOOK_SOURCES[curriculum]||{})[grade]||{})[subject]);
   if(!row)return null;
-  return {...row,chapter:Number(lesson.order||1),official:!row.supplemental,chapterPdf:false};
+  return {...row,chapter:Number(lesson.order||1),grade,subject,official:!row.supplemental,chapterPdf:false};
 }
 
 function setBookPage(page){
   bookViewerState.page=Math.max(1,Number(page||1));
   if($('#bookPage'))$('#bookPage').value=bookViewerState.page;
-  const viewerBase=bookViewerState.viewerUrl||proxyForOfficialPdf(bookViewerState.url);
-  const viewer=`${viewerBase}#page=${bookViewerState.page}&zoom=page-width`;
+  const viewer=embeddedPdfViewer(bookViewerState.url,bookViewerState.page);
   const direct=`${bookViewerState.url}#page=${bookViewerState.page}`;
-  if($('#bookFrame')){$('#bookStatus').textContent='Loading book…';$('#bookFrame').src=viewer}
+  if($('#bookFrame')){$('#bookStatus').textContent='Loading embedded book viewer…';$('#bookFrame').src=viewer}
   if($('#openBookPdf'))$('#openBookPdf').href=direct;
-  if($('#bookHint'))$('#bookHint').innerHTML=`Showing <b>${esc(bookViewerState.title)}</b> • PDF page ${bookViewerState.page}. ${bookViewerState.chapterPdf?'This PDF is the selected NCERT chapter. Tutor actions use this exact PDF page text when available.':'This is the full textbook; use Previous/Next or enter a PDF page number.'}`;
+  if($('#bookHint'))$('#bookHint').innerHTML=`Showing <b>${esc(bookViewerState.title)}</b>. Tutor focus: PDF page ${bookViewerState.page}. ${bookViewerState.chapterPdf?'This PDF is the selected NCERT chapter. If the embedded viewer opens on another page, use its own page control while keeping Tutor page matched here.':'This is the full textbook; use the viewer page control and match Tutor page here.'}`;
 }
 
 function showBookForLesson(lesson){
   ensureBookViewer();const source=sourceForLesson(lesson);const card=$('#bookViewerCard');
   if(!source){card.classList.remove('hidden');$('#bookMeta').textContent='A browser-viewable official PDF is not mapped for this subject yet.';$('#bookHint').textContent='The tutor can still teach from indexed lesson material.';$('#bookFrame').removeAttribute('src');return}
-  bookViewerState={...source,page:1,title:source.title,url:source.url,viewerUrl:proxyForOfficialPdf(source.url)};
+  bookViewerState={...source,page:1,title:source.title,url:source.url,viewerUrl:embeddedPdfViewer(source.url,1)};
   card.classList.remove('hidden');
-  $('#bookMeta').innerHTML=`${source.official?'<span class="bookbadge">official source</span>':'<span class="bookbadge sup">supplemental source</span>'} ${esc(lesson.title)} <span class="small">• displayed through Chalo Padhaye viewer proxy</span>`;
+  $('#bookMeta').innerHTML=`${source.official?'<span class="bookbadge">official source</span>':'<span class="bookbadge sup">supplemental source</span>'} ${esc(lesson.title)} <span class="small">• embedded viewer; official source link stays available</span>`;
   setBookPage(1);
 }
 
