@@ -1,4 +1,5 @@
 from io import BytesIO
+import re
 
 import requests
 from pypdf import PdfReader
@@ -11,88 +12,23 @@ from .knowledge import KnowledgeBase as LegacyKnowledgeBase, chunks, tokenize
 # the 2026-27 session, so keep these mappings aligned with the current books.
 CBSE_SUBJECTS = {
     1: {
-        "math": {
-            "label": "Mathematics — Joyful Mathematics",
-            "title": "NCERT Joyful Mathematics - Class I",
-            "prefix": "aejm1",
-            "chapters": 13,
-        },
-        "english": {
-            "label": "English — Mridang",
-            "title": "NCERT Mridang - Class I",
-            "prefix": "aemr1",
-            "chapters": 9,
-        },
+        "math": {"label": "Mathematics — Joyful Mathematics", "title": "NCERT Joyful Mathematics - Class I", "prefix": "aejm1", "chapters": 13},
+        "english": {"label": "English — Mridang", "title": "NCERT Mridang - Class I", "prefix": "aemr1", "chapters": 9},
     },
     9: {
-        "math": {
-            "label": "Mathematics — Ganita Manjari",
-            "title": "NCERT Ganita Manjari - Grade 9 Part I",
-            "prefix": "iemh1",
-            "chapters": 8,
-        },
-        "science": {
-            "label": "Science — Exploration",
-            "title": "NCERT Exploration - Grade 9",
-            "prefix": "iesc1",
-            "chapters": 13,
-        },
-        "english": {
-            "label": "English — Kaveri",
-            "title": "NCERT Kaveri - Grade 9",
-            "prefix": "iebe1",
-            "chapters": 8,
-        },
-        "social_science": {
-            "label": "Social Science — Understanding Society",
-            "title": "NCERT Understanding Society: India and Beyond - Grade 9 Part I",
-            "prefix": "iest1",
-            "chapters": 9,
-        },
+        "math": {"label": "Mathematics — Ganita Manjari", "title": "NCERT Ganita Manjari - Grade 9 Part I", "prefix": "iemh1", "chapters": 8},
+        "science": {"label": "Science — Exploration", "title": "NCERT Exploration - Grade 9", "prefix": "iesc1", "chapters": 13},
+        "english": {"label": "English — Kaveri", "title": "NCERT Kaveri - Grade 9", "prefix": "iebe1", "chapters": 8},
+        "social_science": {"label": "Social Science — Understanding Society", "title": "NCERT Understanding Society: India and Beyond - Grade 9 Part I", "prefix": "iest1", "chapters": 9},
     },
     10: {
-        "math": {
-            "label": "Mathematics — NCERT Class 10",
-            "title": "NCERT Mathematics - Class X",
-            "prefix": "jemh1",
-            "chapters": 14,
-        },
-        "science": {
-            "label": "Science — NCERT Class 10",
-            "title": "NCERT Science - Class X",
-            "prefix": "jesc1",
-            "chapters": 13,
-        },
-        "english": {
-            "label": "English — First Flight",
-            "title": "NCERT First Flight - Class X",
-            "prefix": "jeff1",
-            "chapters": 11,
-        },
-        "history": {
-            "label": "Social Science — History",
-            "title": "NCERT India and the Contemporary World II - Class X",
-            "prefix": "jess3",
-            "chapters": 5,
-        },
-        "geography": {
-            "label": "Social Science — Geography",
-            "title": "NCERT Contemporary India II - Class X",
-            "prefix": "jess1",
-            "chapters": 7,
-        },
-        "civics": {
-            "label": "Social Science — Political Science",
-            "title": "NCERT Democratic Politics II - Class X",
-            "prefix": "jess4",
-            "chapters": 5,
-        },
-        "economics": {
-            "label": "Social Science — Economics",
-            "title": "NCERT Understanding Economic Development - Class X",
-            "prefix": "jess2",
-            "chapters": 5,
-        },
+        "math": {"label": "Mathematics — NCERT Class 10", "title": "NCERT Mathematics - Class X", "prefix": "jemh1", "chapters": 14},
+        "science": {"label": "Science — NCERT Class 10", "title": "NCERT Science - Class X", "prefix": "jesc1", "chapters": 13},
+        "english": {"label": "English — First Flight", "title": "NCERT First Flight - Class X", "prefix": "jeff1", "chapters": 11},
+        "history": {"label": "Social Science — History", "title": "NCERT India and the Contemporary World II - Class X", "prefix": "jess3", "chapters": 5},
+        "geography": {"label": "Social Science — Geography", "title": "NCERT Contemporary India II - Class X", "prefix": "jess1", "chapters": 7},
+        "civics": {"label": "Social Science — Political Science", "title": "NCERT Democratic Politics II - Class X", "prefix": "jess4", "chapters": 5},
+        "economics": {"label": "Social Science — Economics", "title": "NCERT Understanding Economic Development - Class X", "prefix": "jess2", "chapters": 5},
     },
 }
 
@@ -113,14 +49,7 @@ class CBSEKnowledgeBase:
         result = {}
         for grade, subjects in CBSE_SUBJECTS.items():
             result[str(grade)] = [
-                {
-                    "id": sid,
-                    "label": meta["label"],
-                    "official": True,
-                    "supplemental": False,
-                    "available": True,
-                    "source_title": meta["title"],
-                }
+                {"id": sid, "label": meta["label"], "official": True, "supplemental": False, "available": True, "source_title": meta["title"]}
                 for sid, meta in subjects.items()
             ]
         return result
@@ -173,7 +102,6 @@ class CBSEKnowledgeBase:
         meta = CBSE_SUBJECTS.get(grade, {}).get(subject)
         if not meta:
             return {"docs": [], "bm25": None}
-
         docs = []
         for chapter_no in range(1, int(meta["chapters"]) + 1):
             url = f"https://www.ncert.nic.in/textbook/pdf/{meta['prefix']}{chapter_no:02d}.pdf"
@@ -190,23 +118,19 @@ class CBSEKnowledgeBase:
                 except Exception:
                     text = ""
                 for part in chunks(text):
-                    docs.append(
-                        {
-                            "source": f"{meta['title']} — chapter {chapter_no}, page {page_no}",
-                            "text": part,
-                            "page": page_no,
-                            "chapter": chapter_no,
-                            "url": url,
-                            "supplemental": False,
-                        }
-                    )
-
+                    docs.append({"source": f"{meta['title']} — chapter {chapter_no}, page {page_no}", "text": part, "page": page_no, "chapter": chapter_no, "url": url, "supplemental": False})
         tokens = [tokenize(d["text"]) for d in docs]
         index = {"docs": docs, "bm25": BM25Okapi(tokens) if tokens else None}
         self.indexes[key] = index
         return index
 
     def search(self, query: str, k: int = 4, grade: int = 10, subject: str = "math"):
+        marker = re.search(r"\[Textbook page:\s*(\d+)\s*;\s*Chapter number:\s*(\d+)\]", query or "", flags=re.I)
+        if marker:
+            page_no, chapter_no = int(marker.group(1)), int(marker.group(2))
+            exact = self.page_context(grade, subject, chapter_no, page_no)
+            if exact:
+                return exact[:k]
         try:
             index = self._build_index(grade, subject)
         except Exception:
