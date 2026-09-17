@@ -23,8 +23,9 @@ Turn Chalo Padhaye from a chat-first tutor into a guided digital textbook + tuto
 ## Phase 3 — Digital textbook interaction
 - [x] Display mapped official NCERT/Balbharati/NIOS PDFs in the learning screen.
 - [x] Add previous/next page controls and official PDF fallback.
-- [ ] Retrieve exact selected PDF page text on the backend.
-- [ ] Bind tutor retrieval to current chapter + current page.
+- [x] Retrieve exact selected NCERT chapter PDF page text on the backend.
+- [x] Bind CBSE tutor retrieval to current chapter + current PDF page when the textbook-page action is used.
+- [ ] Add the same exact-page retrieval path for Balbharati and NIOS full-book PDFs.
 - [ ] Render page image snapshots when browser PDF embedding is unreliable.
 - [ ] Add Read with me mode for primary students.
 - [ ] Add diagram/image-aware questions and Look here guidance.
@@ -37,6 +38,7 @@ Turn Chalo Padhaye from a chat-first tutor into a guided digital textbook + tuto
 - [x] Limit student RLS access to the linked child's learning records.
 - [x] Hide Parent Dashboard from student accounts.
 - [x] Students can read parent-created assignments; parent remains owner of portfolio editing.
+- [ ] Run `supabase/006_student_login.sql` on production Supabase.
 - [ ] Add optional trusted-device PIN unlock after the main Supabase login.
 - [ ] Add parent revoke/relink control.
 
