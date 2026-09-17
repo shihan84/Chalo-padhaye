@@ -9,6 +9,7 @@ from fastapi import FastAPI, Header, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from .tutor import Tutor
+from .lesson_routes import router as lesson_router
 
 ROOT = Path(__file__).resolve().parents[1]
 app = FastAPI(title="Chalo Padhaye")
@@ -684,4 +685,5 @@ def chat(data: ChatIn, authorization: Optional[str] = Header(default=None)):
     return answer
 
 
+app.include_router(lesson_router)
 app.mount("/", StaticFiles(directory=ROOT / "frontend", html=True), name="frontend")
