@@ -7,69 +7,47 @@ from rank_bm25 import BM25Okapi
 from .knowledge import KnowledgeBase as LegacyKnowledgeBase, chunks, tokenize
 
 
+# Official NCERT textbook PDF prefixes. Class 9 was substantially refreshed for
+# the 2026-27 session, so keep these mappings aligned with the current books.
 CBSE_SUBJECTS = {
     1: {
         "math": {
             "label": "Mathematics — Joyful Mathematics",
-            "title": "NCERT Joyful Mathematics - Grade 1",
-            "prefix": "bejm1",
+            "title": "NCERT Joyful Mathematics - Class I",
+            "prefix": "aejm1",
             "chapters": 13,
         },
         "english": {
             "label": "English — Mridang",
-            "title": "NCERT Mridang - Grade 1",
-            "prefix": "bemr1",
+            "title": "NCERT Mridang - Class I",
+            "prefix": "aemr1",
             "chapters": 9,
         },
     },
     9: {
         "math": {
-            "label": "Mathematics — CBSE Class 9",
-            "title": "NCERT Mathematics / Ganita Manjari - Class IX",
+            "label": "Mathematics — Ganita Manjari",
+            "title": "NCERT Ganita Manjari - Grade 9 Part I",
             "prefix": "iemh1",
-            "chapters": 15,
+            "chapters": 8,
         },
         "science": {
-            "label": "Science — CBSE Class 9",
-            "title": "NCERT Science - Class IX",
+            "label": "Science — Exploration",
+            "title": "NCERT Exploration - Grade 9",
             "prefix": "iesc1",
-            "chapters": 12,
+            "chapters": 13,
         },
         "english": {
-            "label": "English — Beehive",
-            "title": "NCERT Beehive - Class IX",
+            "label": "English — Kaveri",
+            "title": "NCERT Kaveri - Grade 9",
             "prefix": "iebe1",
-            "chapters": 11,
+            "chapters": 8,
         },
-        "english_supplementary": {
-            "label": "English — Moments",
-            "title": "NCERT Moments Supplementary Reader - Class IX",
-            "prefix": "iemo1",
-            "chapters": 10,
-        },
-        "history": {
-            "label": "Social Science — History",
-            "title": "NCERT India and the Contemporary World I - Class IX",
-            "prefix": "iess3",
-            "chapters": 5,
-        },
-        "geography": {
-            "label": "Social Science — Geography",
-            "title": "NCERT Contemporary India I - Class IX",
-            "prefix": "iess1",
-            "chapters": 6,
-        },
-        "civics": {
-            "label": "Social Science — Political Science",
-            "title": "NCERT Democratic Politics I - Class IX",
-            "prefix": "iess4",
-            "chapters": 5,
-        },
-        "economics": {
-            "label": "Social Science — Economics",
-            "title": "NCERT Economics - Class IX",
-            "prefix": "iess2",
-            "chapters": 4,
+        "social_science": {
+            "label": "Social Science — Understanding Society",
+            "title": "NCERT Understanding Society: India and Beyond - Grade 9 Part I",
+            "prefix": "iest1",
+            "chapters": 9,
         },
     },
     10: {
@@ -115,7 +93,7 @@ CBSE_SUBJECTS = {
             "prefix": "jess2",
             "chapters": 5,
         },
-    }
+    },
 }
 
 
