@@ -16,30 +16,32 @@ Use ONLY the supplied lesson context for syllabus facts. If context is insuffici
 
 TEACH LIKE A HUMAN TUTOR, NOT LIKE AN ARTICLE OR LECTURE:
 - Teach only ONE small concept per turn.
-- Usually use 2 to 5 short spoken sentences before the question.
-- Use one simple everyday example when useful.
+- Keep every spoken turn SHORT because it is converted to real-time voice.
+- Normally use only 1 to 3 short sentences before the question.
+- Avoid introductions, headings, summaries, bullet lists, and repeated wording unless essential.
+- Use one tiny everyday example only when it genuinely helps.
 - Ask EXACTLY ONE short question at the end, then STOP and wait.
 - Never answer your own question in the same turn.
 - Never reveal the answer before the child attempts it.
 - Use the recent conversation to understand whether the child is answering your previous question.
-- If the answer is correct: praise briefly, reinforce why in one sentence, then move to the next small step with one question.
-- If the first answer is wrong: do NOT give the answer. Give one small hint and ask one easier or rephrased question.
+- If the answer is correct: praise in a few words, reinforce why in one short sentence, then ask the next single question.
+- If the first answer is wrong: do NOT give the answer. Give one brief hint and ask one easier or rephrased question.
 - If the child is still struggling after repeated attempts: explain gently with one tiny example, then ask one easier checking question.
-- Avoid long headings, bullet-heavy lectures, repeated summaries, and robotic phrases.
 - Prefer natural punctuation and short clauses because your response will be read aloud.
 - Do not ask two questions in one turn.
 - Keep encouragement genuine and brief.
 - Never shame, pressure, compare siblings, or use marks as punishment.
 - Do not encourage the child to browse the open web or contact strangers. Keep activities age-appropriate and parent-safe.
+- Do not use markdown headings. Avoid markdown formatting in the child-facing reply.
 '''
 
 ACTIVITY_RULES = {
-    "teach": "Teach a tiny concept, give one example if useful, then ask one checking question.",
-    "practice": "Keep explanation minimal. Give one practice item at a time. After an answer, give brief feedback and the next single item.",
-    "quiz": "Act like a gentle oral quiz. Ask only one question at a time. Do not teach before the first question unless the child asks for help.",
-    "revision": "Give a very short recap of one previously relevant concept, then ask one recall question.",
-    "reading": "Use a short passage or idea from the supplied lesson context. Help with meaning, fluency, vocabulary, or comprehension one step at a time. Ask only one reading/comprehension question.",
-    "project": "Turn the lesson into one simple age-appropriate hands-on project using ordinary household materials when possible. Give only the NEXT step, not the entire project at once, and ask one short check-in question.",
+    "teach": "Teach one tiny concept in a very short spoken turn, give one tiny example only if useful, then ask one checking question.",
+    "practice": "Give almost no explanation. Ask one practice item. After an answer, give one short feedback sentence and the next single item.",
+    "quiz": "Act like a gentle oral quiz. Ask only one short question. Do not teach before the first question unless the child asks for help.",
+    "revision": "Give a one-sentence recap, then ask one recall question.",
+    "reading": "Use a very short passage or idea from the supplied lesson context. Help with one reading skill at a time and ask one question.",
+    "project": "Give only the NEXT simple project step using safe ordinary household materials, then ask one short check-in question.",
 }
 
 JSON_RULES = '''Return ONLY valid JSON with this shape:
@@ -58,11 +60,16 @@ class Tutor:
         self.kb = KnowledgeBase()
 
     def _system(self, student_name: str, grade: int, subject: str, curriculum: str = "maharashtra", activity: str = "teach"):
-        grade_rules = (
-            "For Grade 3 / NIOS Level A, use very short sentences, concrete objects, and very easy checking questions."
-            if grade == 3
-            else "For Grade 5 / NIOS Level B, explain clearly with a little more detail, but still one step at a time."
-        )
+        if grade == 3:
+            grade_rules = (
+                "For Grade 3 / NIOS Level A, use very short sentences, concrete objects, and very easy checking questions. "
+                "Keep the child-facing reply under about 45 words whenever possible."
+            )
+        else:
+            grade_rules = (
+                "For Grade 5 / NIOS Level B, explain clearly but still one small step at a time. "
+                "Keep the child-facing reply under about 65 words whenever possible."
+            )
         curriculum_name = "NIOS Open Basic Education homeschool track" if curriculum == "nios" else "Maharashtra State Board school track"
         activity_rule = ACTIVITY_RULES.get(activity, ACTIVITY_RULES["teach"])
         return (
@@ -75,7 +82,7 @@ class Tutor:
         r = requests.post(
             GROQ_URL,
             headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
-            json={"model": GROQ_MODEL, "messages": messages, "temperature": 0.15, "max_tokens": 380},
+            json={"model": GROQ_MODEL, "messages": messages, "temperature": 0.12, "max_tokens": 220},
             timeout=60,
         )
         r.raise_for_status()
@@ -122,9 +129,9 @@ class Tutor:
     ):
         history = history or []
         last_tutor = next((item.get("message", "") for item in reversed(history) if item.get("role") == "tutor"), "")
-        retrieval_query = f"{last_tutor[-900:]}\n{message}" if last_tutor else message
+        retrieval_query = f"{last_tutor[-700:]}\n{message}" if last_tutor else message
         hits = self.kb.search(retrieval_query, 4, grade=grade, subject=subject, curriculum=curriculum)
-        context = "\n\n".join(f"SOURCE {h['source']}:\n{h['text'][:2400]}" for h in hits)
+        context = "\n\n".join(f"SOURCE {h['source']}:\n{h['text'][:2200]}" for h in hits)
         if not context:
             context = "No relevant lesson material could be loaded for this request. Do not invent syllabus facts."
 
@@ -132,7 +139,7 @@ class Tutor:
         messages = [{"role": "system", "content": system}]
         for item in history[-8:]:
             role = "assistant" if item.get("role") == "tutor" else "user"
-            messages.append({"role": role, "content": item.get("message", "")[:1800]})
+            messages.append({"role": role, "content": item.get("message", "")[:1400]})
         messages.append({"role": "user", "content": f"LESSON CONTEXT:\n{context}\n\nCHILD'S NEW MESSAGE: {message}"})
         sources = [h["source"] for h in hits]
         supplemental = any(bool(h.get("supplemental")) for h in hits)
