@@ -9,30 +9,14 @@ ROOT = Path(__file__).resolve().parents[1]
 EXTRACTED = ROOT / "data" / "extracted"
 
 REMOTE_BOOKS = {
-    (5, "evs1"): {
-        "title": "Environmental Studies Part One - Standard Five",
-        "url": "https://books.ebalbharati.in/pdfs/503000541.pdf",
-    },
-    (5, "evs2"): {
-        "title": "Environmental Studies Part Two - Standard Five",
-        "url": "https://books.ebalbharati.in/pdfs/503000542.pdf",
-    },
-    (5, "math"): {
-        "title": "Mathematics - Standard Five",
-        "url": "https://books.ebalbharati.in/pdfs/503020004.pdf",
-    },
-    (5, "english"): {
-        "title": "English Balbharati - Standard Five",
-        "url": "https://books.ebalbharati.in/pdfs/503020001.pdf",
-    },
-    (3, "math"): {
-        "title": "Mathematics - Standard Three",
-        "url": "https://books.ebalbharati.in/pdfs/303020004.pdf",
-    },
-    (3, "english"): {
-        "title": "English Balbharati - Standard Three",
-        "url": "https://books.ebalbharati.in/pdfs/303020001.pdf",
-    },
+    ("maharashtra", 5, "evs1"): {"title": "Environmental Studies Part One - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503000541.pdf"},
+    ("maharashtra", 5, "evs2"): {"title": "Environmental Studies Part Two - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503000542.pdf"},
+    ("maharashtra", 5, "math"): {"title": "Mathematics - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020004.pdf"},
+    ("maharashtra", 5, "english"): {"title": "English Balbharati - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020001.pdf"},
+    ("maharashtra", 3, "math"): {"title": "Mathematics - Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020004.pdf"},
+    ("maharashtra", 3, "english"): {"title": "English Balbharati - Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020001.pdf"},
+    # Official NIOS Open Basic Education material. Level A is Class 3 equivalent.
+    ("nios", 3, "evs"): {"title": "NIOS OBE Level A - Environmental Studies", "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf"},
 }
 
 
@@ -44,10 +28,9 @@ def chunks(text: str, size: int = 1800, overlap: int = 250):
     text = re.sub(r"\s+", " ", text).strip()
     if not text:
         return []
-    out = []
-    start = 0
+    out, start = [], 0
     while start < len(text):
-        out.append(text[start : start + size])
+        out.append(text[start:start + size])
         if start + size >= len(text):
             break
         start += size - overlap
@@ -71,14 +54,13 @@ class KnowledgeBase:
             total.extend(value["docs"])
         return total
 
-    def _build_remote_index(self, grade: int, subject: str):
-        key = (grade, subject)
+    def _build_remote_index(self, grade: int, subject: str, curriculum: str = "maharashtra"):
+        key = (curriculum, grade, subject)
         if key in self.remote_indexes:
             return self.remote_indexes[key]
         book = REMOTE_BOOKS.get(key)
         if not book:
             return {"docs": [], "bm25": None}
-
         r = requests.get(book["url"], timeout=35)
         r.raise_for_status()
         reader = PdfReader(BytesIO(r.content))
@@ -88,34 +70,24 @@ class KnowledgeBase:
                 text = page.extract_text() or ""
             except Exception:
                 text = ""
-            for i, part in enumerate(chunks(text)):
-                docs.append({
-                    "source": f"{book['title']} — page {page_no}",
-                    "text": part,
-                    "page": page_no,
-                    "url": book["url"],
-                })
-
+            for part in chunks(text):
+                docs.append({"source": f"{book['title']} — page {page_no}", "text": part, "page": page_no, "url": book["url"]})
         tokens = [tokenize(d["text"]) for d in docs]
         index = {"docs": docs, "bm25": BM25Okapi(tokens) if tokens else None}
         self.remote_indexes[key] = index
         return index
 
-    def search(self, query: str, k: int = 4, grade: int = 5, subject: str = "evs1"):
+    def search(self, query: str, k: int = 4, grade: int = 5, subject: str = "evs1", curriculum: str = "maharashtra"):
         try:
-            index = self._build_remote_index(grade, subject)
+            index = self._build_remote_index(grade, subject, curriculum)
         except Exception:
             index = {"docs": [], "bm25": None}
-
-        docs = index["docs"]
-        bm25 = index["bm25"]
+        docs, bm25 = index["docs"], index["bm25"]
         if not bm25:
             if not self.local_docs:
                 return []
             tokens = [tokenize(d["text"]) for d in self.local_docs]
-            bm25 = BM25Okapi(tokens)
-            docs = self.local_docs
-
+            bm25, docs = BM25Okapi(tokens), self.local_docs
         scores = bm25.get_scores(tokenize(query))
         idxs = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
         return [docs[i] for i in idxs if scores[i] > 0]
