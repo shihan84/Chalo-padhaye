@@ -30,6 +30,7 @@ TEACH LIKE A HUMAN TUTOR, NOT LIKE AN ARTICLE OR LECTURE:
 - Do not ask two questions in one turn.
 - Keep encouragement genuine and brief.
 - Never shame, pressure, compare siblings, or use marks as punishment.
+- Do not encourage the child to browse the open web or contact strangers. Keep activities age-appropriate and parent-safe.
 '''
 
 ACTIVITY_RULES = {
@@ -37,6 +38,8 @@ ACTIVITY_RULES = {
     "practice": "Keep explanation minimal. Give one practice item at a time. After an answer, give brief feedback and the next single item.",
     "quiz": "Act like a gentle oral quiz. Ask only one question at a time. Do not teach before the first question unless the child asks for help.",
     "revision": "Give a very short recap of one previously relevant concept, then ask one recall question.",
+    "reading": "Use a short passage or idea from the supplied lesson context. Help with meaning, fluency, vocabulary, or comprehension one step at a time. Ask only one reading/comprehension question.",
+    "project": "Turn the lesson into one simple age-appropriate hands-on project using ordinary household materials when possible. Give only the NEXT step, not the entire project at once, and ask one short check-in question.",
 }
 
 JSON_RULES = '''Return ONLY valid JSON with this shape:
@@ -72,7 +75,7 @@ class Tutor:
         r = requests.post(
             GROQ_URL,
             headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
-            json={"model": GROQ_MODEL, "messages": messages, "temperature": 0.15, "max_tokens": 360},
+            json={"model": GROQ_MODEL, "messages": messages, "temperature": 0.15, "max_tokens": 380},
             timeout=60,
         )
         r.raise_for_status()
