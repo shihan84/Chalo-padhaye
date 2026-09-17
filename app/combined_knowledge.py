@@ -100,6 +100,7 @@ CBSE_SUBJECTS = {
 class CBSEKnowledgeBase:
     def __init__(self):
         self.indexes = {}
+        self.page_cache = {}
 
     @property
     def docs(self):
@@ -123,6 +124,47 @@ class CBSEKnowledgeBase:
                 for sid, meta in subjects.items()
             ]
         return result
+
+    def _chapter_url(self, grade: int, subject: str, chapter_no: int):
+        meta = CBSE_SUBJECTS.get(grade, {}).get(subject)
+        if not meta:
+            return None, None
+        if chapter_no < 1 or chapter_no > int(meta["chapters"]):
+            return meta, None
+        return meta, f"https://www.ncert.nic.in/textbook/pdf/{meta['prefix']}{chapter_no:02d}.pdf"
+
+    def page_context(self, grade: int, subject: str, chapter_no: int, page_no: int):
+        """Return chunks from one exact page of one NCERT chapter PDF."""
+        key = (grade, subject, chapter_no, page_no)
+        if key in self.page_cache:
+            return self.page_cache[key]
+        meta, url = self._chapter_url(grade, subject, chapter_no)
+        if not meta or not url:
+            return []
+        try:
+            r = requests.get(url, timeout=20)
+            if not r.ok or not r.content.startswith(b"%PDF"):
+                return []
+            reader = PdfReader(BytesIO(r.content))
+            if page_no < 1 or page_no > len(reader.pages):
+                return []
+            text = reader.pages[page_no - 1].extract_text() or ""
+        except Exception:
+            return []
+        docs = [
+            {
+                "source": f"{meta['title']} — chapter {chapter_no}, page {page_no}",
+                "text": part,
+                "page": page_no,
+                "chapter": chapter_no,
+                "url": url,
+                "supplemental": False,
+                "exact_page": True,
+            }
+            for part in chunks(text)
+        ]
+        self.page_cache[key] = docs
+        return docs
 
     def _build_index(self, grade: int, subject: str):
         key = (grade, subject)
@@ -153,6 +195,7 @@ class CBSEKnowledgeBase:
                             "source": f"{meta['title']} — chapter {chapter_no}, page {page_no}",
                             "text": part,
                             "page": page_no,
+                            "chapter": chapter_no,
                             "url": url,
                             "supplemental": False,
                         }
@@ -191,6 +234,11 @@ class KnowledgeBase:
         out = self.legacy.catalog()
         out["cbse"] = self.cbse.catalog()
         return out
+
+    def page_context(self, grade: int, subject: str, curriculum: str, chapter_no: int, page_no: int):
+        if curriculum == "cbse":
+            return self.cbse.page_context(grade, subject, chapter_no, page_no)
+        return []
 
     def search(self, query: str, k: int = 4, grade: int = 5, subject: str = "evs1", curriculum: str = "maharashtra"):
         if curriculum == "cbse":
