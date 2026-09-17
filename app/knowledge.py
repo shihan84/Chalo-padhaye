@@ -12,24 +12,22 @@ EXTRACTED = ROOT / "data" / "extracted"
 NIOS_MATERIAL_PAGE = "https://rcgangtok.nios.ac.in/open-basic-education-courses-material.html"
 
 REMOTE_BOOKS = {
-    ("maharashtra", 5, "evs1"): {"title": "Environmental Studies Part One - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503000541.pdf"},
-    ("maharashtra", 5, "evs2"): {"title": "Environmental Studies Part Two - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503000542.pdf"},
-    ("maharashtra", 5, "math"): {"title": "Mathematics - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020004.pdf"},
-    ("maharashtra", 5, "english"): {"title": "English Balbharati - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020001.pdf"},
-    ("maharashtra", 3, "math"): {"title": "Mathematics - Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020004.pdf"},
-    ("maharashtra", 3, "english"): {"title": "English Balbharati - Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020001.pdf"},
-    # Verified direct NIOS Level A resources.
+    ("maharashtra", 5, "evs1"): {"title": "Environmental Studies Part One - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503000541.pdf", "official": True},
+    ("maharashtra", 5, "evs2"): {"title": "Environmental Studies Part Two - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503000542.pdf", "official": True},
+    ("maharashtra", 5, "math"): {"title": "Mathematics - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020004.pdf", "official": True},
+    ("maharashtra", 5, "english"): {"title": "English Balbharati - Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020001.pdf", "official": True},
+    ("maharashtra", 3, "math"): {"title": "Mathematics - Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020004.pdf", "official": True},
+    ("maharashtra", 3, "english"): {"title": "English Balbharati - Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020001.pdf", "official": True},
     ("nios", 3, "evs"): {"title": "NIOS OBE Level A - Environmental Studies", "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf", "official": True},
     ("nios", 3, "computer"): {"title": "NIOS OBE Level A - Basic Computer Skills", "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Basic_Computer-skills_Level_A_english_medium.pdf", "official": True},
 }
 
-# Supplemental sources used only when the NIOS material page cannot be resolved at runtime.
 NIOS_SUPPLEMENTS = {
-    (3, "math"): {"title": "Supplemental Mathematics - Balbharati Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020004.pdf"},
-    (3, "english"): {"title": "Supplemental English Practice - Balbharati Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020001.pdf"},
-    (5, "math"): {"title": "Supplemental Mathematics - Balbharati Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020004.pdf"},
-    (5, "english"): {"title": "Supplemental English Practice - Balbharati Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020001.pdf"},
-    (5, "evs"): {"title": "Supplemental EVS - Balbharati Standard Five Part One", "url": "https://books.ebalbharati.in/pdfs/503000541.pdf"},
+    (3, "math"): {"title": "Supplemental Mathematics - Balbharati Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020004.pdf", "official": False},
+    (3, "english"): {"title": "Supplemental English Practice - Balbharati Standard Three", "url": "https://books.ebalbharati.in/pdfs/303020001.pdf", "official": False},
+    (5, "math"): {"title": "Supplemental Mathematics - Balbharati Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020004.pdf", "official": False},
+    (5, "english"): {"title": "Supplemental English Practice - Balbharati Standard Five", "url": "https://books.ebalbharati.in/pdfs/503020001.pdf", "official": False},
+    (5, "evs"): {"title": "Supplemental EVS - Balbharati Standard Five Part One", "url": "https://books.ebalbharati.in/pdfs/503000541.pdf", "official": False},
 }
 
 LIFE_SKILLS = {
@@ -131,29 +129,29 @@ class KnowledgeBase:
             total.extend(value["docs"])
         return total
 
-    def catalog(self):
-        return {
-            "maharashtra": {str(g): [{"id": sid, "label": label, "official": True} for sid, label in subjects.items()] for g, subjects in MAHARASHTRA_SUBJECTS.items()},
-            "nios": {str(g): [{"id": sid, "label": label, "official": sid in ("evs", "math", "computer"), "supplemental": sid in ("english", "life")} for sid, label in subjects.items()] for g, subjects in NIOS_EXPECTED.items()},
-        }
-
     def _discover_nios(self):
         if self._nios_discovered is not None:
             return self._nios_discovered
         found = {}
         try:
-            r = requests.get(NIOS_MATERIAL_PAGE, timeout=20)
+            r = requests.get(NIOS_MATERIAL_PAGE, timeout=8)
             r.raise_for_status()
             parser = _LinkParser()
             parser.feed(r.text)
             aliases = {
                 "a level evs": (3, "evs", "NIOS OBE Level A - Environmental Studies"),
+                "a level environmental studies": (3, "evs", "NIOS OBE Level A - Environmental Studies"),
                 "a level basic computer skills": (3, "computer", "NIOS OBE Level A - Basic Computer Skills"),
+                "a level computer": (3, "computer", "NIOS OBE Level A - Basic Computer Skills"),
                 "a level maths": (3, "math", "NIOS OBE Level A - Mathematics"),
+                "a level mathematics": (3, "math", "NIOS OBE Level A - Mathematics"),
                 "b level evs": (5, "evs", "NIOS OBE Level B - Environmental Studies"),
+                "b level environmental studies": (5, "evs", "NIOS OBE Level B - Environmental Studies"),
                 "b level maths": (5, "math", "NIOS OBE Level B - Mathematics"),
+                "b level mathematics": (5, "math", "NIOS OBE Level B - Mathematics"),
                 "b level computer skill": (5, "computer", "NIOS OBE Level B - Basic Computer Skills"),
                 "b level basic computer skills": (5, "computer", "NIOS OBE Level B - Basic Computer Skills"),
+                "b level computer": (5, "computer", "NIOS OBE Level B - Basic Computer Skills"),
             }
             for text, href in parser.links:
                 norm = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
@@ -183,6 +181,33 @@ class KnowledgeBase:
             return NIOS_SUPPLEMENTS.get((grade, subject))
         return None
 
+    def catalog(self):
+        maharashtra = {
+            str(g): [
+                {"id": sid, "label": label, "official": True, "supplemental": False, "available": True, "source_title": REMOTE_BOOKS.get(("maharashtra", g, sid), {}).get("title")}
+                for sid, label in subjects.items()
+            ]
+            for g, subjects in MAHARASHTRA_SUBJECTS.items()
+        }
+        nios = {}
+        for grade, subjects in NIOS_EXPECTED.items():
+            rows = []
+            for sid, label in subjects.items():
+                if sid == "life":
+                    rows.append({"id": sid, "label": label, "official": False, "supplemental": True, "available": bool(LIFE_SKILLS.get(grade)), "source_title": "Chalo Padhaye Life Skills"})
+                    continue
+                book = self._book_for("nios", grade, sid)
+                rows.append({
+                    "id": sid,
+                    "label": label,
+                    "official": bool(book and book.get("official")),
+                    "supplemental": bool(book and not book.get("official")),
+                    "available": bool(book),
+                    "source_title": book.get("title") if book else None,
+                })
+            nios[str(grade)] = rows
+        return {"maharashtra": maharashtra, "nios": nios}
+
     def _build_remote_index(self, grade: int, subject: str, curriculum: str = "maharashtra"):
         key = (curriculum, grade, subject)
         if key in self.remote_indexes:
@@ -210,7 +235,7 @@ class KnowledgeBase:
                     "text": part,
                     "page": page_no,
                     "url": book.get("url"),
-                    "supplemental": not bool(book.get("official")) and curriculum == "nios",
+                    "supplemental": curriculum == "nios" and not bool(book.get("official")),
                 })
         tokens = [tokenize(d["text"]) for d in docs]
         index = {"docs": docs, "bm25": BM25Okapi(tokens) if tokens else None}
