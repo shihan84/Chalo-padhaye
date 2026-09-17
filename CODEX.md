@@ -1,31 +1,46 @@
 # Codex execution brief
 
-Goal: run and harden the Chalo Padhaye MVP on an Intel MacBook Air.
+Goal: keep Chalo Padhaye reliable as a private family school + homeschool learning platform.
 
-## Required steps
+## Current production architecture
 
-1. Clone the repository.
-2. Create a Python virtual environment and install `requirements.txt`.
-3. Ensure Ollama is installed and available locally.
-4. Pull `qwen2.5:3b` (or, only if incompatible/too slow, choose a smaller Ollama instruct model and document the change).
-5. Run `python scripts/download_books.py`.
-6. Run `python scripts/ingest_books.py`.
-7. Start `uvicorn app.main:app --host 127.0.0.1 --port 8000`.
-8. Verify `/api/health` reports indexed pages.
-9. Open the browser UI and complete a chat round-trip.
-10. Fix any runtime errors found on Intel macOS.
+- FastAPI backend and static web frontend.
+- Supabase Auth/Postgres/RLS for private family data.
+- Groq tutor inference with optional Ollama fallback.
+- Runtime BM25 retrieval over official Balbharati / NIOS material.
+- Fish Audio custom tutor voice through `/api/tts`.
+- Vercel deployment.
 
 ## Non-negotiable product rules
 
-- Class 5 Maharashtra State Board, English medium first.
-- Hindi/Hinglish explanations; preserve textbook terms in English.
-- Syllabus answers must be grounded in locally indexed textbook context.
-- Ask one question at a time and wait for the learner.
-- Prefer local/offline components. Do not silently replace Ollama/RAG with a cloud API.
-- Do not commit downloaded textbook PDFs.
+- English-medium school terms; simple Hindi/Hinglish explanations when helpful.
+- Ground syllabus facts only in supplied lesson context.
+- Never silently label supplemental material as official NIOS content.
+- One small concept and exactly one learner question per turn.
+- Use recent session history so the tutor can evaluate short child answers correctly.
+- First wrong attempt gets a hint, not the final answer.
+- Grade 3 / NIOS Level A must be simpler and shorter than Grade 5 / Level B.
+- Parent login and Supabase RLS remain mandatory for child data.
+- Never commit secrets, child recordings, private documents, or textbook PDFs.
+- No service-role key in browser or frontend code.
 
-## Next implementation after MVP is stable
+## Current homeschool product surface
 
-Implement local `whisper.cpp` STT, SQLite student progress, subject/chapter selection, a lesson state machine with hints/retries, and a parent progress dashboard.
+- School / Homeschool modes.
+- NIOS Level A and B subject catalog plus clearly marked supplemental tracks.
+- Teach / Practice / Quiz / Revision activity modes.
+- Supabase session history and mastery tracking.
+- Daily learning plan.
+- Parent progress dashboard.
+- Custom voice replay, mute, speed control, and microphone language selection.
 
-Before major refactors, keep the existing MVP working and make incremental commits.
+## Engineering priorities
+
+1. Keep `/api/chat`, `/api/tts`, `/api/dashboard`, `/api/daily-plan`, and `/api/catalog` backward compatible.
+2. Improve NIOS official material discovery and cache/index performance without committing the PDFs.
+3. Add persistent weekly planning, assignments, and homeschool portfolio records using RLS-protected tables.
+4. Add printable worksheets/tests with parent controls.
+5. Add reading/pronunciation tracking and optional Whisper STT.
+6. Add automated tests for auth isolation, session ownership, curriculum isolation, progress updates, and source labelling.
+
+Before major refactors, preserve the working production flow and make incremental commits.
