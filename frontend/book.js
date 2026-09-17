@@ -75,7 +75,7 @@ function setBookPage(page){
   const direct=`${bookViewerState.url}#page=${bookViewerState.page}`;
   if($('#bookFrame')){$('#bookStatus').textContent='Loading book…';$('#bookFrame').src=viewer}
   if($('#openBookPdf'))$('#openBookPdf').href=direct;
-  if($('#bookHint'))$('#bookHint').innerHTML=`Showing <b>${esc(bookViewerState.title)}</b> • PDF page ${bookViewerState.page}. ${bookViewerState.chapterPdf?'This PDF is the selected NCERT chapter.':'This is the full textbook; use Previous/Next or enter a PDF page number.'}`;
+  if($('#bookHint'))$('#bookHint').innerHTML=`Showing <b>${esc(bookViewerState.title)}</b> • PDF page ${bookViewerState.page}. ${bookViewerState.chapterPdf?'This PDF is the selected NCERT chapter. Tutor actions use this exact PDF page text when available.':'This is the full textbook; use Previous/Next or enter a PDF page number.'}`;
 }
 
 function showBookForLesson(lesson){
@@ -89,10 +89,11 @@ function showBookForLesson(lesson){
 
 function sendBookPrompt(mode){
   if(!activeLesson||!bookViewerState.url)return;
-  const page=bookViewerState.page,title=activeLesson.title,book=bookViewerState.title;
+  const page=bookViewerState.page,title=activeLesson.title,book=bookViewerState.title,chapter=bookViewerState.chapter||Number(activeLesson.order||1);
+  const marker=`[Textbook page: ${page}; Chapter number: ${chapter}]`;
   const prompt=mode==='quiz'
-    ?`Use the selected textbook chapter "${title}" in ${book}. Focus around PDF page ${page}. Ask exactly one question from this part of the chapter. Do not give the answer first.`
-    :`Teach one small concept from the selected textbook chapter "${title}" in ${book}, focusing around PDF page ${page}. Keep it short, explain naturally, then ask exactly one checking question.`;
+    ?`${marker} Use ONLY the selected textbook page when it contains enough information. The chapter is "${title}" in ${book}. Ask exactly one question from this page. Do not give the answer first.`
+    :`${marker} Use ONLY the selected textbook page when it contains enough information. The chapter is "${title}" in ${book}. Teach one small concept visible in the page text, keep it short, then ask exactly one checking question.`;
   showTab('learn');sendText(prompt,{display:false});
 }
 
