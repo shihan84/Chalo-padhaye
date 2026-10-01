@@ -92,7 +92,7 @@ try {
         $u=require_user();$b=request_json();$id=(string)($b['student_id']??'');$student=require_student_access($id);
         if($u['role']!=='parent')json_response(['error'=>'Only a parent can create portfolio records'],403);
         $type=(string)($b['record_type']??'other');$status=(string)($b['status']??'completed');$curr=(string)($b['curriculum']??'nios');$title=trim((string)($b['title']??''));
-        if(!in_array($type,RECORD_TYPES,true)||!in_array($status,RECORD_STATUS,true)||!in_array($curr,['maharashtra','nios','cbse','general'],true)||$title==='')json_response(['error'=>'Invalid portfolio record'],422);
+        if(!in_array($type,RECORD_TYPES,true)||!in_array($status,RECORD_STATUS,true)||!in_array($curr,['maharashtra','nios','cbse','telangana','general'],true)||$title==='')json_response(['error'=>'Invalid portfolio record'],422);
         $occur=(string)($b['occurred_on']??gmdate('Y-m-d'));$due=isset($b['due_date'])&&$b['due_date']!==''?(string)$b['due_date']:null;if(!valid_date($occur)||($due&&!valid_date($due)))json_response(['error'=>'Use YYYY-MM-DD for dates'],422);
         $rid=uuid_v4();$q=db()->prepare('INSERT INTO homeschool_records(id,student_id,record_type,title,curriculum,subject,notes,minutes,status,occurred_on,due_date) VALUES(?,?,?,?,?,?,?,?,?,?,?)');
         $q->execute([$rid,$id,$type,substr($title,0,255),$curr,substr(trim((string)($b['subject']??'')),0,160)?:null,substr(trim((string)($b['notes']??'')),0,5000)?:null,max(0,min(600,(int)($b['minutes']??0))),$status,$occur,$due]);
