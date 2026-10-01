@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require_once dirname(__DIR__) . '/auth.php';
+require_once dirname(__DIR__) . '/learning.php';
 
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $uri=parse_url($_SERVER['REQUEST_URI']??'/',PHP_URL_PATH)?:'/';
@@ -80,6 +80,38 @@ try {
             json_response(['user'=>['id'=>$uid,'email'=>$email,'role'=>'student','full_name'=>$invite['full_name']]]+create_session($uid),201);
         } catch(PDOException $e){if($pdo->inTransaction())$pdo->rollBack();if((string)$e->getCode()==='23000')json_response(['error'=>'Email is already registered'],409);throw $e;}
     }
+
+
+    if ($method==='GET' && $path==='/dashboard') {
+        $id=query_param('student_id','')??'';$student=require_student_access($id);$progress=student_progress_rows($id);$sessions=student_sessions($id);$records=student_records($id);
+        $scores=array_values(array_map(fn($x)=>(int)$x['score'],array_filter($progress,fn($x)=>$x['score']!==null)));$weak=array_values(array_filter($progress,fn($x)=>(int)$x['attempts']>0));usort($weak,fn($a,$b)=>(int)$a['score']<=>(int)$b['score']);$mastered=array_filter($progress,fn($x)=>(int)$x['score']>=80);
+        json_response(['student'=>$student,'stats'=>['sessions'=>count($sessions),'topics'=>count($progress),'mastered'=>count($mastered),'average_mastery'=>$scores?(int)round(array_sum($scores)/count($scores)):0],'week'=>week_metrics($sessions,$records),'progress'=>$progress,'weak_topics'=>array_slice($weak,0,5),'recent_sessions'=>array_slice($sessions,0,8),'last_session'=>$sessions[0]??null,'portfolio_available'=>true,'recent_portfolio'=>array_slice($records,0,8)]);
+    }
+    if ($method==='GET' && $path==='/portfolio') { $id=query_param('student_id','')??'';require_student_access($id);json_response(['available'=>true,'records'=>student_records($id),'migration'=>null]); }
+    if ($method==='POST' && $path==='/portfolio') {
+        $u=require_user();$b=request_json();$id=(string)($b['student_id']??'');$student=require_student_access($id);
+        if($u['role']!=='parent')json_response(['error'=>'Only a parent can create portfolio records'],403);
+        $type=(string)($b['record_type']??'other');$status=(string)($b['status']??'completed');$curr=(string)($b['curriculum']??'nios');$title=trim((string)($b['title']??''));
+        if(!in_array($type,RECORD_TYPES,true)||!in_array($status,RECORD_STATUS,true)||!in_array($curr,['maharashtra','nios','cbse','general'],true)||$title==='')json_response(['error'=>'Invalid portfolio record'],422);
+        $occur=(string)($b['occurred_on']??gmdate('Y-m-d'));$due=isset($b['due_date'])&&$b['due_date']!==''?(string)$b['due_date']:null;if(!valid_date($occur)||($due&&!valid_date($due)))json_response(['error'=>'Use YYYY-MM-DD for dates'],422);
+        $rid=uuid_v4();$q=db()->prepare('INSERT INTO homeschool_records(id,student_id,record_type,title,curriculum,subject,notes,minutes,status,occurred_on,due_date) VALUES(?,?,?,?,?,?,?,?,?,?,?)');
+        $q->execute([$rid,$id,$type,substr($title,0,255),$curr,substr(trim((string)($b['subject']??'')),0,160)?:null,substr(trim((string)($b['notes']??'')),0,5000)?:null,max(0,min(600,(int)($b['minutes']??0))),$status,$occur,$due]);
+        $q=db()->prepare('SELECT * FROM homeschool_records WHERE id=?');$q->execute([$rid]);json_response(['record'=>$q->fetch()],201);
+    }
+    if (preg_match('#^/portfolio/([0-9a-f-]{36})$#i',$path,$m) && $method==='PATCH') {
+        $u=require_role('parent');$b=request_json();$sid=(string)($b['student_id']??'');$student=require_student_access($sid);if(!hash_equals($student['parent_id'],$u['id']))json_response(['error'=>'Parent ownership required'],403);
+        $status=(string)($b['status']??'');if(!in_array($status,RECORD_STATUS,true))json_response(['error'=>'Unknown record status'],422);
+        $q=db()->prepare('UPDATE homeschool_records SET status=?,occurred_on=CASE WHEN ?="completed" THEN CURDATE() ELSE occurred_on END WHERE id=? AND student_id=?');$q->execute([$status,$status,$m[1],$sid]);if(!$q->rowCount())json_response(['error'=>'Portfolio record not found'],404);
+        $q=db()->prepare('SELECT * FROM homeschool_records WHERE id=?');$q->execute([$m[1]]);json_response(['record'=>$q->fetch()]);
+    }
+    if ($method==='GET' && $path==='/roadmap') {
+        $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);json_response(['curriculum'=>$curr,'level'=>level_label($student,$curr),'subjects'=>roadmap_data($student,$curr,student_progress_rows($id))]);
+    }
+    if ($method==='GET' && $path==='/daily-plan') {
+        $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);$items=daily_plan_data($student,$curr,student_progress_rows($id));$planned=[];foreach(student_records($id) as $r){if($r['status']!=='planned'||($r['due_date']&&$r['due_date']>gmdate('Y-m-d')))continue;$planned[]=['kind'=>'portfolio','record_id'=>$r['id'],'record_type'=>$r['record_type'],'title'=>$r['title'],'minutes'=>(int)$r['minutes'],'reason'=>'Parent-planned activity','subject'=>$r['subject']];if(count($planned)>=3)break;}$items=array_merge($planned,$items);
+        json_response(['curriculum'=>$curr,'level'=>level_label($student,$curr),'items'=>$items,'total_minutes'=>array_sum(array_map(fn($x)=>max(0,(int)($x['minutes']??0)),$items)),'portfolio_available'=>true,'note'=>'This is a Chalo Padhaye study plan. Include breaks and adjust the pace to the child.']);
+    }
+    if ($method==='GET' && $path==='/catalog') json_response(curriculum_catalog());
 
     json_response(['error'=>'API route not implemented','path'=>$path],404);
 } catch(Throwable $e) {
