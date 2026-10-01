@@ -2,7 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/auth.php';
 
-const CURRICULA=['maharashtra','nios','cbse'];
+const CURRICULA=['maharashtra','nios','cbse','telangana'];
 const RECORD_TYPES=['assignment','reading','project','field_trip','physical','art','life_skill','other'];
 const RECORD_STATUS=['planned','completed'];
 
@@ -11,7 +11,7 @@ function valid_date(?string $v): bool { if(!$v)return false; $d=DateTimeImmutabl
 function student_progress_rows(string $id): array { $q=db()->prepare('SELECT id,subject,chapter,topic,score,attempts,status,updated_at FROM student_progress WHERE student_id=? ORDER BY updated_at DESC LIMIT 100');$q->execute([$id]);return $q->fetchAll(); }
 function student_sessions(string $id): array { $q=db()->prepare('SELECT id,subject,chapter,started_at,ended_at FROM tutor_sessions WHERE student_id=? ORDER BY started_at DESC LIMIT 60');$q->execute([$id]);return $q->fetchAll(); }
 function student_records(string $id,int $limit=80): array { $limit=max(1,min(200,$limit));$q=db()->prepare("SELECT id,record_type,title,curriculum,subject,notes,minutes,status,occurred_on,due_date,created_at,updated_at FROM homeschool_records WHERE student_id=? ORDER BY created_at DESC LIMIT {$limit}");$q->execute([$id]);return $q->fetchAll(); }
-function level_label(array $s,string $c): string { $g=(int)$s['grade']; if($c==='nios')return $g===3?'NIOS Level A':($g===5?'NIOS Level B':"NIOS / Grade {$g}"); if($c==='cbse')return "CBSE Class {$g}"; return "Grade {$g}"; }
+function level_label(array $s,string $c): string { $g=(int)$s['grade']; if($c==='nios')return $g===3?'NIOS Level A':($g===5?'NIOS Level B':"NIOS / Grade {$g}"); if($c==='cbse')return "CBSE Class {$g}"; if($c==='telangana')return $g===10?'Telangana SSC Class 10':"Telangana State Board Class {$g}"; return "Grade {$g}"; }
 function subject_groups(array $progress,string $curriculum): array {
     $out=[]; foreach($progress as $r){$raw=(string)($r['subject']??'');$p=strpos($raw,':');if($p===false){$c='maharashtra';$sid=$raw;}else{$c=substr($raw,0,$p);$sid=substr($raw,$p+1);}if($c===$curriculum)$out[$sid][]=$r;} return $out;
 }
