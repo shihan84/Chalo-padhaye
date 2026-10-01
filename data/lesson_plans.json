@@ -1,12 +1,37 @@
 {
-  "version": 3,
+  "version": 4,
   "mastery": {
     "pass_score": 70,
     "steps": [
-      {"id": "learn", "title": "Learn", "order": 1, "activity": "teach", "minimum_checks": 2},
-      {"id": "practice", "title": "Practice", "order": 2, "activity": "practice", "minimum_checks": 3},
-      {"id": "revision", "title": "Revision", "order": 3, "activity": "revision", "minimum_checks": 2},
-      {"id": "test", "title": "Chapter Test", "order": 4, "activity": "quiz", "question_count": 5, "pass_score": 70}
+      {
+        "id": "learn",
+        "title": "Learn",
+        "order": 1,
+        "activity": "teach",
+        "minimum_checks": 2
+      },
+      {
+        "id": "practice",
+        "title": "Practice",
+        "order": 2,
+        "activity": "practice",
+        "minimum_checks": 3
+      },
+      {
+        "id": "revision",
+        "title": "Revision",
+        "order": 3,
+        "activity": "revision",
+        "minimum_checks": 2
+      },
+      {
+        "id": "test",
+        "title": "Chapter Test",
+        "order": 4,
+        "activity": "quiz",
+        "question_count": 5,
+        "pass_score": 70
+      }
     ]
   },
   "curricula": {
@@ -304,6 +329,84 @@
           "Globalisation and the Indian Economy",
           "Consumer Rights"
         ]
+      }
+    },
+    "telangana": {
+      "1": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": []
+      },
+      "2": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": []
+      },
+      "3": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": [],
+        "evs": []
+      },
+      "4": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": [],
+        "evs": []
+      },
+      "5": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": [],
+        "evs": []
+      },
+      "6": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": [],
+        "general_science": [],
+        "social_studies": []
+      },
+      "7": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": [],
+        "general_science": [],
+        "social_studies": []
+      },
+      "8": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": [],
+        "physical_science": [],
+        "biological_science": [],
+        "social_studies": []
+      },
+      "9": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": [],
+        "physical_science": [],
+        "biological_science": [],
+        "social_studies": []
+      },
+      "10": {
+        "math": [],
+        "english": [],
+        "telugu": [],
+        "hindi": [],
+        "physical_science": [],
+        "biological_science": [],
+        "social_studies": []
       }
     }
   }
