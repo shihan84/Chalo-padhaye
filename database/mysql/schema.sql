@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS homeschool_records (
   student_id CHAR(36) NOT NULL,
   record_type ENUM('assignment','reading','project','field_trip','physical','art','life_skill','other') NOT NULL,
   title VARCHAR(255) NOT NULL,
-  curriculum ENUM('maharashtra','nios','cbse','general') NOT NULL DEFAULT 'nios',
+  curriculum ENUM('maharashtra','nios','cbse','telangana','general') NOT NULL DEFAULT 'nios',
   subject VARCHAR(160) NULL,
   notes TEXT NULL,
   minutes SMALLINT UNSIGNED NOT NULL DEFAULT 0,
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS homeschool_records (
 CREATE TABLE IF NOT EXISTS lesson_progress (
   id CHAR(36) PRIMARY KEY,
   student_id CHAR(36) NOT NULL,
-  curriculum ENUM('maharashtra','nios','cbse') NOT NULL,
+  curriculum ENUM('maharashtra','nios','cbse','telangana') NOT NULL,
   subject VARCHAR(160) NOT NULL,
   lesson_id VARCHAR(190) NOT NULL,
   lesson_order INT NOT NULL DEFAULT 1,
