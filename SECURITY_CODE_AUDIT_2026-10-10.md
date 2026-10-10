@@ -33,19 +33,20 @@ security fixes.
 
 ## Confirmed findings and proposed fixes
 
-“Tested” means the Python/JS behavior was executed locally. SQL changes were parsed
-but have not been applied to a live database. PHP changes were grammar-parsed but
-not executed locally. This distinction applies to every row below.
+“Tested” means the Python/JS behavior was executed locally. SQL and PHP were initially
+checked by grammar parsing, then exercised by isolated GitHub CI databases/runtime.
+No SQL was applied to production. See the CI evidence and the remaining staging
+gates below; a passing fixture suite is not a production security guarantee.
 
 | ID | Severity | Branch / exact code location | Evidence and impact | Remediation |
 | --- | --- | --- | --- | --- |
 | A01 | High | Shared: `app/lesson_routes.py::lesson_override`, migration 006 | `_student` accepts a linked student under RLS; override did not compare the token's user to `parent_id`. A student can call the API to unlock/master their chapter. Local denial regression failed before the fix. | Main PR checks authenticated parent ownership before any override write; portfolio mutations also require the parent explicitly. Tested. Direct database mastery edits remain A20. |
-| A02 | High | Shared: `supabase/004_lesson_mastery.sql`, `006_student_login.sql`; PHP MySQL schema | Steps/tests independently reference `student_id` and a progress ID. A row owned by one child can point to another child's known progress UUID; RLS checks only the row's student ID. | Matching `(lesson_progress_id, student_id)` foreign keys in main migration 007 and PHP schema/migration. SQL parsed; live integrity/RLS tests added to CI, pending execution. |
-| A03 | High | Shared: `supabase/006_student_login.sql::claim_student_invite` | Claim updates `student_user_id` unconditionally. A still-valid invite can replace an already linked account; profile ownership is not rechecked against invite creator. Original codes have only 32 bits and no app throttle. | Migration 007 locks the profile, refuses replacement/stale ownership and issues 128-bit codes. Browser accepts longer codes. SQL parsed; runtime/parallel claim tests still required. PHP already guarded linking; its creation path now refuses linked profiles and uses stronger codes. |
+| A02 | High | Shared: `supabase/004_lesson_mastery.sql`, `006_student_login.sql`; PHP MySQL schema | Steps/tests independently reference `student_id` and a progress ID. A row owned by one child can point to another child's known progress UUID; RLS checks only the row's student ID. | Matching `(lesson_progress_id, student_id)` foreign keys in main migration 007 and PHP schema/migration. PostgreSQL RLS and integrity tests pass in isolated CI; PHP schema loads in MySQL CI. |
+| A03 | High | Shared: `supabase/006_student_login.sql::claim_student_invite` | Claim updates `student_user_id` unconditionally. A still-valid invite can replace an already linked account; profile ownership is not rechecked against invite creator. Original codes have only 32 bits and no app throttle. | Migration 007 locks the profile, refuses replacement/stale ownership and issues 128-bit codes. Browser accepts longer codes. SQL and sequential invite checks pass in isolated PostgreSQL CI; parallel claims still require tests. PHP already guarded linking; its creation path now refuses linked profiles and uses stronger codes. |
 | A04 | High | Shared: `requirements.txt`, `app/main.py` static mount, PDF readers | Pinned PDF parser and resolved Starlette have known advisories. Starlette range-processing DoS applies to the app's static file serving. PDF parsing is used at runtime. | Main PR updates FastAPI 0.143.0, Starlette 1.3.1, pypdf 6.19.0, Requests 2.33.0 and python-multipart 0.0.31. Compatibility suite passes; rescan has zero known advisories. See dependency details below. |
 | A05 | Medium | Shared: `lesson_routes.py::lesson_test`; PHP `/lessons/test` | Sending one correct answer with `question_count=1` yields 100%, bypassing the configured five-question test. Zero counts also fall back rather than fail. | Both PRs require exactly the configured question count and a correct count in range. Python tests cover 0/1/4/6 counts. This does not make client counts trustworthy; see A20. |
-| A06 | Medium | Shared: `lesson_routes.py::lesson_step`; PHP `/lessons/step` | Reposting an already completed Learn event resets a test-ready chapter to Practice and 25%. | Completed/mastered step events return existing state; only the current unfinished step may advance. Python replay regression passes. PHP runtime pending. |
-| A07 | Medium | Shared: `lesson_routes.py::lesson_test`; PHP `/lessons/test` | Failing a review of an already mastered chapter clears mastery and `mastered_at`. | Preserve prior mastery, best chapter score and mastery date while recording the failed attempt. Python regression passes; PHP runtime pending. |
+| A06 | Medium | Shared: `lesson_routes.py::lesson_step`; PHP `/lessons/step` | Reposting an already completed Learn event resets a test-ready chapter to Practice and 25%. | Completed/mastered step events return existing state; only the current unfinished step may advance. Python replay regression passes. PHP API integration CI passes; inspect the latest PR checks for added chapter-state cases. |
+| A07 | Medium | Shared: `lesson_routes.py::lesson_test`; PHP `/lessons/test` | Failing a review of an already mastered chapter clears mastery and `mastered_at`. | Preserve prior mastery, best chapter score and mastery date while recording the failed attempt. Python regression passes; PHP API integration CI passes; inspect the latest PR checks for added chapter-state cases. |
 | A08 | Medium | Shared: `combined_knowledge.py::CBSEKnowledgeBase.search` | If a requested page is missing, search falls through to the whole book. `re.search` picks an old marker before the child's newer page marker. This can teach from the wrong chapter/page. | Main PR returns no context for an unavailable explicit page and uses the latest marker. Both regressions pass. |
 | A09 | Medium | Shared: `main.py::_daily_plan_for`; PHP `daily_plan_data` | Code emits every available subject although README promises limited blocks. Grade 3 NIOS gets five academic blocks plus reading/movement. | Limit academic blocks to two for grade <=3, three otherwise, retaining weak-topic priority and offline blocks. Python regression passes. PHP also respects unavailable source state. |
 | A10 | Medium | Shared: `main.py::_week_metrics`; PHP `week_metrics` | Future completed portfolio dates count as study now. A seven-day rolling cutoff plus dates can cover eight calendar days. Naive timestamps can crash Python comparisons. | Count today and the previous six UTC calendar dates; exclude future records and normalize naive Python timestamps. Python checks pass. Local timezone conversion remains a product gap. |
@@ -53,11 +54,11 @@ not executed locally. This distinction applies to every row below.
 | A12 | Medium | Shared: browser `sendText`, `resetChat`, `logout` | A reply started under one child can render after the selected context changes. Response handling uses mutable browser state. | Main PR uses a generation check before accepting late responses. JS test proves stale response is suppressed. Full browser race/E2E tests still needed. |
 | A13 | Medium | Shared: `frontend/book.js::showBookForLesson`, `sourceForLesson` | An unsupported subject clears the iframe but leaves the previous URL/link/state. Static NIOS supplements can differ from the official source discovered by the backend. | Main PR clears stale state/link and uses the catalog's NIOS source URL/type. Browser function regressions pass. |
 | A14 | Low | Shared: `frontend/interaction.js::renderInteraction`, chapter-test completion | A choice question following a number question leaves a numeric input. Finished tests keep showing the generated next interaction even though the chapter is closed. | Reset input type and hide completed-test interaction. Input regression passes. |
-| A15 | Medium | Shared: `frontend/student-auth.js::loadStudents`, `login` | Session restoration defaults to Parent mode and rejects a valid saved student session. A failed login clears access token but leaves refresh token. | Infer Student mode from the authenticated linkage; clear both tokens on failed login. Syntax checked; full real-auth restoration remains an E2E test gap. |
+| A15 | Medium | Shared: `frontend/student-auth.js::loadStudents`, `login` | Session restoration defaults to Parent mode and rejects a valid saved student session. A failed login clears access token but leaves refresh token. | Infer Student mode from the authenticated linkage; clear both tokens on failed login. Syntax checked; full real-Supabase-auth restoration remains an E2E test gap. |
 | A16 | Medium | Shared: `main.py` input/upstream handling, `tutor.py::reply`; PHP `request_json` | Unbounded JSON/messages permit excessive resource consumption. Python upstream exceptions produce 500s, and fallback errors expose upstream URLs/internal exception details. | Main caps bodies at 64 KiB including chunked bodies, bounds chat/TTS fields, uses a generic 502 and provider error; private API responses are no-store. Tests pass. PHP caps body/message/profile fields; runtime pending. |
 | A17 | Medium | Shared: `main.py::chat`, `end_session`; PHP `/chat`, `/end-session` | Python resumes ended sessions; repeated close rewrites `ended_at`. PHP verifies only student/session, permitting curriculum/subject changes; new subjects lack curriculum prefix. | Reject ended sessions; close only open sessions; PHP stores/validates `curriculum:subject`. Python checks pass. Existing PHP legacy sessions must be ended and replaced, not guessed/relabelled. |
 | A18 | High | PHP: `php/tutor.php::groq_tutor`, `learning.php::curriculum_catalog` | No textbook context/retrieval or interaction contract is supplied. Catalog reports all lesson-map entries available. Tutor claims a selected curriculum without sources and can invent content. | PHP PR fails closed with a material-unavailable, non-assessment response and marks source availability false. Actual textbook retrieval is still missing. This intentionally blocks production tutoring until a grounded provider is implemented. |
-| A19 | Medium | PHP: `auth.php::register_parent`, student register, `bootstrap.php::db`, `/health` | Default bcrypt silently truncates >72-byte passwords; DB connection does not set UTC though auth/learning SQL uses UTC; health reports `ok:true` when DB fails. | Reject >72-byte passwords, set DB UTC and return 503/unhealthy for database failure. PHP parser checks pass; HTTP integration tests are added but not yet executed. |
+| A19 | Medium | PHP: `auth.php::register_parent`, student register, `bootstrap.php::db`, `/health` | Default bcrypt silently truncates >72-byte passwords; DB connection does not set UTC though auth/learning SQL uses UTC; health reports `ok:true` when DB fails. | Reject >72-byte passwords, set DB UTC and return 503/unhealthy for database failure. PHP lint/helper and MySQL HTTP integration checks pass in isolated CI. |
 
 ## Confirmed risks not fully remediated by these PRs
 
@@ -151,7 +152,8 @@ and carry the same original advisories if that Python application is run.
 - Python compilation, every browser script's Node syntax check, bootstrap shell
   syntax, `pip check`, YAML parsing and Git whitespace checks pass.
 - All seven main PostgreSQL migration files parse. PHP files, including added test
-  runners, parse with the PHP tree-sitter grammar. Parsing is not execution.
+  runners, parse with the PHP tree-sitter grammar. CI additionally executes PHP lint,
+  helper regressions, and MySQL API tests. Parsing alone is not execution.
 - 119 historical Git blobs were inspected for high-confidence GitHub/Groq/JWT/
   private-key patterns: no matching candidates. This limited pattern scan does not
   prove absence of every possible secret or private datum.
@@ -160,10 +162,13 @@ and carry the same original advisories if that Python application is run.
 - Local PHP/PostgreSQL/MySQL runtime validation is **blocked**: automatic approval
   review rejected installation of server/runtime packages as a broad system mutation
   that could start services. No workaround installation was attempted afterward.
-- CI definitions now include Python/JS/dependency checks, isolated PostgreSQL RLS/
-  invite tests, and separate PHP/MySQL ownership/session HTTP checks. These are
-  committed test implementations, **not claims of green CI**. Inspect actual PR
-  checks before merge. Starlette/httpx emit test-client deprecation warnings; tests pass.
+- All four initial CI jobs passed: Python/JS/dependency checks and PostgreSQL RLS/
+  invites in [main audit run](https://github.com/shihan84/Chalo-padhaye/actions/runs/38071789110);
+  PHP lint/helper and MySQL ownership/session HTTP checks in
+  [PHP audit run](https://github.com/shihan84/Chalo-padhaye/actions/runs/38071798240).
+  Further PHP chapter-state/integrity cases are included in the follow-up commit.
+  Always inspect the current PR head checks before merge. Starlette/httpx emit
+  test-client deprecation warnings; the Python tests pass.
 
 ## Required test gaps and release gates
 
