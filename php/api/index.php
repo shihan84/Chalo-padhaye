@@ -9,7 +9,7 @@ $path='/' . ltrim((string)preg_replace('#^/api#','',$uri),'/');
 try {
     if ($method==='GET' && $path==='/health') {
         $database=false; try { db()->query('SELECT 1'); $database=true; } catch(Throwable $e) {}
-        json_response(['ok'=>true,'runtime'=>'php','database'=>$database,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))]);
+        json_response(['ok'=>$database,'runtime'=>'php','database'=>$database,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$database?200:503);
     }
     if ($method==='GET' && $path==='/config') json_response(['backend'=>'hostinger-php','auth'=>'mysql','custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))]);
 
@@ -31,7 +31,7 @@ try {
         $u=require_role('parent'); $b=request_json();
         $name=trim((string)($b['full_name']??'')); $grade=(int)($b['grade']??0);
         $medium=trim((string)($b['medium']??'English')); $board=trim((string)($b['board']??'Maharashtra State Board'));
-        if ($name===''||$grade<1||$grade>12) json_response(['error'=>'Full name and grade 1-12 are required'],422);
+        if ($name===''||strlen($name)>160||strlen($medium)>80||strlen($board)>120||$grade<1||$grade>12) json_response(['error'=>'Full name and grade 1-12 are required'],422);
         $id=uuid_v4(); $s=db()->prepare('INSERT INTO students(id,full_name,grade,medium,board,parent_id) VALUES(?,?,?,?,?,?)');
         $s->execute([$id,$name,$grade,$medium?:'English',$board?:'Maharashtra State Board',$u['id']]);
         json_response(['student'=>['id'=>$id,'full_name'=>$name,'grade'=>$grade,'medium'=>$medium,'board'=>$board]],201);
@@ -43,7 +43,7 @@ try {
             $u=require_role('parent');
             if (!hash_equals($student['parent_id'],$u['id'])) json_response(['error'=>'Parent ownership required'],403);
             $b=request_json(); $fields=[];$vals=[];
-            foreach(['full_name','medium','board'] as $f) if(array_key_exists($f,$b)){ $v=trim((string)$b[$f]); if($v==='')json_response(['error'=>"$f cannot be empty"],422);$fields[]="$f=?";$vals[]=$v; }
+            foreach(['full_name','medium','board'] as $f) if(array_key_exists($f,$b)){ $v=trim((string)$b[$f]); if($v===''||strlen($v)>['full_name'=>160,'medium'=>80,'board'=>120][$f])json_response(['error'=>"$f cannot be empty"],422);$fields[]="$f=?";$vals[]=$v; }
             if(array_key_exists('grade',$b)){ $g=(int)$b['grade'];if($g<1||$g>12)json_response(['error'=>'Grade must be 1-12'],422);$fields[]='grade=?';$vals[]=$g; }
             if(!$fields) json_response(['error'=>'No supported fields supplied'],422);
             $vals[]=$student['id']; db()->prepare('UPDATE students SET '.implode(',',$fields).' WHERE id=?')->execute($vals);
@@ -53,11 +53,15 @@ try {
 
     if (preg_match('#^/students/([0-9a-f-]{36})/invite$#i',$path,$m) && $method==='POST') {
         $u=require_role('parent'); $student=require_student_access($m[1]);
+        if ($student['student_user_id']!==null) json_response(['error'=>'Student profile already has a login'],409);
         if(!hash_equals($student['parent_id'],$u['id']))json_response(['error'=>'Parent ownership required'],403);
-        $code=strtoupper(bin2hex(random_bytes(4))); $hash=hash('sha256',$code); $id=uuid_v4();
+        $code=strtoupper(bin2hex(random_bytes(16))); $hash=hash('sha256',$code); $id=uuid_v4();
         $expires=(new DateTimeImmutable('now',new DateTimeZone('UTC')))->modify('+24 hours');
         db()->beginTransaction();
         try {
+
+            $lock=db()->prepare('SELECT student_user_id FROM students WHERE id=? FOR UPDATE');$lock->execute([$student['id']]);
+            if ($lock->fetch()['student_user_id']!==null) {db()->rollBack();json_response(['error'=>'Student profile already has a login'],409);}
             db()->prepare('DELETE FROM student_invites WHERE student_id=? AND used_at IS NULL')->execute([$student['id']]);
             db()->prepare('INSERT INTO student_invites(id,student_id,code_hash,created_by,expires_at) VALUES(?,?,?,?,?)')->execute([$id,$student['id'],$hash,$u['id'],$expires->format('Y-m-d H:i:s')]);
             db()->commit();
@@ -67,7 +71,7 @@ try {
 
     if ($method==='POST' && $path==='/auth/student/register') {
         $b=request_json(); $email=strtolower(trim((string)($b['email']??'')));$password=(string)($b['password']??'');$code=strtoupper(trim((string)($b['invite_code']??'')));
-        if(!filter_var($email,FILTER_VALIDATE_EMAIL)||strlen($password)<8||$code==='')json_response(['error'=>'Valid email, password (8+ characters), and invite code required'],422);
+        if(!filter_var($email,FILTER_VALIDATE_EMAIL)||strlen($password)<8||strlen($password)>72||$code==='')json_response(['error'=>'Valid email, password (8-72 bytes), and invite code required'],422);
         $pdo=db();$pdo->beginTransaction();
         try {
             $q=$pdo->prepare('SELECT i.id invite_id,i.student_id,s.full_name FROM student_invites i JOIN students s ON s.id=i.student_id WHERE i.code_hash=? AND i.used_at IS NULL AND i.expires_at>UTC_TIMESTAMP() FOR UPDATE');
@@ -121,19 +125,32 @@ try {
         $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');if(!in_array($c,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);json_response(['ok'=>true,'lesson'=>$lesson,'progress'=>$p]);
     }
     if ($method==='POST' && $path==='/lessons/step') {
-        $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');$step=(string)($b['step_id']??'');$assessment=(string)($b['assessment']??'not_answer');$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);$templates=lesson_steps_template();$template=null;foreach($templates as$t)if($t['id']===$step)$template=$t;if(!$template||$step==='test')json_response(['error'=>'Unknown lesson step'],400);$rows=ensure_steps($sid,$p);$sr=null;foreach($rows as$r)if($r['step_id']===$step)$sr=$r;if(!$sr)json_response(['error'=>'Lesson step record not found'],404);if($sr['status']==='locked')json_response(['error'=>'Complete the previous lesson step first'],403);
+        $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');$step=(string)($b['step_id']??'');$assessment=(string)($b['assessment']??'not_answer');$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);$templates=lesson_steps_template();$template=null;foreach($templates as$t)if($t['id']===$step)$template=$t;if(!$template||$step==='test')json_response(['error'=>'Unknown lesson step'],400);$rows=ensure_steps($sid,$p);$sr=null;foreach($rows as$r)if($r['step_id']===$step)$sr=$r;if(!$sr)json_response(['error'=>'Lesson step record not found'],404);if($sr['status']==='completed'||$p['status']==='mastered')json_response(['ok'=>true,'step'=>$sr,'progress'=>$p]);if($step!==$p['current_step'])json_response(['error'=>'This is not the current lesson step'],403);if($sr['status']==='locked')json_response(['error'=>'Complete the previous lesson step first'],403);
         $attempts=(int)$sr['attempts'];$correct=(int)$sr['correct_count'];if(in_array($assessment,['correct','partial','incorrect'],true)){$attempts++;if($assessment==='correct')$correct++;}$min=(int)($template['minimum_checks']??1);$completed=$step==='learn'?($attempts>=$min&&$correct>=1):($correct>=$min);$score=array_key_exists('score',$b)?max(0,min(100,(int)$b['score'])):$sr['score'];db()->prepare('UPDATE lesson_step_records SET status=?,attempts=?,correct_count=?,score=?,started_at=COALESCE(started_at,UTC_TIMESTAMP()),completed_at=IF(?,UTC_TIMESTAMP(),completed_at),updated_at=UTC_TIMESTAMP() WHERE id=?')->execute([$completed?'completed':'in_progress',$attempts,$correct,$score,$completed?1:0,$sr['id']]);
         if($completed){$idx=0;foreach($templates as$i=>$t)if($t['id']===$step)$idx=$i;$next=$templates[$idx+1]??null;$percent=$templates?(int)round(($idx+1)*100/count($templates)):0;if($next){db()->prepare("UPDATE lesson_step_records SET status='available',updated_at=UTC_TIMESTAMP() WHERE lesson_progress_id=? AND step_id=? AND status='locked'")->execute([$p['id'],$next['id']]);}$status=($next&&$next['id']==='test')?'test_ready':'in_progress';db()->prepare('UPDATE lesson_progress SET status=?,current_step=?,percent_complete=?,updated_at=UTC_TIMESTAMP() WHERE id=?')->execute([$status,$next['id']??$step,$percent,$p['id']]);$p=get_progress($sid,$c,$subject,$lid);}
         $q=db()->prepare('SELECT * FROM lesson_step_records WHERE id=?');$q->execute([$sr['id']]);json_response(['ok'=>true,'step'=>$q->fetch(),'progress'=>$p]);
     }
     if ($method==='POST' && $path==='/lessons/test') {
-        $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);if(!in_array($p['status'],['test_ready','parent_unlocked','mastered'],true))json_response(['error'=>'Complete Learn, Practice and Revision before the chapter test'],403);$qc=max(1,min(20,(int)($b['question_count']??5)));$correct=max(0,min($qc,(int)($b['correct_count']??0)));$score=(int)round($correct*100/$qc);$passed=$score>=lesson_pass_score();$attempt=(int)$p['test_attempts']+1;$summary=json_encode($b['summary']??[],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);db()->prepare('INSERT INTO lesson_test_attempts(id,student_id,lesson_progress_id,attempt_no,score,passed,correct_count,question_count,summary) VALUES(?,?,?,?,?,?,?,?,?)')->execute([uuid_v4(),$sid,$p['id'],$attempt,$score,$passed?1:0,$correct,$qc,$summary]);db()->prepare("UPDATE lesson_step_records SET status=?,attempts=?,correct_count=GREATEST(correct_count,?),score=?,started_at=COALESCE(started_at,UTC_TIMESTAMP()),completed_at=IF(?,UTC_TIMESTAMP(),NULL),updated_at=UTC_TIMESTAMP() WHERE lesson_progress_id=? AND step_id='test'")->execute([$passed?'completed':'in_progress',$attempt,$correct,$score,$passed?1:0,$p['id']]);db()->prepare('UPDATE lesson_progress SET status=?,current_step="test",percent_complete=?,test_score=?,test_attempts=?,mastered_at=IF(?,UTC_TIMESTAMP(),NULL),updated_at=UTC_TIMESTAMP() WHERE id=?')->execute([$passed?'mastered':'test_ready',$passed?100:75,$score,$attempt,$passed?1:0,$p['id']]);json_response(['ok'=>true,'passed'=>$passed,'score'=>$score,'pass_score'=>lesson_pass_score(),'attempt_no'=>$attempt,'progress'=>get_progress($sid,$c,$subject,$lid)]);
+        $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);if(!in_array($p['status'],['test_ready','parent_unlocked','mastered'],true))json_response(['error'=>'Complete Learn, Practice and Revision before the chapter test'],403);$qc=(int)($b['question_count']??5);$expected=5;foreach(lesson_steps_template() as$t)if($t['id']==='test')$expected=(int)($t['question_count']??5);$correct=(int)($b['correct_count']??0);if($qc!==$expected||$correct<0||$correct>$qc)json_response(['error'=>'Submit the full test with valid counts'],422);$score=(int)round($correct*100/$qc);$passed=$score>=lesson_pass_score();$mastered=$p['status']==='mastered';$attempt=(int)$p['test_attempts']+1;$summary=json_encode($b['summary']??[],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);db()->prepare('INSERT INTO lesson_test_attempts(id,student_id,lesson_progress_id,attempt_no,score,passed,correct_count,question_count,summary) VALUES(?,?,?,?,?,?,?,?,?)')->execute([uuid_v4(),$sid,$p['id'],$attempt,$score,$passed?1:0,$correct,$qc,$summary]);db()->prepare("UPDATE lesson_step_records SET status=?,attempts=?,correct_count=GREATEST(correct_count,?),score=?,started_at=COALESCE(started_at,UTC_TIMESTAMP()),completed_at=IF(?,COALESCE(completed_at,UTC_TIMESTAMP()),NULL),updated_at=UTC_TIMESTAMP() WHERE lesson_progress_id=? AND step_id='test'")->execute([($passed||$mastered)?'completed':'in_progress',$attempt,$correct,$score,($passed||$mastered)?1:0,$p['id']]);db()->prepare('UPDATE lesson_progress SET status=?,current_step="test",percent_complete=?,test_score=?,test_attempts=?,mastered_at=IF(?,COALESCE(mastered_at,UTC_TIMESTAMP()),NULL),updated_at=UTC_TIMESTAMP() WHERE id=?')->execute([($passed||$mastered)?'mastered':'test_ready',($passed||$mastered)?100:75,$mastered?max($score,(int)$p['test_score']):$score,$attempt,($passed||$mastered)?1:0,$p['id']]);json_response(['ok'=>true,'passed'=>$passed,'score'=>$score,'pass_score'=>lesson_pass_score(),'attempt_no'=>$attempt,'progress'=>get_progress($sid,$c,$subject,$lid)]);
     }
     if ($method==='POST' && $path==='/chat') {
-        $b=request_json();$sid=(string)($b['student_id']??'');$message=trim((string)($b['message']??''));if($message==='')json_response(['error'=>'Message required'],422);$student=require_student_access($sid);$session=(string)($b['session_id']??'');if($session!==''){$q=db()->prepare('SELECT id FROM tutor_sessions WHERE id=? AND student_id=?');$q->execute([$session,$sid]);if(!$q->fetch())json_response(['error'=>'Tutor session not found'],404);}else{$session=uuid_v4();db()->prepare('INSERT INTO tutor_sessions(id,student_id,subject,chapter) VALUES(?,?,?,?)')->execute([$session,$sid,substr((string)($b['subject']??''),0,160),null]);}$history=tutor_history($session);db()->prepare("INSERT INTO tutor_messages(id,session_id,role,message) VALUES(?,?,'student',?)")->execute([uuid_v4(),$session,$message]);$answer=groq_tutor($student,$b,$history);db()->prepare("INSERT INTO tutor_messages(id,session_id,role,message) VALUES(?,?,'tutor',?)")->execute([uuid_v4(),$session,$answer['text']]);save_progress_assessment($sid,(string)($b['curriculum']??'maharashtra'),(string)($b['subject']??'general'),$answer);json_response($answer+['session_id'=>$session]);
+        $b=request_json();$sid=(string)($b['student_id']??'');$message=trim((string)($b['message']??''));
+        if($message===''||strlen($message)>12000)json_response(['error'=>'Message must be 1-12000 bytes'],422);
+        $curr=(string)($b['curriculum']??'maharashtra');$subject=(string)($b['subject']??'general');$activity=(string)($b['activity']??'teach');
+        if(!in_array($curr,CURRICULA,true)||!in_array($activity,['teach','practice','quiz','revision','reading','project'],true)||strlen($subject)>80)json_response(['error'=>'Invalid lesson context'],422);
+        $student=require_student_access($sid);$session=(string)($b['session_id']??'');$subjectKey=$curr.':'.$subject;
+        if($session!==''){
+            $q=db()->prepare('SELECT id FROM tutor_sessions WHERE id=? AND student_id=? AND subject=? AND ended_at IS NULL');$q->execute([$session,$sid,$subjectKey]);
+            if(!$q->fetch())json_response(['error'=>'Session does not match this lesson'],403);
+        }else{
+            $session=uuid_v4();db()->prepare('INSERT INTO tutor_sessions(id,student_id,subject,chapter) VALUES(?,?,?,?)')->execute([$session,$sid,$subjectKey,null]);
+        }
+        $history=tutor_history($session);db()->prepare("INSERT INTO tutor_messages(id,session_id,role,message) VALUES(?,?,'student',?)")->execute([uuid_v4(),$session,$message]);
+        $answer=groq_tutor($student,$b,$history);db()->prepare("INSERT INTO tutor_messages(id,session_id,role,message) VALUES(?,?,'tutor',?)")->execute([uuid_v4(),$session,$answer['text']]);
+        save_progress_assessment($sid,$curr,$subject,$answer);json_response($answer+['session_id'=>$session]);
     }
     if ($method==='POST' && $path==='/end-session') {
-        $b=request_json();$sid=(string)($b['student_id']??'');$session=(string)($b['session_id']??'');require_student_access($sid);$q=db()->prepare('UPDATE tutor_sessions SET ended_at=UTC_TIMESTAMP() WHERE id=? AND student_id=?');$q->execute([$session,$sid]);json_response(['ok'=>true]);
+        $b=request_json();$sid=(string)($b['student_id']??'');$session=(string)($b['session_id']??'');require_student_access($sid);$q=db()->prepare('UPDATE tutor_sessions SET ended_at=UTC_TIMESTAMP() WHERE id=? AND student_id=? AND ended_at IS NULL');$q->execute([$session,$sid]);json_response(['ok'=>true]);
     }
     if ($method==='POST' && $path==='/tts') {
         require_user();$b=request_json();$text=trim((string)($b['text']??''));$key=env_value('FISH_AUDIO_API_KEY');$voice=env_value('FISH_AUDIO_VOICE_ID');if(!$key||!$voice)json_response(['error'=>'Custom voice is not configured'],503);if($text==='')json_response(['error'=>'Text required'],422);if(strlen($text)>1800)$text=substr($text,0,1800);

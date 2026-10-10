@@ -43,3 +43,20 @@ The existing Vercel deployment and Supabase implementation remain operational wh
 5. Adapt the frontend away from direct Supabase dependencies.
 6. Add a GitHub Actions deployment workflow for this branch.
 7. Test on Hostinger before any production cutover.
+
+## October 2026 audit gate
+
+This branch is **not ready for production cutover**. The frontend still uses
+Supabase and trusted textbook retrieval has not been ported. The PHP tutor now
+fails closed with an explicit material-unavailable response instead of generating
+ungrounded syllabus content. Its catalog marks retrieval unavailable.
+
+Fresh installs use `database/mysql/schema.sql`. Existing PHP databases must first
+check for mismatched student/progress links, then apply
+`database/mysql/migrations/002_audit_hardening.sql` once on staging.
+Do not rerun that ALTER migration on a fresh schema.
+
+PHP 8.1+ is required (`never`, `str_starts_with`). Validate with
+`php tests/php_regressions.php` and lint every PHP file. Full MySQL ownership,
+authentication, concurrency and migration tests are still required. See the
+branch audit report. This change does not deploy or merge this branch.
