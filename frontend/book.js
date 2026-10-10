@@ -50,6 +50,11 @@ function sourceForLesson(lesson){
     const chapter=Number(lesson.order||1);
     return {title:`${subjectLabel(subject,'cbse',grade)} — ${lesson.title}`,url:`https://www.ncert.nic.in/textbook/pdf/${prefix}${String(chapter).padStart(2,'0')}.pdf`,chapter,grade,subject,official:true,chapterPdf:true};
   }
+  if(curriculum==='nios'){
+    const item=subjectList().find(x=>x.id===subject);
+    if(!item||!item.source_url)return null;
+    return {title:item.source_title,url:item.source_url,chapter:Number(lesson.order||1),grade,subject,official:!!item.official,supplemental:!!item.supplemental,chapterPdf:false};
+  }
   const row=(((BOOK_SOURCES[curriculum]||{})[grade]||{})[subject]);
   if(!row)return null;
   return {...row,chapter:Number(lesson.order||1),grade,subject,official:!row.supplemental,chapterPdf:false};
@@ -67,7 +72,7 @@ function setBookPage(page){
 
 function showBookForLesson(lesson){
   ensureBookViewer();const source=sourceForLesson(lesson);const card=$('#bookViewerCard');
-  if(!source){card.classList.remove('hidden');$('#bookMeta').textContent='A browser-viewable official PDF is not mapped for this subject yet.';$('#bookHint').textContent='The tutor can still teach from indexed lesson material.';$('#bookFrame').removeAttribute('src');return}
+  if(!source){bookViewerState={url:'',title:'',page:1,chapter:0};$('#openBookPdf').removeAttribute('href');$('#bookStatus').textContent='Source unavailable for this lesson.';card.classList.remove('hidden');$('#bookMeta').textContent='A browser-viewable official PDF is not mapped for this subject yet.';$('#bookHint').textContent='The tutor can still teach from indexed lesson material.';$('#bookFrame').removeAttribute('src');return}
   bookViewerState={...source,page:1,title:source.title,url:source.url,viewerUrl:embeddedPdfViewer(source.url,1)};
   card.classList.remove('hidden');
   $('#bookMeta').innerHTML=`${source.official?'<span class="bookbadge">official source</span>':'<span class="bookbadge sup">supplemental source</span>'} ${esc(lesson.title)} <span class="small">• embedded viewer; official source link stays available</span>`;

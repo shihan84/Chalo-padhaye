@@ -7,12 +7,15 @@ from typing import Optional
 import requests
 from fastapi import FastAPI, Header, HTTPException, Response
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 from .tutor import Tutor
 from .lesson_routes import router as lesson_router
+from .security import BodySizeLimit
 
 ROOT = Path(__file__).resolve().parents[1]
 app = FastAPI(title="Chalo Padhaye")
+app.add_middleware(BodySizeLimit)
 tutor = Tutor()
 SUPABASE_URL = os.getenv("NEXT_PUBLIC_SUPABASE_URL") or os.getenv("SUPABASE_URL", "")
 SUPABASE_ANON_KEY = os.getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY") or os.getenv("SUPABASE_ANON_KEY", "")
@@ -27,8 +30,24 @@ CURRICULA = {"maharashtra", "nios", "cbse"}
 PORTFOLIO_CURRICULA = CURRICULA | {"general"}
 
 
+@app.exception_handler(requests.RequestException)
+async def upstream_failure(request, exc):
+    return JSONResponse(status_code=502, content={"detail": "Upstream service is unavailable"}, headers={"Cache-Control": "no-store"})
+
+
+@app.middleware("http")
+async def private_api_responses(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["X-Frame-Options"] = "DENY"
+    return response
+
+
 class ChatIn(BaseModel):
-    message: str
+    message: str = Field(min_length=1, max_length=12000)
     student_id: str
     subject: str = "evs1"
     curriculum: str = "maharashtra"
@@ -37,7 +56,7 @@ class ChatIn(BaseModel):
 
 
 class TTSIn(BaseModel):
-    text: str
+    text: str = Field(min_length=1, max_length=1200)
 
 
 class EndSessionIn(BaseModel):
@@ -77,7 +96,10 @@ def _headers(token: str, prefer: Optional[str] = None):
 def _token(authorization: Optional[str]) -> str:
     if not authorization or not authorization.lower().startswith("bearer "):
         raise HTTPException(401, "Parent login required")
-    return authorization.split(" ", 1)[1].strip()
+    token = authorization.split(" ", 1)[1].strip()
+    if not token:
+        raise HTTPException(401, "Login required")
+    return token
 
 
 def _require_user(token: str):
@@ -89,13 +111,19 @@ def _require_user(token: str):
     return r.json()
 
 
+def _require_parent(token: str, student: dict):
+    user = _require_user(token)
+    if not user.get("id") or student.get("parent_id") != user["id"]:
+        raise HTTPException(403, "Parent ownership required")
+
+
 def _student(token: str, student_id: str):
     if not SUPABASE_URL or not SUPABASE_ANON_KEY:
         raise HTTPException(503, "Supabase is not configured")
     r = requests.get(
         f"{SUPABASE_URL}/rest/v1/students",
         headers=_headers(token),
-        params={"id": f"eq.{student_id}", "select": "id,full_name,grade,medium,board"},
+        params={"id": f"eq.{student_id}", "select": "id,full_name,grade,medium,board,parent_id"},
         timeout=10,
     )
     if not r.ok:
@@ -254,7 +282,8 @@ def _as_dt(value):
     if not value:
         return None
     try:
-        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        return parsed.replace(tzinfo=timezone.utc) if parsed.tzinfo is None else parsed
     except Exception:
         return None
 
@@ -270,7 +299,7 @@ def _as_day(value):
 
 def _week_metrics(sessions: list, records: list):
     now = datetime.now(timezone.utc)
-    cutoff = now - timedelta(days=7)
+    cutoff = (now - timedelta(days=6)).replace(hour=0, minute=0, second=0, microsecond=0)
     session_minutes = 0
     weekly_sessions = 0
     active_days = set()
@@ -278,7 +307,7 @@ def _week_metrics(sessions: list, records: list):
 
     for row in sessions:
         started = _as_dt(row.get("started_at"))
-        if not started or started < cutoff:
+        if not started or started < cutoff or started > now:
             continue
         weekly_sessions += 1
         active_days.add(started.date())
@@ -295,7 +324,7 @@ def _week_metrics(sessions: list, records: list):
         if row.get("status") != "completed":
             continue
         day = _as_day(row.get("occurred_on")) or _as_day(row.get("created_at"))
-        if not day or day < cutoff_day:
+        if not day or day < cutoff_day or day > now.date():
             continue
         completed_records += 1
         offline_minutes += max(0, min(600, int(row.get("minutes") or 0)))
@@ -374,7 +403,7 @@ def _daily_plan_for(student: dict, curriculum: str, progress: list):
     scored.sort(key=lambda x: x[0])
 
     items = []
-    for _, sid, item, attempts, avg in scored:
+    for _, sid, item, attempts, avg in scored[:2 if grade <= 3 else 3]:
         if avg is None:
             act, reason = "teach", "New learning block"
         elif avg < 45:
@@ -552,7 +581,7 @@ def portfolio(student_id: str, authorization: Optional[str] = Header(default=Non
 @app.post("/api/portfolio")
 def create_portfolio(data: PortfolioIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
-    _student(token, data.student_id)
+    _require_parent(token, _student(token, data.student_id))
     if data.record_type not in RECORD_TYPES:
         raise HTTPException(400, "Unknown record type")
     if data.status not in RECORD_STATUS:
@@ -598,7 +627,7 @@ def create_portfolio(data: PortfolioIn, authorization: Optional[str] = Header(de
 @app.patch("/api/portfolio/{record_id}")
 def update_portfolio(record_id: str, data: PortfolioStatusIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
-    _student(token, data.student_id)
+    _require_parent(token, _student(token, data.student_id))
     if data.status not in RECORD_STATUS:
         raise HTTPException(400, "Unknown record status")
     r = requests.get(
@@ -631,7 +660,7 @@ def end_session(data: EndSessionIn, authorization: Optional[str] = Header(defaul
     )
     if not r.ok or not r.json():
         raise HTTPException(403, "Session is not available")
-    _patch(token, "tutor_sessions", {"id": f"eq.{data.session_id}"}, {"ended_at": datetime.now(timezone.utc).isoformat()})
+    _patch(token, "tutor_sessions", {"id": f"eq.{data.session_id}", "student_id": f"eq.{data.student_id}", "ended_at": "is.null"}, {"ended_at": datetime.now(timezone.utc).isoformat()})
     return {"ok": True}
 
 
@@ -662,6 +691,8 @@ def tts(data: TTSIn, authorization: Optional[str] = Header(default=None)):
 def chat(data: ChatIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, data.student_id)
+    if not data.message.strip():
+        raise HTTPException(400, "Message is required")
     if data.curriculum not in CURRICULA:
         raise HTTPException(400, "Unknown curriculum")
     if data.activity not in ACTIVITIES:
@@ -676,7 +707,7 @@ def chat(data: ChatIn, authorization: Optional[str] = Header(default=None)):
         r = requests.get(
             f"{SUPABASE_URL}/rest/v1/tutor_sessions",
             headers=_headers(token),
-            params={"id": f"eq.{session_id}", "student_id": f"eq.{student['id']}", "select": "id,subject"},
+            params={"id": f"eq.{session_id}", "student_id": f"eq.{student['id']}", "ended_at": "is.null", "select": "id,subject"},
             timeout=10,
         )
         rows = r.json() if r.ok else []

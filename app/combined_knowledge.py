@@ -125,12 +125,10 @@ class CBSEKnowledgeBase:
         return index
 
     def search(self, query: str, k: int = 4, grade: int = 10, subject: str = "math"):
-        marker = re.search(r"\[Textbook page:\s*(\d+)\s*;\s*Chapter number:\s*(\d+)\]", query or "", flags=re.I)
-        if marker:
-            page_no, chapter_no = int(marker.group(1)), int(marker.group(2))
-            exact = self.page_context(grade, subject, chapter_no, page_no)
-            if exact:
-                return exact[:k]
+        markers = re.findall(r"\[Textbook page:\s*(\d+)\s*;\s*Chapter number:\s*(\d+)\]", query or "", flags=re.I)
+        if markers:
+            page_no, chapter_no = map(int, markers[-1])
+            return self.page_context(grade, subject, chapter_no, page_no)[:k]
         try:
             index = self._build_index(grade, subject)
         except Exception:

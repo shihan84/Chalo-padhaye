@@ -128,3 +128,25 @@ curl http://127.0.0.1:8000/api/health
 ## Audit / next phases
 
 See `HOMESCHOOL_AUDIT.md` for the current capability audit, smoke-test checklist, remaining limitations and next development phases.
+
+## Audit fixes and verification (October 2026)
+
+Run `supabase/007_audit_hardening.sql` **after migrations 001–006** to harden
+student invite claims and enforce matching student IDs on lesson records.
+The migration rejects implicit account replacement. It enforces new writes without
+rewriting existing data; inspect legacy mismatches before validating its foreign keys.
+No production database migration is performed automatically.
+
+Run checks locally:
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest -q
+node --test tests/frontend.test.cjs
+pip-audit -r requirements.txt
+```
+
+See `SECURITY_CODE_AUDIT_2026-10-10.md` for evidence, branch differences,
+remaining risks and the production verification checklist. Chapter scores remain
+learning heuristics: client-supplied assessments and direct authenticated database
+writes are not suitable for tamper-resistant certification.

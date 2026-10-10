@@ -287,5 +287,5 @@ class Tutor:
                 "student_state": "neutral",
                 "delivery": "normal",
                 "interaction": {"type": "none", "prompt": "", "options": []},
-                "error": f"Groq: {groq_error}; Ollama: {e}",
+                "error": "Tutor providers are unavailable",
             }

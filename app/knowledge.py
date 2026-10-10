@@ -1,7 +1,7 @@
 from pathlib import Path
 from io import BytesIO
 from html.parser import HTMLParser
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 import re
 import requests
 from pypdf import PdfReader
@@ -157,7 +157,12 @@ class KnowledgeBase:
                 norm = re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
                 for phrase, (grade, subject, title) in aliases.items():
                     if phrase in norm and href:
-                        found[(grade, subject)] = {"title": title, "url": urljoin(NIOS_MATERIAL_PAGE, href), "official": True}
+                        url = urljoin(NIOS_MATERIAL_PAGE, href)
+                        parsed = urlparse(url)
+                        host = parsed.hostname or ""
+                        if parsed.scheme != "https" or not (host == "nios.ac.in" or host.endswith(".nios.ac.in")) or not parsed.path.lower().endswith(".pdf"):
+                            continue
+                        found[(grade, subject)] = {"title": title, "url": url, "official": True}
         except Exception:
             pass
         self._nios_discovered = found
@@ -204,6 +209,7 @@ class KnowledgeBase:
                     "supplemental": bool(book and not book.get("official")),
                     "available": bool(book),
                     "source_title": book.get("title") if book else None,
+                    "source_url": book.get("url") if book else None,
                 })
             nios[str(grade)] = rows
         return {"maharashtra": maharashtra, "nios": nios}

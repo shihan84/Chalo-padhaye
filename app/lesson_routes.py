@@ -42,7 +42,10 @@ def _headers(token: str, prefer: Optional[str] = None):
 def _token(authorization: Optional[str]):
     if not authorization or not authorization.lower().startswith("bearer "):
         raise HTTPException(401, "Parent login required")
-    return authorization.split(" ", 1)[1].strip()
+    token = authorization.split(" ", 1)[1].strip()
+    if not token:
+        raise HTTPException(401, "Login required")
+    return token
 
 
 def _student(token: str, student_id: str):
@@ -51,7 +54,7 @@ def _student(token: str, student_id: str):
     r = requests.get(
         f"{SUPABASE_URL}/rest/v1/students",
         headers=_headers(token),
-        params={"id": f"eq.{student_id}", "select": "id,full_name,grade"},
+        params={"id": f"eq.{student_id}", "select": "id,full_name,grade,parent_id"},
         timeout=10,
     )
     if not r.ok:
@@ -407,6 +410,10 @@ def lesson_step(data: StepEventIn, authorization: Optional[str] = Header(default
         raise HTTPException(404, "Lesson step record not found")
     if step.get("status") == "locked":
         raise HTTPException(403, "Complete the previous lesson step first")
+    if step.get("status") == "completed" or progress.get("status") == "mastered":
+        return {"ok": True, "step": step, "progress": progress}
+    if data.step_id != progress.get("current_step"):
+        raise HTTPException(403, "This is not the current lesson step")
 
     attempts = int(step.get("attempts") or 0)
     correct = int(step.get("correct_count") or 0)
@@ -478,14 +485,19 @@ def lesson_test(data: TestAttemptIn, authorization: Optional[str] = Header(defau
         raise HTTPException(403, "Complete Learn, Practice and Revision before the chapter test")
 
     expected_questions = int(next((x.get("question_count") for x in _step_template() if x["id"] == "test"), 5) or 5)
-    question_count = max(1, min(expected_questions, int(data.question_count or expected_questions)))
-    correct_count = max(0, min(question_count, int(data.correct_count or 0)))
+    if data.question_count != expected_questions:
+        raise HTTPException(400, f"Submit exactly {expected_questions} questions")
+    if not 0 <= data.correct_count <= expected_questions:
+        raise HTTPException(400, "Correct count is outside the test range")
+    question_count = expected_questions
+    correct_count = data.correct_count
     # Derive the displayed score from the recorded result rather than trusting a
     # browser-provided percentage. Individual test answers will be server-scored
     # when the dedicated test-session UI is added.
     score = round(correct_count * 100 / question_count)
     pass_score = int((PLAN.get("mastery") or {}).get("pass_score") or 70)
     passed = score >= pass_score
+    already_mastered = progress.get("status") == "mastered"
     attempt_no = int(progress.get("test_attempts") or 0) + 1
     now = datetime.now(timezone.utc).isoformat()
     _post(
@@ -513,22 +525,22 @@ def lesson_test(data: TestAttemptIn, authorization: Optional[str] = Header(defau
             "lesson_step_records",
             {"id": f"eq.{test_step['id']}"},
             {
-                "status": "completed" if passed else "in_progress",
+                "status": "completed" if passed or already_mastered else "in_progress",
                 "attempts": attempt_no,
                 "correct_count": max(int(test_step.get("correct_count") or 0), correct_count),
                 "score": score,
                 "started_at": test_step.get("started_at") or now,
-                "completed_at": now if passed else None,
+                "completed_at": test_step.get("completed_at") or now if passed or already_mastered else None,
                 "updated_at": now,
             },
         )
     progress_payload = {
-        "status": "mastered" if passed else "test_ready",
+        "status": "mastered" if passed or already_mastered else "test_ready",
         "current_step": "test",
-        "percent_complete": 100 if passed else 75,
-        "test_score": score,
+        "percent_complete": 100 if passed or already_mastered else 75,
+        "test_score": max(score, int(progress.get("test_score") or 0)) if already_mastered else score,
         "test_attempts": attempt_no,
-        "mastered_at": now if passed else None,
+        "mastered_at": progress.get("mastered_at") or now if passed or already_mastered else None,
         "updated_at": now,
     }
     progress = _patch(token, "lesson_progress", {"id": f"eq.{progress['id']}"}, progress_payload) or {**progress, **progress_payload}
@@ -579,6 +591,8 @@ def lesson_test(data: TestAttemptIn, authorization: Optional[str] = Header(defau
 def lesson_override(data: OverrideIn, authorization: Optional[str] = Header(default=None)):
     token = _token(authorization)
     student = _student(token, data.student_id)
+    from .main import _require_parent
+    _require_parent(token, student)
     _validate_curriculum(data.curriculum)
     lesson, definitions = _lesson_definition(student, data.curriculum, data.subject, data.lesson_id)
     if data.action not in {"unlock", "master"}:
@@ -595,6 +609,9 @@ def lesson_override(data: OverrideIn, authorization: Optional[str] = Header(defa
         },
     )
     now = datetime.now(timezone.utc).isoformat()
+    if progress and data.action == "unlock":
+        # Unlocking access must not reset work that is already available.
+        return {"ok": True, "progress": progress, "steps": _ensure_steps(token, student["id"], progress)}
     if not progress:
         progress = _post(
             token,
