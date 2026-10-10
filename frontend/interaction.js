@@ -20,7 +20,7 @@ function renderInteraction(interaction){
   installInteractionPanel();currentInteraction=interaction&&typeof interaction==='object'?interaction:null;
   const qbox=$('#interactionQuestion'),prompt=$('#interactionPrompt'),choices=$('#interactionChoices'),hint=$('#interactionHint');
   if(!currentInteraction||currentInteraction.type==='none'){qbox.classList.add('hidden');return}
-  const type=currentInteraction.type||'short_answer';prompt.textContent=currentInteraction.prompt||'Your turn.';choices.innerHTML='';hint.textContent='';qbox.classList.remove('hidden');
+  $('#q').type='text';$('#q').placeholder='Type or speak a short answer...';const type=currentInteraction.type||'short_answer';prompt.textContent=currentInteraction.prompt||'Your turn.';choices.innerHTML='';hint.textContent='';qbox.classList.remove('hidden');
   if(type==='choice'||type==='true_false'){
     (currentInteraction.options||[]).forEach(opt=>{const b=document.createElement('button');b.className='interaction-choice';b.textContent=opt;b.onclick=()=>{if(!chatBusy)sendText(opt,{display:true})};choices.appendChild(b)});
     hint.textContent='Tap one answer.';
@@ -44,19 +44,19 @@ function cleanTutorText(value){
 
 async function sendText(value,opts={}){
   if(chatBusy)return;const p=current(),v=(value??$('#q').value).trim();if(!p||!v||!$('#subject').value)return;
-  const display=opts.display!==false;chatBusy=true;stopVoice('');clearInteraction();if(display)add(v,'me');$('#q').value='';$('#send').disabled=true;$$('.chip').forEach(b=>b.disabled=true);$('#status').textContent='Tutor is thinking...';
+  const requestGeneration=chatContextGeneration;const display=opts.display!==false;chatBusy=true;setLearningControlsBusy(true);stopVoice('');clearInteraction();if(display)add(v,'me');$('#q').value='';$('#send').disabled=true;$$('.chip').forEach(b=>b.disabled=true);$('#status').textContent='Tutor is thinking...';
   try{
     let backend=v;if(activeLesson)backend=`[Current structured chapter: ${activeLesson.title}. Current step: ${stepLabel(activeLesson.current_step)}. Stay strictly inside this chapter.]\n${v}`;
     const r=await authFetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:backend,student_id:p.id,subject:$('#subject').value,curriculum,activity,session_id:sessionId})});
-    const j=await r.json();if(!r.ok)throw new Error(j.detail||'Tutor request failed');sessionId=j.session_id||sessionId;lastStudentState=j.student_state||'neutral';lastDelivery=j.delivery||'normal';
-    let spoken=cleanTutorText(j.text||'');const sync=await syncLessonStep(j);if(sync.testFinished)spoken=spoken.replace(/[^.!?।]*\?\s*$/,'').trim()||`Test saved: ${sync.score}%.`;
+    const j=await r.json();if(requestGeneration!==chatContextGeneration)return;if(!r.ok)throw new Error(j.detail||'Tutor request failed');sessionId=j.session_id||sessionId;sessionStudentId=p.id;lastStudentState=j.student_state||'neutral';lastDelivery=j.delivery||'normal';
+    let spoken=cleanTutorText(j.text||'');const sync=await syncLessonStep(j);if(requestGeneration!==chatContextGeneration)return;if(sync.testFinished)spoken=spoken.replace(/[^.!?।]*\?\s*$/,'').trim()||`Test saved: ${sync.score}%.`;
     if(!spoken)spoken='I could not finish that response. Please tap “Explain simpler” and I will retry this step.';
-    lastTutorText=spoken;add(spoken,'bot');renderInteraction(j.interaction);$('#replay').disabled=!lastTutorText;
+    lastTutorText=spoken;add(spoken,'bot');renderInteraction(sync.testFinished?{type:'none'}:j.interaction);$('#replay').disabled=!lastTutorText;
     $('#status').textContent=(j.sources&&j.sources[0]?`Source: ${j.sources[0]}`:'Learning saved.')+(j.supplemental?' • supplemental':'');
     if(j.assessment!=='not_answer')$('#assessment').textContent=`${j.assessment==='correct'?'✅ Correct':j.assessment==='partial'?'🟡 Partly correct':'🧩 Keep trying'} • ${j.topic||'Topic'} • ${String(j.student_state||'neutral').replace('_',' ')}`;
     if(lastTutorText)speakTutor(lastTutorText,lastStudentState,lastDelivery);
   }catch(e){add(e.message,'system');renderInteraction({type:'none'})}
-  finally{chatBusy=false;$('#send').disabled=false;$$('.chip').forEach(b=>b.disabled=false)}
+  finally{chatBusy=false;setLearningControlsBusy(false);$('#send').disabled=false;$$('.chip').forEach(b=>b.disabled=false)}
 }
 
 installInteractionPanel();

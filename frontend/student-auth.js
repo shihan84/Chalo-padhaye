@@ -15,7 +15,7 @@ function installStudentLoginUI(){
       <p class="small">Use an email the family controls, create a password, and enter the invite code generated from the Parent Dashboard.</p>
       <input id="studentSetupEmail" type="email" placeholder="Student login email"><br><br>
       <input id="studentSetupPassword" type="password" minlength="6" placeholder="Create password"><br><br>
-      <input id="studentInviteCode" maxlength="12" placeholder="Invite code"><br><br>
+      <input id="studentInviteCode" maxlength="32" placeholder="Invite code"><br><br>
       <button id="createStudentLogin" class="primary">Create & link student login</button>
     </div>
     <p id="loginStatus" class="status"></p>`;
@@ -101,7 +101,7 @@ async function loadStudents(){
   if(!students.length)throw new Error(cpLoginMode==='student'?'This login is not linked to a student profile yet. Use the parent-generated invite code.':'No student profiles found');
   cpAccountRole=students.some(s=>s.student_user_id&&s.student_user_id===cpAuthUserId)?'student':'parent';
   if(cpLoginMode==='student'&&cpAccountRole!=='student')throw new Error('This is a parent account. Use Parent Login.');
-  if(cpLoginMode==='parent'&&cpAccountRole==='student')throw new Error('This is a student account. Use Student Login.');
+  if(cpAccountRole==='student')setLoginMode('student');
   if(cpAccountRole==='student')students=students.filter(s=>s.student_user_id===cpAuthUserId);
   $('#student').innerHTML='';students.forEach(s=>$('#student').add(new Option(`${s.full_name} — Grade ${s.grade} — ${s.board||''}`,s.id)));
   curriculum=preferredSchoolCurriculum();updateModeUI();applyAccountRole();await fillSubjects();loadResume();
@@ -116,7 +116,7 @@ async function login(){
   try{
     const r=await fetch(`${CFG.supabase_url}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:CFG.supabase_anon_key,'Content-Type':'application/json'},body:JSON.stringify({email:$('#email').value.trim(),password:$('#password').value})});
     const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Login failed');storeSession(j);await loadStudents();showLoggedInApp();
-  }catch(e){accessToken='';sessionStorage.removeItem('cp_token');$('#loginStatus').textContent=e.message}
+  }catch(e){accessToken=refreshToken='';sessionStorage.removeItem('cp_token');sessionStorage.removeItem('cp_refresh');$('#loginStatus').textContent=e.message}
 }
 
 function ensureStudentLoginCard(){
@@ -135,7 +135,7 @@ async function generateStudentInvite(){
     const r=await fetch(`${CFG.supabase_url}/rest/v1/rpc/create_student_invite`,{method:'POST',headers:{apikey:CFG.supabase_anon_key,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({p_student_id:p.id})});
     const j=await r.json();if(!r.ok)throw new Error(j.message||'Could not create invite. Run 006_student_login.sql first.');
     const row=Array.isArray(j)?j[0]:j,code=row&&row.invite_code;if(!code)throw new Error('Invite code was not returned.');
-    out.innerHTML=`Student: <b>${esc(p.full_name)}</b><br><br>Invite code: <code>${esc(code)}</code><br><span class="small">Expires ${row.expires_at?new Date(row.expires_at).toLocaleString():'in 24 hours'}.</span>`;
+    out.innerHTML=`Student: <b>${esc(p.full_name)}</b><br><br>Invite code: <code>${esc(code)}</code><br><span class="small">Expires ${row.expires_at?esc(new Date(row.expires_at).toLocaleString()):'in 24 hours'}.</span>`;
   }catch(e){out.textContent=e.message}
 }
 

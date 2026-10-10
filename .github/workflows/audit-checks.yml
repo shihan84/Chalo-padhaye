@@ -1,0 +1,43 @@
+name: Audit regression checks
+on:
+  pull_request:
+    branches: [main, deployment/hostinger-handoff]
+  push:
+    branches: [main, deployment/hostinger-handoff]
+permissions:
+  contents: read
+jobs:
+  python-and-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: pip install -r requirements-dev.txt
+      - run: python -m pytest -q
+      - run: node --test tests/frontend.test.cjs
+      - run: python -m compileall -q app scripts
+      - run: pip-audit -r requirements.txt
+  postgres-rls:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: audit-fixture-only
+          POSTGRES_DB: audit_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: psql -h localhost -U postgres -d audit_test -v ON_ERROR_STOP=1 -f tests/postgres_rls.sql
+        env:
+          PGPASSWORD: audit-fixture-only
