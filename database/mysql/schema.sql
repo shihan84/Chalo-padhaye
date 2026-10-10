@@ -100,6 +100,7 @@ CREATE TABLE IF NOT EXISTS lesson_progress (
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_lesson_progress_student FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
   UNIQUE KEY uq_lesson_progress (student_id, curriculum, subject, lesson_id),
+  UNIQUE KEY uq_lesson_progress_id_student (id, student_id),
   INDEX idx_lesson_progress_student (student_id, curriculum, subject, lesson_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -118,6 +119,7 @@ CREATE TABLE IF NOT EXISTS lesson_step_records (
   completed_at TIMESTAMP NULL,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_steps_progress FOREIGN KEY (lesson_progress_id) REFERENCES lesson_progress(id) ON DELETE CASCADE,
+  CONSTRAINT fk_steps_progress_student FOREIGN KEY (lesson_progress_id, student_id) REFERENCES lesson_progress(id, student_id) ON DELETE CASCADE,
   CONSTRAINT fk_steps_student FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
   UNIQUE KEY uq_lesson_step (lesson_progress_id, step_id),
   INDEX idx_steps_student (student_id, lesson_progress_id, step_order)
@@ -134,6 +136,7 @@ CREATE TABLE IF NOT EXISTS lesson_test_attempts (
   question_count INT UNSIGNED NOT NULL DEFAULT 0,
   summary JSON NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_tests_progress_student FOREIGN KEY (lesson_progress_id, student_id) REFERENCES lesson_progress(id, student_id) ON DELETE CASCADE,
   CONSTRAINT fk_tests_student FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
   CONSTRAINT fk_tests_progress FOREIGN KEY (lesson_progress_id) REFERENCES lesson_progress(id) ON DELETE CASCADE,
   INDEX idx_tests_student (student_id, lesson_progress_id, created_at)

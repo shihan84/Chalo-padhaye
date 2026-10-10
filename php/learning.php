@@ -16,28 +16,29 @@ function subject_groups(array $progress,string $curriculum): array {
     $out=[]; foreach($progress as $r){$raw=(string)($r['subject']??'');$p=strpos($raw,':');if($p===false){$c='maharashtra';$sid=$raw;}else{$c=substr($raw,0,$p);$sid=substr($raw,$p+1);}if($c===$curriculum)$out[$sid][]=$r;} return $out;
 }
 function week_metrics(array $sessions,array $records): array {
-    $cutoff=(new DateTimeImmutable('now',new DateTimeZone('UTC')))->modify('-7 days');$active=[];$subjects=[];$sm=0;$ws=0;
-    foreach($sessions as $r){$start=new DateTimeImmutable($r['started_at'],new DateTimeZone('UTC'));if($start<$cutoff)continue;$ws++;$active[$start->format('Y-m-d')]=1;if($r['subject'])$subjects[$r['subject']]=1;if($r['ended_at']){$end=new DateTimeImmutable($r['ended_at'],new DateTimeZone('UTC'));$sm+=max(0,min(180,(int)round(($end->getTimestamp()-$start->getTimestamp())/60)));}}
-    $om=0;$items=0;foreach($records as $r){if($r['status']!=='completed')continue;$day=$r['occurred_on']?:substr($r['created_at'],0,10);if($day<$cutoff->format('Y-m-d'))continue;$items++;$om+=max(0,min(600,(int)$r['minutes']));$active[$day]=1;if($r['subject'])$subjects['offline:'.$r['subject']]=1;}
+    $cutoff=(new DateTimeImmutable('now',new DateTimeZone('UTC')))->modify('-6 days')->setTime(0,0,0);$active=[];$subjects=[];$sm=0;$ws=0;
+    foreach($sessions as $r){$start=new DateTimeImmutable($r['started_at'],new DateTimeZone('UTC'));if($start<$cutoff||$start>new DateTimeImmutable('now',new DateTimeZone('UTC')))continue;$ws++;$active[$start->format('Y-m-d')]=1;if($r['subject'])$subjects[$r['subject']]=1;if($r['ended_at']){$end=new DateTimeImmutable($r['ended_at'],new DateTimeZone('UTC'));$sm+=max(0,min(180,(int)round(($end->getTimestamp()-$start->getTimestamp())/60)));}}
+    $om=0;$items=0;foreach($records as $r){if($r['status']!=='completed')continue;$day=$r['occurred_on']?:substr($r['created_at'],0,10);if($day<$cutoff->format('Y-m-d')||$day>gmdate('Y-m-d'))continue;$items++;$om+=max(0,min(600,(int)$r['minutes']));$active[$day]=1;if($r['subject'])$subjects['offline:'.$r['subject']]=1;}
     $today=(new DateTimeImmutable('now',new DateTimeZone('UTC')))->format('Y-m-d');$cursor=isset($active[$today])?new DateTimeImmutable($today):new DateTimeImmutable('yesterday');$streak=0;while(isset($active[$cursor->format('Y-m-d')])){$streak++;$cursor=$cursor->modify('-1 day');}
     return ['sessions'=>$ws,'study_minutes'=>$sm,'offline_minutes'=>$om,'total_minutes'=>$sm+$om,'active_days'=>count($active),'subjects'=>count($subjects),'portfolio_items'=>$items,'streak_days'=>$streak];
 }
 function curriculum_catalog(): array {
     static $catalog=null;if($catalog!==null)return $catalog;
     $plan=json_decode((string)@file_get_contents(dirname(__DIR__).'/data/lesson_plans.json'),true)?:[];
-    $out=[];foreach(($plan['curricula']??[]) as $c=>$grades){foreach($grades as $grade=>$subjects){foreach($subjects as $sid=>$lessons){$out[$c][(string)$grade][]= ['id'=>$sid,'label'=>ucwords(str_replace('_',' ',$sid)),'available'=>true,'lesson_count'=>is_array($lessons)?count($lessons):0];}}}
+    $out=[];foreach(($plan['curricula']??[]) as $c=>$grades){foreach($grades as $grade=>$subjects){foreach($subjects as $sid=>$lessons){$out[$c][(string)$grade][]= ['id'=>$sid,'label'=>ucwords(str_replace('_',' ',$sid)),'available'=>false,'official'=>false,'supplemental'=>false,'source_status'=>'unavailable','lesson_count'=>is_array($lessons)?count($lessons):0];}}}
     return $catalog=$out;
 }
 function roadmap_data(array $student,string $curriculum,array $progress): array {
     $groups=subject_groups($progress,$curriculum);$items=curriculum_catalog()[$curriculum][(string)$student['grade']]??[];$out=[];
     foreach($items as $item){$rows=$groups[$item['id']]??[];$scores=array_map(fn($x)=>(int)($x['score']??0),$rows);$mastery=$scores?(int)round(array_sum($scores)/count($scores)):0;$attempts=array_sum(array_map(fn($x)=>(int)$x['attempts'],$rows));usort($rows,fn($a,$b)=>(int)$a['score']<=>(int)$b['score']);
-      if(!$rows){$act='teach';$reason='Start this subject';}elseif($mastery<45){$act='revision';$reason='Review weak topics';}elseif($mastery<80){$act='practice';$reason='Keep practising';}else{$act='quiz';$reason='Check retention';}
+      if(!($item['available']??false)){$act='unavailable';$reason='Trusted textbook retrieval is not implemented';}elseif(!$rows){$act='teach';$reason='Start this subject';}elseif($mastery<45){$act='revision';$reason='Review weak topics';}elseif($mastery<80){$act='practice';$reason='Keep practising';}else{$act='quiz';$reason='Check retention';}
       $item['mastery']=$mastery;$item['attempts']=$attempts;$item['topics']=count($rows);$item['weak_topics']=array_map(fn($x)=>['topic'=>$x['topic'],'score'=>(int)$x['score']],array_slice($rows,0,3));$item['recommended_activity']=$act;$item['recommendation']=$reason;$out[]=$item;
     } return $out;
 }
 function daily_plan_data(array $student,string $curriculum,array $progress): array {
     $grade=(int)$student['grade'];$groups=subject_groups($progress,$curriculum);$subjects=curriculum_catalog()[$curriculum][(string)$grade]??[];$items=[];
-    foreach($subjects as $item){$rows=$groups[$item['id']]??[];$avg=$rows?(int)round(array_sum(array_map(fn($x)=>(int)$x['score'],$rows))/count($rows)):null;if($avg===null){$act='teach';$reason='New learning block';}elseif($avg<45){$act='revision';$reason='Needs revision';}elseif($avg<80){$act='practice';$reason='Build confidence';}else{$act='quiz';$reason='Quick mastery check';}$items[]=['kind'=>'lesson','subject'=>$item['id'],'title'=>$item['label'],'minutes'=>$grade>=6?25:20,'activity'=>$act,'reason'=>$reason,'supplemental'=>false,'priority'=>$avg??101];}
+    foreach($subjects as $item){if(!($item['available']??false))continue;$rows=$groups[$item['id']]??[];$avg=$rows?(int)round(array_sum(array_map(fn($x)=>(int)$x['score'],$rows))/count($rows)):null;if($avg===null){$act='teach';$reason='New learning block';}elseif($avg<45){$act='revision';$reason='Needs revision';}elseif($avg<80){$act='practice';$reason='Build confidence';}else{$act='quiz';$reason='Quick mastery check';}$items[]=['kind'=>'lesson','subject'=>$item['id'],'title'=>$item['label'],'minutes'=>$grade>=6?25:20,'activity'=>$act,'reason'=>$reason,'supplemental'=>false,'priority'=>$avg??101];}
     usort($items,fn($a,$b)=>$a['priority']<=>$b['priority']);foreach($items as &$i)unset($i['priority']);
+    $items=array_slice($items,0,$grade<=3?2:3);
     if($curriculum==='nios'){$items[]=['kind'=>'offline_suggestion','record_type'=>'reading','title'=>'Independent reading / read aloud','minutes'=>$grade<=3?15:20,'reason'=>'Daily reading habit'];$items[]=['kind'=>'offline_suggestion','record_type'=>'physical','title'=>'Movement / outdoor play','minutes'=>$grade<=3?20:25,'reason'=>'Daily physical activity'];}return $items;
 }
