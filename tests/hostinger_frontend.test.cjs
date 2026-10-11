@@ -115,3 +115,13 @@ test('missing textbook mappings clear the previous PDF and disable page tutoring
  c.clearBookSource();assert.equal(el('#openBookPdf').href,undefined);assert.equal(el('#bookFrame').src,undefined);assert.equal(el('#teachBookPage').disabled,true);assert.equal(el('#quizBookPage').disabled,true);assert.equal(c.sourceForLesson({order:3}),null);
  c.setBookPage(4);assert.equal(el('#bookFrame').src,undefined);
 });
+test('page lesson responses are discarded after switching child or PDF page',async()=>{
+ const nodes=new Map(),el=id=>{if(!nodes.has(id))nodes.set(id,{value:'',disabled:false,textContent:'',innerHTML:'',classList:{add(){},remove(){}}});return nodes.get(id)};
+ let resolve;const c=vm.createContext({URL,$:el,current:()=>({id:'child-a',grade:3}),authFetch:()=>new Promise(r=>resolve=r),officialBookLink:()=>'',toast(){}});
+ vm.runInContext(fs.readFileSync('frontend/book.js','utf8').split('(function wireBookViewer')[0],c);
+ vm.runInContext("bookViewerState={book_id:'book-fixture',page:13};",c);
+ const pending=c.sendBookPrompt('quiz');c.current=()=>({id:'child-b',grade:3});vm.runInContext('bookGeneration++;bookRequest++;',c);
+ resolve({ok:true,json:async()=>({text:'Wrong child reply',session_id:'old',sources:[]})});await pending;
+ assert.notEqual(el('#bookTutorText').textContent,'Wrong child reply');
+ assert.equal(vm.runInContext('bookTutorSession',c),null);
+});

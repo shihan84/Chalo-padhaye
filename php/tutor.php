@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/lessons.php';
+require_once __DIR__.'/textbook.php';
 
 function http_json(string $url,array $headers,array $body,int $timeout=45): array {
     $ch=curl_init($url);curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_RETURNTRANSFER=>true,CURLOPT_HTTPHEADER=>$headers,CURLOPT_POSTFIELDS=>json_encode($body),CURLOPT_TIMEOUT=>$timeout]);$raw=curl_exec($ch);$status=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);$err=curl_error($ch);curl_close($ch);if($raw===false||$status<200||$status>=300)throw new RuntimeException("Upstream request failed: {$status} {$err}");$j=json_decode($raw,true);if(!is_array($j))throw new RuntimeException('Invalid upstream JSON');return$j;

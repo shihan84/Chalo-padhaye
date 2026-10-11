@@ -8,3 +8,6 @@ venv/
 runtime/
 data/textbooks/*.pdf
 data/extracted/*.txt
+
+tmp/
+data/textbook-corpus/

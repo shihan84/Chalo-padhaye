@@ -1,0 +1,1108 @@
+{
+  "version": 1,
+  "reviewed_on": "2026-10-11",
+  "books": [
+    {
+      "id": "book-361afb5d874302434e1c3c3f",
+      "curriculum": "maharashtra",
+      "grades": [
+        3
+      ],
+      "title": "Class 3 · The World Around Us · Book 303000869",
+      "url": "https://ebooks.ebalbharati.in/pdfs/303000869.pdf",
+      "sha256": "361afb5d874302434e1c3c3f6c81cd0cee875ea3f3fc04599e214ebf33e47fc9",
+      "page_count": 100,
+      "min_text_pages": 95,
+      "edition": "First edition 2026; approved from 2026–27",
+      "first_lesson_page": 15,
+      "chapters": [
+        {
+          "title": "Our Family",
+          "printed_page": 1,
+          "pdf_page": 15
+        },
+        {
+          "title": "Family Tree",
+          "printed_page": 7,
+          "pdf_page": 21
+        },
+        {
+          "title": "My School",
+          "printed_page": 11,
+          "pdf_page": 25
+        },
+        {
+          "title": "Market",
+          "printed_page": 18,
+          "pdf_page": 32
+        },
+        {
+          "title": "Our Needs and Problems",
+          "printed_page": 26,
+          "pdf_page": 40
+        },
+        {
+          "title": "Water Awareness",
+          "printed_page": 37,
+          "pdf_page": 51
+        },
+        {
+          "title": "Indian Traditions and Cultural Diversity",
+          "printed_page": 44,
+          "pdf_page": 58
+        },
+        {
+          "title": "Means of Transport",
+          "printed_page": 52,
+          "pdf_page": 66
+        },
+        {
+          "title": "Historical Monuments",
+          "printed_page": 59,
+          "pdf_page": 73
+        },
+        {
+          "title": "Stories of Bravery and Revolution",
+          "printed_page": 65,
+          "pdf_page": 79
+        },
+        {
+          "title": "Protection of the Environment - My Responsibility",
+          "printed_page": 70,
+          "pdf_page": 84
+        },
+        {
+          "title": "National Unity",
+          "printed_page": 76,
+          "pdf_page": 90
+        },
+        {
+          "title": "Let us Listen, Speak and Understand",
+          "printed_page": 80,
+          "pdf_page": 94
+        }
+      ]
+    },
+    {
+      "id": "book-90be01ff1d567e22e3ab133c",
+      "curriculum": "maharashtra",
+      "grades": [
+        3
+      ],
+      "title": "Class 3 · Balbharati · Book 303060001",
+      "url": "https://ebooks.ebalbharati.in/pdfs/303060001.pdf",
+      "sha256": "90be01ff1d567e22e3ab133c2d0f2ef308af166fbc2ac3786572b0a743433b40",
+      "page_count": 100,
+      "min_text_pages": 93,
+      "edition": "First edition 2026; approved from 2026–27",
+      "first_lesson_page": 11,
+      "chapters": [
+        {
+          "title": "Rain in Summer",
+          "printed_page": 1,
+          "pdf_page": 11
+        },
+        {
+          "title": "Welcome Day",
+          "printed_page": 3,
+          "pdf_page": 13
+        },
+        {
+          "title": "The Seed",
+          "printed_page": 5,
+          "pdf_page": 15
+        },
+        {
+          "title": "The Mango Tree",
+          "printed_page": 7,
+          "pdf_page": 17
+        },
+        {
+          "title": "Magical Water",
+          "printed_page": 9,
+          "pdf_page": 19
+        },
+        {
+          "title": "Attentive Ant",
+          "printed_page": 11,
+          "pdf_page": 21
+        },
+        {
+          "title": "Helping a Classmate",
+          "printed_page": 13,
+          "pdf_page": 23
+        },
+        {
+          "title": "Let’s Go on a Picnic",
+          "printed_page": 15,
+          "pdf_page": 25
+        },
+        {
+          "title": "I am a Weaver Bird",
+          "printed_page": 18,
+          "pdf_page": 28
+        },
+        {
+          "title": "Flavours of Friendship",
+          "printed_page": 21,
+          "pdf_page": 31
+        },
+        {
+          "title": "Song of Week Days",
+          "printed_page": 25,
+          "pdf_page": 35
+        },
+        {
+          "title": "Weather",
+          "printed_page": 27,
+          "pdf_page": 37
+        },
+        {
+          "title": "Helping Siblings",
+          "printed_page": 29,
+          "pdf_page": 39
+        },
+        {
+          "title": "The Tired Mobile Phone",
+          "printed_page": 30,
+          "pdf_page": 40
+        },
+        {
+          "title": "Who am I?",
+          "printed_page": 33,
+          "pdf_page": 43
+        },
+        {
+          "title": "Five Little Senses",
+          "printed_page": 34,
+          "pdf_page": 44
+        },
+        {
+          "title": "A Drop of Kindness",
+          "printed_page": 36,
+          "pdf_page": 46
+        },
+        {
+          "title": "Struggler : Bhagyashree Jadhav",
+          "printed_page": 39,
+          "pdf_page": 49
+        },
+        {
+          "title": "Shravan Pournima",
+          "printed_page": 42,
+          "pdf_page": 52
+        },
+        {
+          "title": "The City of Dreams",
+          "printed_page": 44,
+          "pdf_page": 54
+        },
+        {
+          "title": "My Little Friends",
+          "printed_page": 46,
+          "pdf_page": 56
+        },
+        {
+          "title": "The Page from a Diary",
+          "printed_page": 48,
+          "pdf_page": 58
+        },
+        {
+          "title": "The Talking Vegetable",
+          "printed_page": 50,
+          "pdf_page": 60
+        },
+        {
+          "title": "The Monkey who Wore Glasses",
+          "printed_page": 52,
+          "pdf_page": 62
+        },
+        {
+          "title": "Ajanta Caves - A Treasure of Ancient Indian Art",
+          "printed_page": 54,
+          "pdf_page": 64
+        },
+        {
+          "title": "The Magic of Map",
+          "printed_page": 56,
+          "pdf_page": 66
+        },
+        {
+          "title": "Work on Time",
+          "printed_page": 58,
+          "pdf_page": 68
+        },
+        {
+          "title": "We are the Children",
+          "printed_page": 60,
+          "pdf_page": 70
+        },
+        {
+          "title": "Cleanliness Campaign",
+          "printed_page": 62,
+          "pdf_page": 72
+        },
+        {
+          "title": "Super Safety Squad",
+          "printed_page": 64,
+          "pdf_page": 74
+        },
+        {
+          "title": "Good Neighbours",
+          "printed_page": 66,
+          "pdf_page": 76
+        },
+        {
+          "title": "The Brave Mother",
+          "printed_page": 68,
+          "pdf_page": 78
+        },
+        {
+          "title": "Aaji’s Batwa",
+          "printed_page": 71,
+          "pdf_page": 81
+        },
+        {
+          "title": "Maru Mahotsav - The Desert Comes Alive",
+          "printed_page": 73,
+          "pdf_page": 83
+        },
+        {
+          "title": "Say “Thank You”",
+          "printed_page": 75,
+          "pdf_page": 85
+        },
+        {
+          "title": "Welcome Speech",
+          "printed_page": 77,
+          "pdf_page": 87
+        },
+        {
+          "title": "Aryaveer Meets an Astronaut",
+          "printed_page": 78,
+          "pdf_page": 88
+        },
+        {
+          "title": "The Majestic Peacock - India’s Pride",
+          "printed_page": 80,
+          "pdf_page": 90
+        },
+        {
+          "title": "The Third Brother’s Share",
+          "printed_page": 84,
+          "pdf_page": 94
+        },
+        {
+          "title": "Play in May",
+          "printed_page": 87,
+          "pdf_page": 97
+        }
+      ]
+    },
+    {
+      "id": "book-64d40e25d00ab6c5913f91ce",
+      "curriculum": "maharashtra",
+      "grades": [
+        3
+      ],
+      "title": "Class 3 · Mathematics · Book 303060004",
+      "url": "https://ebooks.ebalbharati.in/pdfs/303060004.pdf",
+      "sha256": "64d40e25d00ab6c5913f91ce1aaaba94068e06870fa42cb51c6d9ac6ccf02918",
+      "page_count": 140,
+      "min_text_pages": 136,
+      "edition": "First edition 2026; approved from 2026–27",
+      "first_lesson_page": 13,
+      "chapters": [
+        {
+          "title": "Find Shapes Around Us",
+          "printed_page": 1,
+          "pdf_page": 13
+        },
+        {
+          "title": "Play with Numbers",
+          "printed_page": 7,
+          "pdf_page": 19
+        },
+        {
+          "title": "Addition and Subtraction",
+          "printed_page": 25,
+          "pdf_page": 37
+        },
+        {
+          "title": "Fractions",
+          "printed_page": 37,
+          "pdf_page": 49
+        },
+        {
+          "title": "Length and Weight",
+          "printed_page": 47,
+          "pdf_page": 59
+        },
+        {
+          "title": "Data Handling",
+          "printed_page": 54,
+          "pdf_page": 66
+        },
+        {
+          "title": "Notion of Maps (Najri Nakasha)",
+          "printed_page": 59,
+          "pdf_page": 71
+        },
+        {
+          "title": "Multiplication",
+          "printed_page": 66,
+          "pdf_page": 78
+        },
+        {
+          "title": "Division",
+          "printed_page": 80,
+          "pdf_page": 92
+        },
+        {
+          "title": "Fun with Shapes (Two-dimensional)",
+          "printed_page": 92,
+          "pdf_page": 104
+        },
+        {
+          "title": "Symmetry",
+          "printed_page": 103,
+          "pdf_page": 115
+        },
+        {
+          "title": "Volume and Capacity",
+          "printed_page": 107,
+          "pdf_page": 119
+        },
+        {
+          "title": "Measurement of Time",
+          "printed_page": 111,
+          "pdf_page": 123
+        },
+        {
+          "title": "Patterns",
+          "printed_page": 119,
+          "pdf_page": 131
+        }
+      ]
+    },
+    {
+      "id": "book-9509cb0006677d335f584d05",
+      "curriculum": "maharashtra",
+      "grades": [
+        5
+      ],
+      "title": "Class 5 · Environmental Studies · Book 503000541",
+      "url": "https://ebooks.ebalbharati.in/pdfs/503000541.pdf",
+      "sha256": "9509cb0006677d335f584d05d1f28c5f2303f0900323fd99bfe34afd110be188",
+      "page_count": 148,
+      "min_text_pages": 140,
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "first_lesson_page": 11,
+      "chapters": [
+        {
+          "title": "Our Earth and Our Solar System",
+          "printed_page": 1,
+          "pdf_page": 11
+        },
+        {
+          "title": "Motions of the Earth",
+          "printed_page": 6,
+          "pdf_page": 16
+        },
+        {
+          "title": "The Earth and its Living World",
+          "printed_page": 11,
+          "pdf_page": 21
+        },
+        {
+          "title": "Environmental Balance",
+          "printed_page": 18,
+          "pdf_page": 28
+        },
+        {
+          "title": "Family Values",
+          "printed_page": 24,
+          "pdf_page": 34
+        },
+        {
+          "title": "Rules Are for Everyone",
+          "printed_page": 28,
+          "pdf_page": 38
+        },
+        {
+          "title": "Let us Solve our own Problems",
+          "printed_page": 32,
+          "pdf_page": 42
+        },
+        {
+          "title": "Public Facilities and My School",
+          "printed_page": 35,
+          "pdf_page": 45
+        },
+        {
+          "title": "Maps - our Companions",
+          "printed_page": 39,
+          "pdf_page": 49
+        },
+        {
+          "title": "Getting to Know India",
+          "printed_page": 44,
+          "pdf_page": 54
+        },
+        {
+          "title": "Our Home and Environment",
+          "printed_page": 51,
+          "pdf_page": 61
+        },
+        {
+          "title": "Food for All",
+          "printed_page": 58,
+          "pdf_page": 68
+        },
+        {
+          "title": "Methods of Preserving Food",
+          "printed_page": 64,
+          "pdf_page": 74
+        },
+        {
+          "title": "Transport",
+          "printed_page": 68,
+          "pdf_page": 78
+        },
+        {
+          "title": "Communication and Mass Media",
+          "printed_page": 73,
+          "pdf_page": 83
+        },
+        {
+          "title": "Water",
+          "printed_page": 77,
+          "pdf_page": 87
+        },
+        {
+          "title": "Clothes - our Necessity",
+          "printed_page": 82,
+          "pdf_page": 92
+        },
+        {
+          "title": "The Environment and Us",
+          "printed_page": 89,
+          "pdf_page": 99
+        },
+        {
+          "title": "Constituents of Food",
+          "printed_page": 96,
+          "pdf_page": 106
+        },
+        {
+          "title": "Our Emotional World",
+          "printed_page": 103,
+          "pdf_page": 113
+        },
+        {
+          "title": "Busy at Work - our Internal Organs",
+          "printed_page": 107,
+          "pdf_page": 117
+        },
+        {
+          "title": "Growth and Personality Development",
+          "printed_page": 115,
+          "pdf_page": 125
+        },
+        {
+          "title": "Infectious Diseases and how to Prevent them",
+          "printed_page": 121,
+          "pdf_page": 131
+        },
+        {
+          "title": "Substances, Objects and Energy",
+          "printed_page": 127,
+          "pdf_page": 137
+        },
+        {
+          "title": "Community Health and Hygiene",
+          "printed_page": 133,
+          "pdf_page": 143
+        }
+      ]
+    },
+    {
+      "id": "book-e5ddb55855884105326b4a96",
+      "curriculum": "maharashtra",
+      "grades": [
+        5
+      ],
+      "title": "Class 5 · Environmental Studies · Book 503000542",
+      "url": "https://ebooks.ebalbharati.in/pdfs/503000542.pdf",
+      "sha256": "e5ddb55855884105326b4a968f7379e3cf051ae8a6c6c5622fad368a61fa9d11",
+      "page_count": 66,
+      "min_text_pages": 58,
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "first_lesson_page": 12,
+      "chapters": [
+        {
+          "title": "What is History?",
+          "printed_page": 1,
+          "pdf_page": 12
+        },
+        {
+          "title": "History and the Concept of Time",
+          "printed_page": 6,
+          "pdf_page": 17
+        },
+        {
+          "title": "Life on Earth",
+          "printed_page": 12,
+          "pdf_page": 23
+        },
+        {
+          "title": "Evolution",
+          "printed_page": 15,
+          "pdf_page": 26
+        },
+        {
+          "title": "Evolution of Mankind",
+          "printed_page": 19,
+          "pdf_page": 30
+        },
+        {
+          "title": "Stone Age : Stone Tools",
+          "printed_page": 25,
+          "pdf_page": 36
+        },
+        {
+          "title": "From Shelters to Village-settlements",
+          "printed_page": 30,
+          "pdf_page": 41
+        },
+        {
+          "title": "Beginning of Settled Life",
+          "printed_page": 34,
+          "pdf_page": 45
+        },
+        {
+          "title": "Settled Life and Urban Civilization",
+          "printed_page": 39,
+          "pdf_page": 50
+        },
+        {
+          "title": "Historic Period",
+          "printed_page": 45,
+          "pdf_page": 56
+        }
+      ]
+    },
+    {
+      "id": "book-369eb7e63ef44be6d942052e",
+      "curriculum": "maharashtra",
+      "grades": [
+        5
+      ],
+      "title": "Class 5 · Balbharati · Book 503020001",
+      "url": "https://ebooks.ebalbharati.in/pdfs/503020001.pdf",
+      "sha256": "369eb7e63ef44be6d942052e4ebcaac2f25cbd97e00d67ca2472c3ad6e065baa",
+      "page_count": 100,
+      "min_text_pages": 91,
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "first_lesson_page": 11,
+      "chapters": [
+        {
+          "title": "What a Bird Thought",
+          "printed_page": 1,
+          "pdf_page": 11
+        },
+        {
+          "title": "Daydreams",
+          "printed_page": 2,
+          "pdf_page": 12
+        },
+        {
+          "title": "Be a Good Listener",
+          "printed_page": 5,
+          "pdf_page": 15
+        },
+        {
+          "title": "Strawberries",
+          "printed_page": 7,
+          "pdf_page": 17
+        },
+        {
+          "title": "The Twelve Months",
+          "printed_page": 8,
+          "pdf_page": 18
+        },
+        {
+          "title": "Announcements",
+          "printed_page": 14,
+          "pdf_page": 24
+        },
+        {
+          "title": "Major Dhyan Chand",
+          "printed_page": 16,
+          "pdf_page": 26
+        },
+        {
+          "title": "Peer Profile",
+          "printed_page": 19,
+          "pdf_page": 29
+        },
+        {
+          "title": "The Triantiwontigongolope",
+          "printed_page": 21,
+          "pdf_page": 31
+        },
+        {
+          "title": "Three Sacks of Rice",
+          "printed_page": 23,
+          "pdf_page": 33
+        },
+        {
+          "title": "Be a Good Speaker",
+          "printed_page": 26,
+          "pdf_page": 36
+        },
+        {
+          "title": "Count your Garden",
+          "printed_page": 28,
+          "pdf_page": 38
+        },
+        {
+          "title": "The Adventures of Gulliver",
+          "printed_page": 29,
+          "pdf_page": 39
+        },
+        {
+          "title": "A Lesson for All",
+          "printed_page": 33,
+          "pdf_page": 43
+        },
+        {
+          "title": "Bird Bath",
+          "printed_page": 38,
+          "pdf_page": 48
+        },
+        {
+          "title": "Write your own Story",
+          "printed_page": 39,
+          "pdf_page": 49
+        },
+        {
+          "title": "On the Water",
+          "printed_page": 42,
+          "pdf_page": 52
+        },
+        {
+          "title": "Weeds in the Garden",
+          "printed_page": 44,
+          "pdf_page": 54
+        },
+        {
+          "title": "Be a Good Host and Guest",
+          "printed_page": 47,
+          "pdf_page": 57
+        },
+        {
+          "title": "Only One Mother",
+          "printed_page": 51,
+          "pdf_page": 61
+        },
+        {
+          "title": "The Journey to the Great Oz",
+          "printed_page": 52,
+          "pdf_page": 62
+        },
+        {
+          "title": "A Book Review",
+          "printed_page": 57,
+          "pdf_page": 67
+        },
+        {
+          "title": "Write your own Poem",
+          "printed_page": 59,
+          "pdf_page": 69
+        },
+        {
+          "title": "Senses Alert",
+          "printed_page": 60,
+          "pdf_page": 70
+        },
+        {
+          "title": "The Man in the Moon",
+          "printed_page": 62,
+          "pdf_page": 72
+        },
+        {
+          "title": "Water in the Well",
+          "printed_page": 63,
+          "pdf_page": 73
+        },
+        {
+          "title": "The Legend of Marathon",
+          "printed_page": 65,
+          "pdf_page": 75
+        },
+        {
+          "title": "All about Money",
+          "printed_page": 68,
+          "pdf_page": 78
+        },
+        {
+          "title": "A Lark",
+          "printed_page": 71,
+          "pdf_page": 81
+        },
+        {
+          "title": "Be a Netizen",
+          "printed_page": 72,
+          "pdf_page": 82
+        },
+        {
+          "title": "Give your Mind a Workout!",
+          "printed_page": 75,
+          "pdf_page": 85
+        },
+        {
+          "title": "Helen Keller",
+          "printed_page": 77,
+          "pdf_page": 87
+        },
+        {
+          "title": "Rangoli",
+          "printed_page": 80,
+          "pdf_page": 90
+        },
+        {
+          "title": "Language Study",
+          "printed_page": 83,
+          "pdf_page": 93
+        }
+      ]
+    },
+    {
+      "id": "book-f3462657b04cda3917e27702",
+      "curriculum": "maharashtra",
+      "grades": [
+        5
+      ],
+      "title": "Class 5 · Mathematics · Book 503020004",
+      "url": "https://ebooks.ebalbharati.in/pdfs/503020004.pdf",
+      "sha256": "f3462657b04cda3917e277023f5dc3b7ea97252b4536ff337fab4b0533d91fd8",
+      "page_count": 100,
+      "min_text_pages": 90,
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "first_lesson_page": 11,
+      "chapters": [
+        {
+          "title": "Roman Numerals",
+          "printed_page": 1,
+          "pdf_page": 11
+        },
+        {
+          "title": "Number Work",
+          "printed_page": 3,
+          "pdf_page": 13
+        },
+        {
+          "title": "Addition and Subtraction",
+          "printed_page": 10,
+          "pdf_page": 20
+        },
+        {
+          "title": "Multiplication and Division",
+          "printed_page": 15,
+          "pdf_page": 25
+        },
+        {
+          "title": "Fractions",
+          "printed_page": 21,
+          "pdf_page": 31
+        },
+        {
+          "title": "Angles",
+          "printed_page": 34,
+          "pdf_page": 44
+        },
+        {
+          "title": "Circles",
+          "printed_page": 41,
+          "pdf_page": 51
+        },
+        {
+          "title": "Multiples and Factors",
+          "printed_page": 46,
+          "pdf_page": 56
+        },
+        {
+          "title": "Decimal Fractions",
+          "printed_page": 52,
+          "pdf_page": 62
+        },
+        {
+          "title": "Measuring Time",
+          "printed_page": 59,
+          "pdf_page": 69
+        },
+        {
+          "title": "Problems on Measurement",
+          "printed_page": 64,
+          "pdf_page": 74
+        },
+        {
+          "title": "Perimeter and Area",
+          "printed_page": 68,
+          "pdf_page": 78
+        },
+        {
+          "title": "Three Dimensional Objects and Nets",
+          "printed_page": 75,
+          "pdf_page": 85
+        },
+        {
+          "title": "Pictographs",
+          "printed_page": 79,
+          "pdf_page": 89
+        },
+        {
+          "title": "Patterns",
+          "printed_page": 83,
+          "pdf_page": 93
+        },
+        {
+          "title": "Preparation for Algebra",
+          "printed_page": 86,
+          "pdf_page": 96
+        }
+      ]
+    },
+    {
+      "id": "book-9ab3ca8fb90c45d871181c2a",
+      "curriculum": "nios",
+      "grades": [
+        1,
+        2,
+        3
+      ],
+      "title": "EVS",
+      "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf",
+      "sha256": "9ab3ca8fb90c45d871181c2a0a5c8c39250c0444e682c8e7176264033aaf3be1",
+      "page_count": 183,
+      "min_text_pages": 178,
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "first_lesson_page": 9,
+      "chapters": [
+        {
+          "title": "Concept of Family and Interpersonal Relations",
+          "printed_page": 1,
+          "pdf_page": 9
+        },
+        {
+          "title": "Our Social Environment",
+          "printed_page": 15,
+          "pdf_page": 23
+        },
+        {
+          "title": "Our Festivals",
+          "printed_page": 33,
+          "pdf_page": 41
+        },
+        {
+          "title": "The Environment",
+          "printed_page": 45,
+          "pdf_page": 53
+        },
+        {
+          "title": "Conservation of Environment",
+          "printed_page": 61,
+          "pdf_page": 69
+        },
+        {
+          "title": "Sun-Moon-Stars, Day-Night and Seasons",
+          "printed_page": 81,
+          "pdf_page": 89
+        },
+        {
+          "title": "Our Basic Needs",
+          "printed_page": 93,
+          "pdf_page": 101
+        },
+        {
+          "title": "Food",
+          "printed_page": 101,
+          "pdf_page": 109
+        },
+        {
+          "title": "Care and cleanliness of external organs",
+          "printed_page": 115,
+          "pdf_page": 123
+        },
+        {
+          "title": "Transport and Communication",
+          "printed_page": 125,
+          "pdf_page": 133
+        },
+        {
+          "title": "National Identity",
+          "printed_page": 143,
+          "pdf_page": 151
+        },
+        {
+          "title": "Our Social and Economic Environment",
+          "printed_page": 153,
+          "pdf_page": 161
+        }
+      ]
+    },
+    {
+      "id": "book-c991d028346a4ffd0732e8dd",
+      "curriculum": "nios",
+      "grades": [
+        1,
+        2,
+        3
+      ],
+      "title": "Basic Computer Skills",
+      "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Basic_Computer-skills_Level_A_english_medium.pdf",
+      "sha256": "c991d028346a4ffd0732e8ddd68d393654a4166b4b730ec679689c6497e28ddd",
+      "page_count": 124,
+      "min_text_pages": 119,
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "first_lesson_page": 9,
+      "chapters": [
+        {
+          "title": "Introduction to Computers",
+          "printed_page": 1,
+          "pdf_page": 9
+        },
+        {
+          "title": "Working of Computer",
+          "printed_page": 17,
+          "pdf_page": 25
+        },
+        {
+          "title": "Input, Output and Storage Devices",
+          "printed_page": 31,
+          "pdf_page": 39
+        },
+        {
+          "title": "Operating System",
+          "printed_page": 47,
+          "pdf_page": 55
+        },
+        {
+          "title": "Paint Brush and Computer Games",
+          "printed_page": 63,
+          "pdf_page": 71
+        },
+        {
+          "title": "Word Processing",
+          "printed_page": 83,
+          "pdf_page": 91
+        }
+      ]
+    },
+    {
+      "id": "book-cef9be78cba2034acf46c587",
+      "curriculum": "nios",
+      "grades": [
+        4,
+        5
+      ],
+      "title": "Maths",
+      "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_B_english_medium.pdf",
+      "sha256": "cef9be78cba2034acf46c5877815ba84157067370a40a7a4c4cdae9b052eba11",
+      "page_count": 203,
+      "min_text_pages": 200,
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "first_lesson_page": 7,
+      "chapters": [
+        {
+          "title": "Numbers",
+          "printed_page": 1,
+          "pdf_page": 7
+        },
+        {
+          "title": "Addition, Subtraction, Multiplication and Division",
+          "printed_page": 23,
+          "pdf_page": 29
+        },
+        {
+          "title": "Fractions",
+          "printed_page": 52,
+          "pdf_page": 58
+        },
+        {
+          "title": "Decimals",
+          "printed_page": 88,
+          "pdf_page": 94
+        },
+        {
+          "title": "Perimeter, Area and Volume",
+          "printed_page": 148,
+          "pdf_page": 154
+        },
+        {
+          "title": "Geometry",
+          "printed_page": 164,
+          "pdf_page": 170
+        },
+        {
+          "title": "Data Handling",
+          "printed_page": 186,
+          "pdf_page": 192
+        }
+      ]
+    },
+    {
+      "id": "book-217773030f7a2b270692c590",
+      "curriculum": "nios",
+      "grades": [
+        4,
+        5
+      ],
+      "title": "Computer Skill",
+      "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/basic_computer_level_b.pdf",
+      "sha256": "217773030f7a2b270692c5909f58331326bf89e3b95c4c2cc5ad506151acdafe",
+      "page_count": 120,
+      "min_text_pages": 118,
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "first_lesson_page": 6,
+      "chapters": [
+        {
+          "title": "Introduction to Computers",
+          "printed_page": 1,
+          "pdf_page": 6
+        },
+        {
+          "title": "Word Processing: Advantage and Features",
+          "printed_page": 15,
+          "pdf_page": 20
+        },
+        {
+          "title": "Spreadsheet",
+          "printed_page": 34,
+          "pdf_page": 39
+        },
+        {
+          "title": "Presentation",
+          "printed_page": 58,
+          "pdf_page": 63
+        },
+        {
+          "title": "Internet and its Advantages",
+          "printed_page": 74,
+          "pdf_page": 79
+        },
+        {
+          "title": "Computer Security",
+          "printed_page": 90,
+          "pdf_page": 95
+        },
+        {
+          "title": "E-mail",
+          "printed_page": 101,
+          "pdf_page": 106
+        }
+      ]
+    }
+  ]
+}

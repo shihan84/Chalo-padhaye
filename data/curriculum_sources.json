@@ -307,8 +307,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
           ]
         },
@@ -613,8 +613,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
           ]
         },
@@ -1678,8 +1678,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
           ]
         },
@@ -2732,8 +2732,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
           ]
         },
@@ -3775,8 +3775,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
           ]
         },
@@ -5335,8 +5335,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
           ]
         },
@@ -7357,8 +7357,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
           ]
         },
@@ -9181,8 +9181,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
           ]
         },
@@ -9970,8 +9970,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected."
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction."
           ]
         },
         "10": {
@@ -10825,8 +10825,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected."
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction."
           ]
         },
         "11": {
@@ -12602,8 +12602,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected."
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction."
           ]
         },
         "12": {
@@ -14335,8 +14335,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected."
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction."
           ]
         }
       }
@@ -14395,8 +14395,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -14451,8 +14451,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -14476,8 +14476,9 @@
               "subject": "The World Around Us",
               "medium": "English-medium catalogue (language books may differ)",
               "format": "pdf",
-              "edition": "Syllabus-year 2026 catalogue; confirm cover edition",
-              "primary": true
+              "edition": "First edition 2026; approved from 2026–27",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Class 3 · Balbharati · Book 303060001",
@@ -14488,8 +14489,9 @@
               "subject": "Balbharati",
               "medium": "English-medium catalogue (language books may differ)",
               "format": "pdf",
-              "edition": "Syllabus-year 2026 catalogue; confirm cover edition",
-              "primary": true
+              "edition": "First edition 2026; approved from 2026–27",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Class 3 · Mathematics · Book 303060004",
@@ -14500,8 +14502,9 @@
               "subject": "Mathematics",
               "medium": "English-medium catalogue (language books may differ)",
               "format": "pdf",
-              "edition": "Syllabus-year 2026 catalogue; confirm cover edition",
-              "primary": true
+              "edition": "First edition 2026; approved from 2026–27",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Class 3 · Marathi language · Book 303000866",
@@ -14973,10 +14976,446 @@
             }
           ],
           "syllabi": [],
-          "outlines": [],
+          "outlines": [
+            {
+              "label": "Class 3 · The World Around Us · Book 303000869",
+              "edition": "First edition 2026; approved from 2026–27",
+              "url": "https://ebooks.ebalbharati.in/pdfs/303000869.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 14,
+              "chapters": [
+                "Our Family",
+                "Family Tree",
+                "My School",
+                "Market",
+                "Our Needs and Problems",
+                "Water Awareness",
+                "Indian Traditions and Cultural Diversity",
+                "Means of Transport",
+                "Historical Monuments",
+                "Stories of Bravery and Revolution",
+                "Protection of the Environment - My Responsibility",
+                "National Unity",
+                "Let us Listen, Speak and Understand"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Our Family",
+                  "printed_page": 1,
+                  "pdf_page": 15
+                },
+                {
+                  "title": "Family Tree",
+                  "printed_page": 7,
+                  "pdf_page": 21
+                },
+                {
+                  "title": "My School",
+                  "printed_page": 11,
+                  "pdf_page": 25
+                },
+                {
+                  "title": "Market",
+                  "printed_page": 18,
+                  "pdf_page": 32
+                },
+                {
+                  "title": "Our Needs and Problems",
+                  "printed_page": 26,
+                  "pdf_page": 40
+                },
+                {
+                  "title": "Water Awareness",
+                  "printed_page": 37,
+                  "pdf_page": 51
+                },
+                {
+                  "title": "Indian Traditions and Cultural Diversity",
+                  "printed_page": 44,
+                  "pdf_page": 58
+                },
+                {
+                  "title": "Means of Transport",
+                  "printed_page": 52,
+                  "pdf_page": 66
+                },
+                {
+                  "title": "Historical Monuments",
+                  "printed_page": 59,
+                  "pdf_page": 73
+                },
+                {
+                  "title": "Stories of Bravery and Revolution",
+                  "printed_page": 65,
+                  "pdf_page": 79
+                },
+                {
+                  "title": "Protection of the Environment - My Responsibility",
+                  "printed_page": 70,
+                  "pdf_page": 84
+                },
+                {
+                  "title": "National Unity",
+                  "printed_page": 76,
+                  "pdf_page": 90
+                },
+                {
+                  "title": "Let us Listen, Speak and Understand",
+                  "printed_page": 80,
+                  "pdf_page": 94
+                }
+              ]
+            },
+            {
+              "label": "Class 3 · Balbharati · Book 303060001",
+              "edition": "First edition 2026; approved from 2026–27",
+              "url": "https://ebooks.ebalbharati.in/pdfs/303060001.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 10,
+              "chapters": [
+                "Rain in Summer",
+                "Welcome Day",
+                "The Seed",
+                "The Mango Tree",
+                "Magical Water",
+                "Attentive Ant",
+                "Helping a Classmate",
+                "Let’s Go on a Picnic",
+                "I am a Weaver Bird",
+                "Flavours of Friendship",
+                "Song of Week Days",
+                "Weather",
+                "Helping Siblings",
+                "The Tired Mobile Phone",
+                "Who am I?",
+                "Five Little Senses",
+                "A Drop of Kindness",
+                "Struggler : Bhagyashree Jadhav",
+                "Shravan Pournima",
+                "The City of Dreams",
+                "My Little Friends",
+                "The Page from a Diary",
+                "The Talking Vegetable",
+                "The Monkey who Wore Glasses",
+                "Ajanta Caves - A Treasure of Ancient Indian Art",
+                "The Magic of Map",
+                "Work on Time",
+                "We are the Children",
+                "Cleanliness Campaign",
+                "Super Safety Squad",
+                "Good Neighbours",
+                "The Brave Mother",
+                "Aaji’s Batwa",
+                "Maru Mahotsav - The Desert Comes Alive",
+                "Say “Thank You”",
+                "Welcome Speech",
+                "Aryaveer Meets an Astronaut",
+                "The Majestic Peacock - India’s Pride",
+                "The Third Brother’s Share",
+                "Play in May"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Rain in Summer",
+                  "printed_page": 1,
+                  "pdf_page": 11
+                },
+                {
+                  "title": "Welcome Day",
+                  "printed_page": 3,
+                  "pdf_page": 13
+                },
+                {
+                  "title": "The Seed",
+                  "printed_page": 5,
+                  "pdf_page": 15
+                },
+                {
+                  "title": "The Mango Tree",
+                  "printed_page": 7,
+                  "pdf_page": 17
+                },
+                {
+                  "title": "Magical Water",
+                  "printed_page": 9,
+                  "pdf_page": 19
+                },
+                {
+                  "title": "Attentive Ant",
+                  "printed_page": 11,
+                  "pdf_page": 21
+                },
+                {
+                  "title": "Helping a Classmate",
+                  "printed_page": 13,
+                  "pdf_page": 23
+                },
+                {
+                  "title": "Let’s Go on a Picnic",
+                  "printed_page": 15,
+                  "pdf_page": 25
+                },
+                {
+                  "title": "I am a Weaver Bird",
+                  "printed_page": 18,
+                  "pdf_page": 28
+                },
+                {
+                  "title": "Flavours of Friendship",
+                  "printed_page": 21,
+                  "pdf_page": 31
+                },
+                {
+                  "title": "Song of Week Days",
+                  "printed_page": 25,
+                  "pdf_page": 35
+                },
+                {
+                  "title": "Weather",
+                  "printed_page": 27,
+                  "pdf_page": 37
+                },
+                {
+                  "title": "Helping Siblings",
+                  "printed_page": 29,
+                  "pdf_page": 39
+                },
+                {
+                  "title": "The Tired Mobile Phone",
+                  "printed_page": 30,
+                  "pdf_page": 40
+                },
+                {
+                  "title": "Who am I?",
+                  "printed_page": 33,
+                  "pdf_page": 43
+                },
+                {
+                  "title": "Five Little Senses",
+                  "printed_page": 34,
+                  "pdf_page": 44
+                },
+                {
+                  "title": "A Drop of Kindness",
+                  "printed_page": 36,
+                  "pdf_page": 46
+                },
+                {
+                  "title": "Struggler : Bhagyashree Jadhav",
+                  "printed_page": 39,
+                  "pdf_page": 49
+                },
+                {
+                  "title": "Shravan Pournima",
+                  "printed_page": 42,
+                  "pdf_page": 52
+                },
+                {
+                  "title": "The City of Dreams",
+                  "printed_page": 44,
+                  "pdf_page": 54
+                },
+                {
+                  "title": "My Little Friends",
+                  "printed_page": 46,
+                  "pdf_page": 56
+                },
+                {
+                  "title": "The Page from a Diary",
+                  "printed_page": 48,
+                  "pdf_page": 58
+                },
+                {
+                  "title": "The Talking Vegetable",
+                  "printed_page": 50,
+                  "pdf_page": 60
+                },
+                {
+                  "title": "The Monkey who Wore Glasses",
+                  "printed_page": 52,
+                  "pdf_page": 62
+                },
+                {
+                  "title": "Ajanta Caves - A Treasure of Ancient Indian Art",
+                  "printed_page": 54,
+                  "pdf_page": 64
+                },
+                {
+                  "title": "The Magic of Map",
+                  "printed_page": 56,
+                  "pdf_page": 66
+                },
+                {
+                  "title": "Work on Time",
+                  "printed_page": 58,
+                  "pdf_page": 68
+                },
+                {
+                  "title": "We are the Children",
+                  "printed_page": 60,
+                  "pdf_page": 70
+                },
+                {
+                  "title": "Cleanliness Campaign",
+                  "printed_page": 62,
+                  "pdf_page": 72
+                },
+                {
+                  "title": "Super Safety Squad",
+                  "printed_page": 64,
+                  "pdf_page": 74
+                },
+                {
+                  "title": "Good Neighbours",
+                  "printed_page": 66,
+                  "pdf_page": 76
+                },
+                {
+                  "title": "The Brave Mother",
+                  "printed_page": 68,
+                  "pdf_page": 78
+                },
+                {
+                  "title": "Aaji’s Batwa",
+                  "printed_page": 71,
+                  "pdf_page": 81
+                },
+                {
+                  "title": "Maru Mahotsav - The Desert Comes Alive",
+                  "printed_page": 73,
+                  "pdf_page": 83
+                },
+                {
+                  "title": "Say “Thank You”",
+                  "printed_page": 75,
+                  "pdf_page": 85
+                },
+                {
+                  "title": "Welcome Speech",
+                  "printed_page": 77,
+                  "pdf_page": 87
+                },
+                {
+                  "title": "Aryaveer Meets an Astronaut",
+                  "printed_page": 78,
+                  "pdf_page": 88
+                },
+                {
+                  "title": "The Majestic Peacock - India’s Pride",
+                  "printed_page": 80,
+                  "pdf_page": 90
+                },
+                {
+                  "title": "The Third Brother’s Share",
+                  "printed_page": 84,
+                  "pdf_page": 94
+                },
+                {
+                  "title": "Play in May",
+                  "printed_page": 87,
+                  "pdf_page": 97
+                }
+              ]
+            },
+            {
+              "label": "Class 3 · Mathematics · Book 303060004",
+              "edition": "First edition 2026; approved from 2026–27",
+              "url": "https://ebooks.ebalbharati.in/pdfs/303060004.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 12,
+              "chapters": [
+                "Find Shapes Around Us",
+                "Play with Numbers",
+                "Addition and Subtraction",
+                "Fractions",
+                "Length and Weight",
+                "Data Handling",
+                "Notion of Maps (Najri Nakasha)",
+                "Multiplication",
+                "Division",
+                "Fun with Shapes (Two-dimensional)",
+                "Symmetry",
+                "Volume and Capacity",
+                "Measurement of Time",
+                "Patterns"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Find Shapes Around Us",
+                  "printed_page": 1,
+                  "pdf_page": 13
+                },
+                {
+                  "title": "Play with Numbers",
+                  "printed_page": 7,
+                  "pdf_page": 19
+                },
+                {
+                  "title": "Addition and Subtraction",
+                  "printed_page": 25,
+                  "pdf_page": 37
+                },
+                {
+                  "title": "Fractions",
+                  "printed_page": 37,
+                  "pdf_page": 49
+                },
+                {
+                  "title": "Length and Weight",
+                  "printed_page": 47,
+                  "pdf_page": 59
+                },
+                {
+                  "title": "Data Handling",
+                  "printed_page": 54,
+                  "pdf_page": 66
+                },
+                {
+                  "title": "Notion of Maps (Najri Nakasha)",
+                  "printed_page": 59,
+                  "pdf_page": 71
+                },
+                {
+                  "title": "Multiplication",
+                  "printed_page": 66,
+                  "pdf_page": 78
+                },
+                {
+                  "title": "Division",
+                  "printed_page": 80,
+                  "pdf_page": 92
+                },
+                {
+                  "title": "Fun with Shapes (Two-dimensional)",
+                  "printed_page": 92,
+                  "pdf_page": 104
+                },
+                {
+                  "title": "Symmetry",
+                  "printed_page": 103,
+                  "pdf_page": 115
+                },
+                {
+                  "title": "Volume and Capacity",
+                  "printed_page": 107,
+                  "pdf_page": 119
+                },
+                {
+                  "title": "Measurement of Time",
+                  "printed_page": 111,
+                  "pdf_page": 123
+                },
+                {
+                  "title": "Patterns",
+                  "printed_page": 119,
+                  "pdf_page": 131
+                }
+              ]
+            }
+          ],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -15091,8 +15530,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -15116,8 +15555,9 @@
               "subject": "Environmental Studies",
               "medium": "English-medium catalogue (language books may differ)",
               "format": "pdf",
-              "edition": "Syllabus-year 2026 catalogue; confirm cover edition",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Class 5 · Environmental Studies · Book 503000542",
@@ -15128,8 +15568,9 @@
               "subject": "Environmental Studies",
               "medium": "English-medium catalogue (language books may differ)",
               "format": "pdf",
-              "edition": "Syllabus-year 2026 catalogue; confirm cover edition",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Class 5 · Balbharati · Book 503020001",
@@ -15140,8 +15581,9 @@
               "subject": "Balbharati",
               "medium": "English-medium catalogue (language books may differ)",
               "format": "pdf",
-              "edition": "Syllabus-year 2026 catalogue; confirm cover edition",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Class 5 · Publisher textbook · Book 504020171",
@@ -15164,8 +15606,9 @@
               "subject": "Mathematics",
               "medium": "English-medium catalogue (language books may differ)",
               "format": "pdf",
-              "edition": "Syllabus-year 2026 catalogue; confirm cover edition",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Class 5 · Publisher textbook · Book 503000620",
@@ -15277,10 +15720,565 @@
             }
           ],
           "syllabi": [],
-          "outlines": [],
+          "outlines": [
+            {
+              "label": "Class 5 · Environmental Studies · Book 503000541",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://ebooks.ebalbharati.in/pdfs/503000541.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 10,
+              "chapters": [
+                "Our Earth and Our Solar System",
+                "Motions of the Earth",
+                "The Earth and its Living World",
+                "Environmental Balance",
+                "Family Values",
+                "Rules Are for Everyone",
+                "Let us Solve our own Problems",
+                "Public Facilities and My School",
+                "Maps - our Companions",
+                "Getting to Know India",
+                "Our Home and Environment",
+                "Food for All",
+                "Methods of Preserving Food",
+                "Transport",
+                "Communication and Mass Media",
+                "Water",
+                "Clothes - our Necessity",
+                "The Environment and Us",
+                "Constituents of Food",
+                "Our Emotional World",
+                "Busy at Work - our Internal Organs",
+                "Growth and Personality Development",
+                "Infectious Diseases and how to Prevent them",
+                "Substances, Objects and Energy",
+                "Community Health and Hygiene"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Our Earth and Our Solar System",
+                  "printed_page": 1,
+                  "pdf_page": 11
+                },
+                {
+                  "title": "Motions of the Earth",
+                  "printed_page": 6,
+                  "pdf_page": 16
+                },
+                {
+                  "title": "The Earth and its Living World",
+                  "printed_page": 11,
+                  "pdf_page": 21
+                },
+                {
+                  "title": "Environmental Balance",
+                  "printed_page": 18,
+                  "pdf_page": 28
+                },
+                {
+                  "title": "Family Values",
+                  "printed_page": 24,
+                  "pdf_page": 34
+                },
+                {
+                  "title": "Rules Are for Everyone",
+                  "printed_page": 28,
+                  "pdf_page": 38
+                },
+                {
+                  "title": "Let us Solve our own Problems",
+                  "printed_page": 32,
+                  "pdf_page": 42
+                },
+                {
+                  "title": "Public Facilities and My School",
+                  "printed_page": 35,
+                  "pdf_page": 45
+                },
+                {
+                  "title": "Maps - our Companions",
+                  "printed_page": 39,
+                  "pdf_page": 49
+                },
+                {
+                  "title": "Getting to Know India",
+                  "printed_page": 44,
+                  "pdf_page": 54
+                },
+                {
+                  "title": "Our Home and Environment",
+                  "printed_page": 51,
+                  "pdf_page": 61
+                },
+                {
+                  "title": "Food for All",
+                  "printed_page": 58,
+                  "pdf_page": 68
+                },
+                {
+                  "title": "Methods of Preserving Food",
+                  "printed_page": 64,
+                  "pdf_page": 74
+                },
+                {
+                  "title": "Transport",
+                  "printed_page": 68,
+                  "pdf_page": 78
+                },
+                {
+                  "title": "Communication and Mass Media",
+                  "printed_page": 73,
+                  "pdf_page": 83
+                },
+                {
+                  "title": "Water",
+                  "printed_page": 77,
+                  "pdf_page": 87
+                },
+                {
+                  "title": "Clothes - our Necessity",
+                  "printed_page": 82,
+                  "pdf_page": 92
+                },
+                {
+                  "title": "The Environment and Us",
+                  "printed_page": 89,
+                  "pdf_page": 99
+                },
+                {
+                  "title": "Constituents of Food",
+                  "printed_page": 96,
+                  "pdf_page": 106
+                },
+                {
+                  "title": "Our Emotional World",
+                  "printed_page": 103,
+                  "pdf_page": 113
+                },
+                {
+                  "title": "Busy at Work - our Internal Organs",
+                  "printed_page": 107,
+                  "pdf_page": 117
+                },
+                {
+                  "title": "Growth and Personality Development",
+                  "printed_page": 115,
+                  "pdf_page": 125
+                },
+                {
+                  "title": "Infectious Diseases and how to Prevent them",
+                  "printed_page": 121,
+                  "pdf_page": 131
+                },
+                {
+                  "title": "Substances, Objects and Energy",
+                  "printed_page": 127,
+                  "pdf_page": 137
+                },
+                {
+                  "title": "Community Health and Hygiene",
+                  "printed_page": 133,
+                  "pdf_page": 143
+                }
+              ]
+            },
+            {
+              "label": "Class 5 · Environmental Studies · Book 503000542",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://ebooks.ebalbharati.in/pdfs/503000542.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 11,
+              "chapters": [
+                "What is History?",
+                "History and the Concept of Time",
+                "Life on Earth",
+                "Evolution",
+                "Evolution of Mankind",
+                "Stone Age : Stone Tools",
+                "From Shelters to Village-settlements",
+                "Beginning of Settled Life",
+                "Settled Life and Urban Civilization",
+                "Historic Period"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "What is History?",
+                  "printed_page": 1,
+                  "pdf_page": 12
+                },
+                {
+                  "title": "History and the Concept of Time",
+                  "printed_page": 6,
+                  "pdf_page": 17
+                },
+                {
+                  "title": "Life on Earth",
+                  "printed_page": 12,
+                  "pdf_page": 23
+                },
+                {
+                  "title": "Evolution",
+                  "printed_page": 15,
+                  "pdf_page": 26
+                },
+                {
+                  "title": "Evolution of Mankind",
+                  "printed_page": 19,
+                  "pdf_page": 30
+                },
+                {
+                  "title": "Stone Age : Stone Tools",
+                  "printed_page": 25,
+                  "pdf_page": 36
+                },
+                {
+                  "title": "From Shelters to Village-settlements",
+                  "printed_page": 30,
+                  "pdf_page": 41
+                },
+                {
+                  "title": "Beginning of Settled Life",
+                  "printed_page": 34,
+                  "pdf_page": 45
+                },
+                {
+                  "title": "Settled Life and Urban Civilization",
+                  "printed_page": 39,
+                  "pdf_page": 50
+                },
+                {
+                  "title": "Historic Period",
+                  "printed_page": 45,
+                  "pdf_page": 56
+                }
+              ]
+            },
+            {
+              "label": "Class 5 · Balbharati · Book 503020001",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://ebooks.ebalbharati.in/pdfs/503020001.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 10,
+              "chapters": [
+                "What a Bird Thought",
+                "Daydreams",
+                "Be a Good Listener",
+                "Strawberries",
+                "The Twelve Months",
+                "Announcements",
+                "Major Dhyan Chand",
+                "Peer Profile",
+                "The Triantiwontigongolope",
+                "Three Sacks of Rice",
+                "Be a Good Speaker",
+                "Count your Garden",
+                "The Adventures of Gulliver",
+                "A Lesson for All",
+                "Bird Bath",
+                "Write your own Story",
+                "On the Water",
+                "Weeds in the Garden",
+                "Be a Good Host and Guest",
+                "Only One Mother",
+                "The Journey to the Great Oz",
+                "A Book Review",
+                "Write your own Poem",
+                "Senses Alert",
+                "The Man in the Moon",
+                "Water in the Well",
+                "The Legend of Marathon",
+                "All about Money",
+                "A Lark",
+                "Be a Netizen",
+                "Give your Mind a Workout!",
+                "Helen Keller",
+                "Rangoli",
+                "Language Study"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "What a Bird Thought",
+                  "printed_page": 1,
+                  "pdf_page": 11
+                },
+                {
+                  "title": "Daydreams",
+                  "printed_page": 2,
+                  "pdf_page": 12
+                },
+                {
+                  "title": "Be a Good Listener",
+                  "printed_page": 5,
+                  "pdf_page": 15
+                },
+                {
+                  "title": "Strawberries",
+                  "printed_page": 7,
+                  "pdf_page": 17
+                },
+                {
+                  "title": "The Twelve Months",
+                  "printed_page": 8,
+                  "pdf_page": 18
+                },
+                {
+                  "title": "Announcements",
+                  "printed_page": 14,
+                  "pdf_page": 24
+                },
+                {
+                  "title": "Major Dhyan Chand",
+                  "printed_page": 16,
+                  "pdf_page": 26
+                },
+                {
+                  "title": "Peer Profile",
+                  "printed_page": 19,
+                  "pdf_page": 29
+                },
+                {
+                  "title": "The Triantiwontigongolope",
+                  "printed_page": 21,
+                  "pdf_page": 31
+                },
+                {
+                  "title": "Three Sacks of Rice",
+                  "printed_page": 23,
+                  "pdf_page": 33
+                },
+                {
+                  "title": "Be a Good Speaker",
+                  "printed_page": 26,
+                  "pdf_page": 36
+                },
+                {
+                  "title": "Count your Garden",
+                  "printed_page": 28,
+                  "pdf_page": 38
+                },
+                {
+                  "title": "The Adventures of Gulliver",
+                  "printed_page": 29,
+                  "pdf_page": 39
+                },
+                {
+                  "title": "A Lesson for All",
+                  "printed_page": 33,
+                  "pdf_page": 43
+                },
+                {
+                  "title": "Bird Bath",
+                  "printed_page": 38,
+                  "pdf_page": 48
+                },
+                {
+                  "title": "Write your own Story",
+                  "printed_page": 39,
+                  "pdf_page": 49
+                },
+                {
+                  "title": "On the Water",
+                  "printed_page": 42,
+                  "pdf_page": 52
+                },
+                {
+                  "title": "Weeds in the Garden",
+                  "printed_page": 44,
+                  "pdf_page": 54
+                },
+                {
+                  "title": "Be a Good Host and Guest",
+                  "printed_page": 47,
+                  "pdf_page": 57
+                },
+                {
+                  "title": "Only One Mother",
+                  "printed_page": 51,
+                  "pdf_page": 61
+                },
+                {
+                  "title": "The Journey to the Great Oz",
+                  "printed_page": 52,
+                  "pdf_page": 62
+                },
+                {
+                  "title": "A Book Review",
+                  "printed_page": 57,
+                  "pdf_page": 67
+                },
+                {
+                  "title": "Write your own Poem",
+                  "printed_page": 59,
+                  "pdf_page": 69
+                },
+                {
+                  "title": "Senses Alert",
+                  "printed_page": 60,
+                  "pdf_page": 70
+                },
+                {
+                  "title": "The Man in the Moon",
+                  "printed_page": 62,
+                  "pdf_page": 72
+                },
+                {
+                  "title": "Water in the Well",
+                  "printed_page": 63,
+                  "pdf_page": 73
+                },
+                {
+                  "title": "The Legend of Marathon",
+                  "printed_page": 65,
+                  "pdf_page": 75
+                },
+                {
+                  "title": "All about Money",
+                  "printed_page": 68,
+                  "pdf_page": 78
+                },
+                {
+                  "title": "A Lark",
+                  "printed_page": 71,
+                  "pdf_page": 81
+                },
+                {
+                  "title": "Be a Netizen",
+                  "printed_page": 72,
+                  "pdf_page": 82
+                },
+                {
+                  "title": "Give your Mind a Workout!",
+                  "printed_page": 75,
+                  "pdf_page": 85
+                },
+                {
+                  "title": "Helen Keller",
+                  "printed_page": 77,
+                  "pdf_page": 87
+                },
+                {
+                  "title": "Rangoli",
+                  "printed_page": 80,
+                  "pdf_page": 90
+                },
+                {
+                  "title": "Language Study",
+                  "printed_page": 83,
+                  "pdf_page": 93
+                }
+              ]
+            },
+            {
+              "label": "Class 5 · Mathematics · Book 503020004",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://ebooks.ebalbharati.in/pdfs/503020004.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 10,
+              "chapters": [
+                "Roman Numerals",
+                "Number Work",
+                "Addition and Subtraction",
+                "Multiplication and Division",
+                "Fractions",
+                "Angles",
+                "Circles",
+                "Multiples and Factors",
+                "Decimal Fractions",
+                "Measuring Time",
+                "Problems on Measurement",
+                "Perimeter and Area",
+                "Three Dimensional Objects and Nets",
+                "Pictographs",
+                "Patterns",
+                "Preparation for Algebra"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Roman Numerals",
+                  "printed_page": 1,
+                  "pdf_page": 11
+                },
+                {
+                  "title": "Number Work",
+                  "printed_page": 3,
+                  "pdf_page": 13
+                },
+                {
+                  "title": "Addition and Subtraction",
+                  "printed_page": 10,
+                  "pdf_page": 20
+                },
+                {
+                  "title": "Multiplication and Division",
+                  "printed_page": 15,
+                  "pdf_page": 25
+                },
+                {
+                  "title": "Fractions",
+                  "printed_page": 21,
+                  "pdf_page": 31
+                },
+                {
+                  "title": "Angles",
+                  "printed_page": 34,
+                  "pdf_page": 44
+                },
+                {
+                  "title": "Circles",
+                  "printed_page": 41,
+                  "pdf_page": 51
+                },
+                {
+                  "title": "Multiples and Factors",
+                  "printed_page": 46,
+                  "pdf_page": 56
+                },
+                {
+                  "title": "Decimal Fractions",
+                  "printed_page": 52,
+                  "pdf_page": 62
+                },
+                {
+                  "title": "Measuring Time",
+                  "printed_page": 59,
+                  "pdf_page": 69
+                },
+                {
+                  "title": "Problems on Measurement",
+                  "printed_page": 64,
+                  "pdf_page": 74
+                },
+                {
+                  "title": "Perimeter and Area",
+                  "printed_page": 68,
+                  "pdf_page": 78
+                },
+                {
+                  "title": "Three Dimensional Objects and Nets",
+                  "printed_page": 75,
+                  "pdf_page": 85
+                },
+                {
+                  "title": "Pictographs",
+                  "printed_page": 79,
+                  "pdf_page": 89
+                },
+                {
+                  "title": "Patterns",
+                  "printed_page": 83,
+                  "pdf_page": 93
+                },
+                {
+                  "title": "Preparation for Algebra",
+                  "printed_page": 86,
+                  "pdf_page": 96
+                }
+              ]
+            }
+          ],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -15407,8 +16405,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -15595,8 +16593,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -15855,8 +16853,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -16181,8 +17179,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -16483,8 +17481,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -16977,8 +17975,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         },
@@ -17471,8 +18469,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Separate current examination syllabus and prescribed subject set need verification; catalogue year is not an exam syllabus."
           ]
         }
@@ -17501,8 +18499,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17531,8 +18529,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17561,8 +18559,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17592,8 +18590,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17623,8 +18621,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17654,8 +18652,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17686,8 +18684,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17718,8 +18716,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17752,8 +18750,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17888,8 +18886,8 @@
             }
           ],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "SCERT directory lists 2025–26; current 2026–27 editions and direct textbook mappings remain pending. Directory returned gateway errors during this review."
           ],
           "subjects": [
@@ -17932,8 +18930,9 @@
               "subject": "EVS",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Basic Computer Skills",
@@ -17943,8 +18942,9 @@
               "subject": "Basic Computer Skills",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Maths",
@@ -17967,10 +18967,141 @@
               "edition": "Official archived reference; document includes adult-track content"
             }
           ],
-          "outlines": [],
+          "outlines": [
+            {
+              "label": "EVS",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 7,
+              "chapters": [
+                "Concept of Family and Interpersonal Relations",
+                "Our Social Environment",
+                "Our Festivals",
+                "The Environment",
+                "Conservation of Environment",
+                "Sun-Moon-Stars, Day-Night and Seasons",
+                "Our Basic Needs",
+                "Food",
+                "Care and cleanliness of external organs",
+                "Transport and Communication",
+                "National Identity",
+                "Our Social and Economic Environment"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Concept of Family and Interpersonal Relations",
+                  "printed_page": 1,
+                  "pdf_page": 9
+                },
+                {
+                  "title": "Our Social Environment",
+                  "printed_page": 15,
+                  "pdf_page": 23
+                },
+                {
+                  "title": "Our Festivals",
+                  "printed_page": 33,
+                  "pdf_page": 41
+                },
+                {
+                  "title": "The Environment",
+                  "printed_page": 45,
+                  "pdf_page": 53
+                },
+                {
+                  "title": "Conservation of Environment",
+                  "printed_page": 61,
+                  "pdf_page": 69
+                },
+                {
+                  "title": "Sun-Moon-Stars, Day-Night and Seasons",
+                  "printed_page": 81,
+                  "pdf_page": 89
+                },
+                {
+                  "title": "Our Basic Needs",
+                  "printed_page": 93,
+                  "pdf_page": 101
+                },
+                {
+                  "title": "Food",
+                  "printed_page": 101,
+                  "pdf_page": 109
+                },
+                {
+                  "title": "Care and cleanliness of external organs",
+                  "printed_page": 115,
+                  "pdf_page": 123
+                },
+                {
+                  "title": "Transport and Communication",
+                  "printed_page": 125,
+                  "pdf_page": 133
+                },
+                {
+                  "title": "National Identity",
+                  "printed_page": 143,
+                  "pdf_page": 151
+                },
+                {
+                  "title": "Our Social and Economic Environment",
+                  "printed_page": 153,
+                  "pdf_page": 161
+                }
+              ]
+            },
+            {
+              "label": "Basic Computer Skills",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Basic_Computer-skills_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 7,
+              "chapters": [
+                "Introduction to Computers",
+                "Working of Computer",
+                "Input, Output and Storage Devices",
+                "Operating System",
+                "Paint Brush and Computer Games",
+                "Word Processing"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Introduction to Computers",
+                  "printed_page": 1,
+                  "pdf_page": 9
+                },
+                {
+                  "title": "Working of Computer",
+                  "printed_page": 17,
+                  "pdf_page": 25
+                },
+                {
+                  "title": "Input, Output and Storage Devices",
+                  "printed_page": 31,
+                  "pdf_page": 39
+                },
+                {
+                  "title": "Operating System",
+                  "printed_page": 47,
+                  "pdf_page": 55
+                },
+                {
+                  "title": "Paint Brush and Computer Games",
+                  "printed_page": 63,
+                  "pdf_page": 71
+                },
+                {
+                  "title": "Word Processing",
+                  "printed_page": 83,
+                  "pdf_page": 91
+                }
+              ]
+            }
+          ],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Language books, child-track curriculum and agency-prescribed subject choices need verification. No Balbharati supplements are labelled official NIOS."
           ]
         },
@@ -17999,8 +19130,9 @@
               "subject": "EVS",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Basic Computer Skills",
@@ -18010,8 +19142,9 @@
               "subject": "Basic Computer Skills",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Maths",
@@ -18034,10 +19167,141 @@
               "edition": "Official archived reference; document includes adult-track content"
             }
           ],
-          "outlines": [],
+          "outlines": [
+            {
+              "label": "EVS",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 7,
+              "chapters": [
+                "Concept of Family and Interpersonal Relations",
+                "Our Social Environment",
+                "Our Festivals",
+                "The Environment",
+                "Conservation of Environment",
+                "Sun-Moon-Stars, Day-Night and Seasons",
+                "Our Basic Needs",
+                "Food",
+                "Care and cleanliness of external organs",
+                "Transport and Communication",
+                "National Identity",
+                "Our Social and Economic Environment"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Concept of Family and Interpersonal Relations",
+                  "printed_page": 1,
+                  "pdf_page": 9
+                },
+                {
+                  "title": "Our Social Environment",
+                  "printed_page": 15,
+                  "pdf_page": 23
+                },
+                {
+                  "title": "Our Festivals",
+                  "printed_page": 33,
+                  "pdf_page": 41
+                },
+                {
+                  "title": "The Environment",
+                  "printed_page": 45,
+                  "pdf_page": 53
+                },
+                {
+                  "title": "Conservation of Environment",
+                  "printed_page": 61,
+                  "pdf_page": 69
+                },
+                {
+                  "title": "Sun-Moon-Stars, Day-Night and Seasons",
+                  "printed_page": 81,
+                  "pdf_page": 89
+                },
+                {
+                  "title": "Our Basic Needs",
+                  "printed_page": 93,
+                  "pdf_page": 101
+                },
+                {
+                  "title": "Food",
+                  "printed_page": 101,
+                  "pdf_page": 109
+                },
+                {
+                  "title": "Care and cleanliness of external organs",
+                  "printed_page": 115,
+                  "pdf_page": 123
+                },
+                {
+                  "title": "Transport and Communication",
+                  "printed_page": 125,
+                  "pdf_page": 133
+                },
+                {
+                  "title": "National Identity",
+                  "printed_page": 143,
+                  "pdf_page": 151
+                },
+                {
+                  "title": "Our Social and Economic Environment",
+                  "printed_page": 153,
+                  "pdf_page": 161
+                }
+              ]
+            },
+            {
+              "label": "Basic Computer Skills",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Basic_Computer-skills_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 7,
+              "chapters": [
+                "Introduction to Computers",
+                "Working of Computer",
+                "Input, Output and Storage Devices",
+                "Operating System",
+                "Paint Brush and Computer Games",
+                "Word Processing"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Introduction to Computers",
+                  "printed_page": 1,
+                  "pdf_page": 9
+                },
+                {
+                  "title": "Working of Computer",
+                  "printed_page": 17,
+                  "pdf_page": 25
+                },
+                {
+                  "title": "Input, Output and Storage Devices",
+                  "printed_page": 31,
+                  "pdf_page": 39
+                },
+                {
+                  "title": "Operating System",
+                  "printed_page": 47,
+                  "pdf_page": 55
+                },
+                {
+                  "title": "Paint Brush and Computer Games",
+                  "printed_page": 63,
+                  "pdf_page": 71
+                },
+                {
+                  "title": "Word Processing",
+                  "printed_page": 83,
+                  "pdf_page": 91
+                }
+              ]
+            }
+          ],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Language books, child-track curriculum and agency-prescribed subject choices need verification. No Balbharati supplements are labelled official NIOS."
           ]
         },
@@ -18066,8 +19330,9 @@
               "subject": "EVS",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Basic Computer Skills",
@@ -18077,8 +19342,9 @@
               "subject": "Basic Computer Skills",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Maths",
@@ -18101,10 +19367,141 @@
               "edition": "Official archived reference; document includes adult-track content"
             }
           ],
-          "outlines": [],
+          "outlines": [
+            {
+              "label": "EVS",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 7,
+              "chapters": [
+                "Concept of Family and Interpersonal Relations",
+                "Our Social Environment",
+                "Our Festivals",
+                "The Environment",
+                "Conservation of Environment",
+                "Sun-Moon-Stars, Day-Night and Seasons",
+                "Our Basic Needs",
+                "Food",
+                "Care and cleanliness of external organs",
+                "Transport and Communication",
+                "National Identity",
+                "Our Social and Economic Environment"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Concept of Family and Interpersonal Relations",
+                  "printed_page": 1,
+                  "pdf_page": 9
+                },
+                {
+                  "title": "Our Social Environment",
+                  "printed_page": 15,
+                  "pdf_page": 23
+                },
+                {
+                  "title": "Our Festivals",
+                  "printed_page": 33,
+                  "pdf_page": 41
+                },
+                {
+                  "title": "The Environment",
+                  "printed_page": 45,
+                  "pdf_page": 53
+                },
+                {
+                  "title": "Conservation of Environment",
+                  "printed_page": 61,
+                  "pdf_page": 69
+                },
+                {
+                  "title": "Sun-Moon-Stars, Day-Night and Seasons",
+                  "printed_page": 81,
+                  "pdf_page": 89
+                },
+                {
+                  "title": "Our Basic Needs",
+                  "printed_page": 93,
+                  "pdf_page": 101
+                },
+                {
+                  "title": "Food",
+                  "printed_page": 101,
+                  "pdf_page": 109
+                },
+                {
+                  "title": "Care and cleanliness of external organs",
+                  "printed_page": 115,
+                  "pdf_page": 123
+                },
+                {
+                  "title": "Transport and Communication",
+                  "printed_page": 125,
+                  "pdf_page": 133
+                },
+                {
+                  "title": "National Identity",
+                  "printed_page": 143,
+                  "pdf_page": 151
+                },
+                {
+                  "title": "Our Social and Economic Environment",
+                  "printed_page": 153,
+                  "pdf_page": 161
+                }
+              ]
+            },
+            {
+              "label": "Basic Computer Skills",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Basic_Computer-skills_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 7,
+              "chapters": [
+                "Introduction to Computers",
+                "Working of Computer",
+                "Input, Output and Storage Devices",
+                "Operating System",
+                "Paint Brush and Computer Games",
+                "Word Processing"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Introduction to Computers",
+                  "printed_page": 1,
+                  "pdf_page": 9
+                },
+                {
+                  "title": "Working of Computer",
+                  "printed_page": 17,
+                  "pdf_page": 25
+                },
+                {
+                  "title": "Input, Output and Storage Devices",
+                  "printed_page": 31,
+                  "pdf_page": 39
+                },
+                {
+                  "title": "Operating System",
+                  "printed_page": 47,
+                  "pdf_page": 55
+                },
+                {
+                  "title": "Paint Brush and Computer Games",
+                  "printed_page": 63,
+                  "pdf_page": 71
+                },
+                {
+                  "title": "Word Processing",
+                  "printed_page": 83,
+                  "pdf_page": 91
+                }
+              ]
+            }
+          ],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Language books, child-track curriculum and agency-prescribed subject choices need verification. No Balbharati supplements are labelled official NIOS."
           ]
         },
@@ -18133,8 +19530,9 @@
               "subject": "Maths",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Computer Skill",
@@ -18144,8 +19542,9 @@
               "subject": "Computer Skill",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             }
           ],
           "syllabi": [
@@ -18157,10 +19556,117 @@
               "edition": "Official archived reference; document includes adult-track content"
             }
           ],
-          "outlines": [],
+          "outlines": [
+            {
+              "label": "Maths",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_B_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 5,
+              "chapters": [
+                "Numbers",
+                "Addition, Subtraction, Multiplication and Division",
+                "Fractions",
+                "Decimals",
+                "Perimeter, Area and Volume",
+                "Geometry",
+                "Data Handling"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Numbers",
+                  "printed_page": 1,
+                  "pdf_page": 7
+                },
+                {
+                  "title": "Addition, Subtraction, Multiplication and Division",
+                  "printed_page": 23,
+                  "pdf_page": 29
+                },
+                {
+                  "title": "Fractions",
+                  "printed_page": 52,
+                  "pdf_page": 58
+                },
+                {
+                  "title": "Decimals",
+                  "printed_page": 88,
+                  "pdf_page": 94
+                },
+                {
+                  "title": "Perimeter, Area and Volume",
+                  "printed_page": 148,
+                  "pdf_page": 154
+                },
+                {
+                  "title": "Geometry",
+                  "printed_page": 164,
+                  "pdf_page": 170
+                },
+                {
+                  "title": "Data Handling",
+                  "printed_page": 186,
+                  "pdf_page": 192
+                }
+              ]
+            },
+            {
+              "label": "Computer Skill",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/basic_computer_level_b.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 5,
+              "chapters": [
+                "Introduction to Computers",
+                "Word Processing: Advantage and Features",
+                "Spreadsheet",
+                "Presentation",
+                "Internet and its Advantages",
+                "Computer Security",
+                "E-mail"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Introduction to Computers",
+                  "printed_page": 1,
+                  "pdf_page": 6
+                },
+                {
+                  "title": "Word Processing: Advantage and Features",
+                  "printed_page": 15,
+                  "pdf_page": 20
+                },
+                {
+                  "title": "Spreadsheet",
+                  "printed_page": 34,
+                  "pdf_page": 39
+                },
+                {
+                  "title": "Presentation",
+                  "printed_page": 58,
+                  "pdf_page": 63
+                },
+                {
+                  "title": "Internet and its Advantages",
+                  "printed_page": 74,
+                  "pdf_page": 79
+                },
+                {
+                  "title": "Computer Security",
+                  "printed_page": 90,
+                  "pdf_page": 95
+                },
+                {
+                  "title": "E-mail",
+                  "printed_page": 101,
+                  "pdf_page": 106
+                }
+              ]
+            }
+          ],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "EVS textbook link missing from publisher table.",
             "Language books, child-track curriculum and agency-prescribed subject choices need verification. No Balbharati supplements are labelled official NIOS."
           ]
@@ -18190,8 +19696,9 @@
               "subject": "Maths",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             },
             {
               "title": "Computer Skill",
@@ -18201,8 +19708,9 @@
               "subject": "Computer Skill",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "primary": true,
+              "contents_verified": true
             }
           ],
           "syllabi": [
@@ -18214,10 +19722,117 @@
               "edition": "Official archived reference; document includes adult-track content"
             }
           ],
-          "outlines": [],
+          "outlines": [
+            {
+              "label": "Maths",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_B_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 5,
+              "chapters": [
+                "Numbers",
+                "Addition, Subtraction, Multiplication and Division",
+                "Fractions",
+                "Decimals",
+                "Perimeter, Area and Volume",
+                "Geometry",
+                "Data Handling"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Numbers",
+                  "printed_page": 1,
+                  "pdf_page": 7
+                },
+                {
+                  "title": "Addition, Subtraction, Multiplication and Division",
+                  "printed_page": 23,
+                  "pdf_page": 29
+                },
+                {
+                  "title": "Fractions",
+                  "printed_page": 52,
+                  "pdf_page": 58
+                },
+                {
+                  "title": "Decimals",
+                  "printed_page": 88,
+                  "pdf_page": 94
+                },
+                {
+                  "title": "Perimeter, Area and Volume",
+                  "printed_page": 148,
+                  "pdf_page": 154
+                },
+                {
+                  "title": "Geometry",
+                  "printed_page": 164,
+                  "pdf_page": 170
+                },
+                {
+                  "title": "Data Handling",
+                  "printed_page": 186,
+                  "pdf_page": 192
+                }
+              ]
+            },
+            {
+              "label": "Computer Skill",
+              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/basic_computer_level_b.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 5,
+              "chapters": [
+                "Introduction to Computers",
+                "Word Processing: Advantage and Features",
+                "Spreadsheet",
+                "Presentation",
+                "Internet and its Advantages",
+                "Computer Security",
+                "E-mail"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Introduction to Computers",
+                  "printed_page": 1,
+                  "pdf_page": 6
+                },
+                {
+                  "title": "Word Processing: Advantage and Features",
+                  "printed_page": 15,
+                  "pdf_page": 20
+                },
+                {
+                  "title": "Spreadsheet",
+                  "printed_page": 34,
+                  "pdf_page": 39
+                },
+                {
+                  "title": "Presentation",
+                  "printed_page": 58,
+                  "pdf_page": 63
+                },
+                {
+                  "title": "Internet and its Advantages",
+                  "printed_page": 74,
+                  "pdf_page": 79
+                },
+                {
+                  "title": "Computer Security",
+                  "printed_page": 90,
+                  "pdf_page": 95
+                },
+                {
+                  "title": "E-mail",
+                  "printed_page": 101,
+                  "pdf_page": 106
+                }
+              ]
+            }
+          ],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "EVS textbook link missing from publisher table.",
             "Language books, child-track curriculum and agency-prescribed subject choices need verification. No Balbharati supplements are labelled official NIOS."
           ]
@@ -18284,8 +19899,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Language books, child-track curriculum and agency-prescribed subject choices need verification. No Balbharati supplements are labelled official NIOS."
           ]
         },
@@ -18351,8 +19966,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Language books, child-track curriculum and agency-prescribed subject choices need verification. No Balbharati supplements are labelled official NIOS."
           ]
         },
@@ -18418,8 +20033,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Language books, child-track curriculum and agency-prescribed subject choices need verification. No Balbharati supplements are labelled official NIOS."
           ]
         },
@@ -18831,8 +20446,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Current exam syllabus, chosen subject set and chapter outlines need verification; these courses are not OBE Levels A/B/C."
           ]
         },
@@ -19244,8 +20859,8 @@
           ],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Current exam syllabus, chosen subject set and chapter outlines need verification; these courses are not OBE Levels A/B/C."
           ]
         },
@@ -19715,8 +21330,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Current exam syllabus, chosen subject set and chapter outlines need verification; these courses are not OBE Levels A/B/C.",
             "Senior curriculum table links to a file named seccurriculum.pdf; verify its contents before importing it as Senior Secondary syllabus."
           ]
@@ -20187,8 +21802,8 @@
           "syllabi": [],
           "outlines": [],
           "pending": [
-            "Chapter outlines and school-prescribed edition need verification.",
-            "Textbook-grounded tutoring is not connected.",
+            "Remaining chapter outlines and school-prescribed editions need verification.",
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
             "Current exam syllabus, chosen subject set and chapter outlines need verification; these courses are not OBE Levels A/B/C.",
             "Senior curriculum table links to a file named seccurriculum.pdf; verify its contents before importing it as Senior Secondary syllabus."
           ]
