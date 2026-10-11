@@ -1,0 +1,404 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/health",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "ok": true,
+      "runtime": "php",
+      "database": true,
+      "schema": true,
+      "custom_voice": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/config",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/catalog",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=1",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=2",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=3",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=4",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=5",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=6",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=7",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=8",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=9",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=telangana&grade=10",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?grade=11",
+    "status": 422,
+    "expected": 422,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/syllabus?curriculum=cbse",
+    "status": 422,
+    "expected": 422,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/auth/me",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/students",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/dashboard?student_id=00000000-0000-0000-0000-000000000000",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/portfolio?student_id=00000000-0000-0000-0000-000000000000",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/roadmap?student_id=00000000-0000-0000-0000-000000000000",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/daily-plan?student_id=00000000-0000-0000-0000-000000000000",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/lessons?curriculum=telangana&student_id=00000000-0000-0000-0000-000000000000",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/api/not-a-route",
+    "status": 404,
+    "expected": 404,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/.env",
+    "status": 403,
+    "expected": 403,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/.git/config",
+    "status": 403,
+    "expected": 403,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/chalo-private/.env",
+    "status": 403,
+    "expected": 403,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/database/mysql/schema.sql",
+    "status": 404,
+    "expected": 404,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/register",
+    "status": 422,
+    "expected": 422,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/student/register",
+    "status": 422,
+    "expected": 422,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/login",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "POST",
+    "path": "/api/auth/logout",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "POST",
+    "path": "/api/students",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "POST",
+    "path": "/api/portfolio",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "POST",
+    "path": "/api/lessons/start",
+    "status": 400,
+    "expected": 400,
+    "pass": true,
+    "extra": {},
+    "note": "Empty curriculum rejected before authentication"
+  },
+  {
+    "method": "POST",
+    "path": "/api/chat",
+    "status": 422,
+    "expected": 422,
+    "pass": true,
+    "extra": {},
+    "note": "Empty message rejected before authentication"
+  },
+  {
+    "method": "POST",
+    "path": "/api/tts",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "extra": {}
+  },
+  {
+    "method": "GET",
+    "path": "/index.html",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/app.css",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/favicon.svg",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/core.js",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/lessons.js",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/book.js",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/interaction.js",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/student-auth.js",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/extras.js",
+    "status": 200,
+    "expected": 200,
+    "pass": true,
+    "extra": {
+      "matches_release": true
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/lessons/start",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "note": "Valid request body without token"
+  },
+  {
+    "method": "POST",
+    "path": "/api/chat",
+    "status": 401,
+    "expected": 401,
+    "pass": true,
+    "note": "Valid request body without token"
+  }
+]
