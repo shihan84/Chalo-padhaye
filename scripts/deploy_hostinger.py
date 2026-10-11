@@ -17,6 +17,12 @@ from zipfile import ZipFile
 from build_hostinger import build
 
 
+PROGRESS={'phase':'configuration'}
+
+def stage(name):
+    PROGRESS['phase']=name
+    print(name,flush=True)
+
 def configuration(env):
     required=('HOSTINGER_DOMAIN','HOSTINGER_SSH_FINGERPRINT','HOSTINGER_SSH_HOST',
               'HOSTINGER_SSH_PORT','HOSTINGER_SSH_USER','HOSTINGER_SSH_PASSWORD',
@@ -78,14 +84,20 @@ def deploy(env):
     import paramiko
     with tempfile.TemporaryDirectory() as temp:
         archive_path=build(Path(temp)/'release.zip')
+        stage('Connecting to SSH server')
         sock=socket.create_connection((env['HOSTINGER_SSH_HOST'],port),timeout=20)
         transport=paramiko.Transport(sock)
         sftp=None
         try:
+            stage('Negotiating SSH')
             transport.start_client(timeout=20)
             verify_host_key(transport.get_remote_server_key(),env['HOSTINGER_SSH_FINGERPRINT'])
+            stage('SSH host identity verified; authenticating')
             transport.auth_password(env['HOSTINGER_SSH_USER'],env['HOSTINGER_SSH_PASSWORD'],fallback=False)
+            stage('SSH authentication succeeded; opening SFTP')
             sftp=paramiko.SFTPClient.from_transport(transport)
+            sftp.get_channel().settimeout(30)
+            stage('Checking domain directory')
             home=sftp.normalize('.')
             root=home+'/domains/'+domain
             # Do not invent a domain directory or deploy into another site's root.
@@ -93,12 +105,14 @@ def deploy(env):
                 if not stat.S_ISDIR(sftp.lstat(directory).st_mode):
                     raise ValueError('Target domain directory is unavailable')
             backup=root+'/chalo-backups/'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+env.get('GITHUB_RUN_ID','local')
+            stage('Creating private rollback backup')
             ensure_dir(sftp,backup)
             with ZipFile(archive_path) as archive:
                 files={name:archive.read(name) for name in archive.namelist() if name.startswith(('public_html/','chalo-private/')) and not name.endswith('.env.example')}
             files['chalo-private/.env']=dotenv
             changed=[]
             try:
+                stage('Uploading Hostinger package')
                 for name,data in files.items():
                     target=root+'/'+name
                     ensure_dir(sftp,str(Path(target).parent))
@@ -119,8 +133,11 @@ def deploy(env):
                     sftp.chmod(candidate,0o600 if name=='chalo-private/.env' else 0o644)
                     sftp.posix_rename(candidate,target)
                     changed.append((target,old))
+                stage('Checking live HTTPS PHP and database health')
                 health(domain)
-            except Exception:
+            except Exception as failure:
+                print('Failed phase: '+PROGRESS['phase']+'; error type: '+type(failure).__name__,flush=True)
+                stage('Restoring replaced files')
                 for target,old in reversed(changed):
                     if old:
                         with sftp.open(old,'rb') as source:
@@ -129,6 +146,7 @@ def deploy(env):
                         sftp.posix_rename(target+'.rollback',target)
                     else:
                         sftp.remove(target)
+                stage('Rollback completed')
                 raise
             print('Hostinger upload completed; PHP/database health check passed. Prior files retained privately for rollback.')
         finally:
@@ -143,7 +161,8 @@ if __name__=='__main__':
     except ValueError as exc:
         print(str(exc),file=sys.stderr)
         sys.exit(1)
-    except Exception:
+    except Exception as exc:
+        print('Error type: '+type(exc).__name__+'; phase: '+PROGRESS['phase'],file=sys.stderr)
         # Exceptions from SSH and providers may contain private host/user information.
         print('Hostinger deployment failed. Check configuration and server availability; secret values are not logged.',file=sys.stderr)
         sys.exit(1)
