@@ -16,7 +16,7 @@ class CorpusTests(unittest.TestCase):
     with self.assertRaisesRegex(ValueError,'changed'):mod.build_one(book,tmp,tmp)
     extract.assert_not_called()
  def test_manifest_has_real_pin_and_valid_chapter_pages(self):
-  books=json.loads((mod.ROOT/'data/textbook_manifest.json').read_text())['books'];self.assertEqual(len(books),11)
+  books=json.loads((mod.ROOT/'data/textbook_manifest.json').read_text())['books'];self.assertEqual(len(books),12)
   for b in books:
    mod.validate_url(b['url']);self.assertRegex(b['sha256'],r'^[0-9a-f]{64}$');self.assertEqual(b['id'],'book-'+b['sha256'][:24]);self.assertTrue(b['chapters'])
    self.assertTrue(all(1<=c['pdf_page']<=b['page_count'] for c in b['chapters']))

@@ -887,7 +887,7 @@
       "sha256": "9ab3ca8fb90c45d871181c2a0a5c8c39250c0444e682c8e7176264033aaf3be1",
       "page_count": 183,
       "min_text_pages": 178,
-      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
       "first_lesson_page": 9,
       "chapters": [
         {
@@ -965,7 +965,7 @@
       "sha256": "c991d028346a4ffd0732e8ddd68d393654a4166b4b730ec679689c6497e28ddd",
       "page_count": 124,
       "min_text_pages": 119,
-      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
       "first_lesson_page": 9,
       "chapters": [
         {
@@ -1012,7 +1012,7 @@
       "sha256": "cef9be78cba2034acf46c5877815ba84157067370a40a7a4c4cdae9b052eba11",
       "page_count": 203,
       "min_text_pages": 200,
-      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
       "first_lesson_page": 7,
       "chapters": [
         {
@@ -1064,7 +1064,7 @@
       "sha256": "217773030f7a2b270692c5909f58331326bf89e3b95c4c2cc5ad506151acdafe",
       "page_count": 120,
       "min_text_pages": 118,
-      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
       "first_lesson_page": 6,
       "chapters": [
         {
@@ -1101,6 +1101,59 @@
           "title": "E-mail",
           "printed_page": 101,
           "pdf_page": 106
+        }
+      ]
+    },
+    {
+      "id": "book-70d3aa8f2ebb15e3a0f647b8",
+      "curriculum": "nios",
+      "grades": [
+        1,
+        2,
+        3
+      ],
+      "title": "Maths",
+      "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_A_english_medium.pdf",
+      "sha256": "70d3aa8f2ebb15e3a0f647b8b0ada92dd141a6551e58446ce76832a3cdf065ee",
+      "page_count": 131,
+      "min_text_pages": 126,
+      "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
+      "first_lesson_page": 7,
+      "chapters": [
+        {
+          "title": "Reading, Understanding, Forming and Writing Numbers",
+          "printed_page": 1,
+          "pdf_page": 7
+        },
+        {
+          "title": "Addition and subtraction of numbers",
+          "printed_page": 31,
+          "pdf_page": 37
+        },
+        {
+          "title": "Multiplication",
+          "printed_page": 53,
+          "pdf_page": 59
+        },
+        {
+          "title": "Division",
+          "printed_page": 65,
+          "pdf_page": 71
+        },
+        {
+          "title": "Fraction",
+          "printed_page": 77,
+          "pdf_page": 83
+        },
+        {
+          "title": "Measurement",
+          "printed_page": 85,
+          "pdf_page": 91
+        },
+        {
+          "title": "Geometrical Figures",
+          "printed_page": 105,
+          "pdf_page": 111
         }
       ]
     }

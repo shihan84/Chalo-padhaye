@@ -18930,7 +18930,7 @@
               "subject": "EVS",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             },
@@ -18942,7 +18942,7 @@
               "subject": "Basic Computer Skills",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             },
@@ -18954,8 +18954,9 @@
               "subject": "Maths",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
+              "primary": true,
+              "contents_verified": true
             }
           ],
           "syllabi": [
@@ -18970,7 +18971,7 @@
           "outlines": [
             {
               "label": "EVS",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 7,
@@ -19053,7 +19054,7 @@
             },
             {
               "label": "Basic Computer Skills",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Basic_Computer-skills_Level_A_english_medium.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 7,
@@ -19095,6 +19096,59 @@
                   "title": "Word Processing",
                   "printed_page": 83,
                   "pdf_page": 91
+                }
+              ]
+            },
+            {
+              "label": "Maths",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 5,
+              "chapters": [
+                "Reading, Understanding, Forming and Writing Numbers",
+                "Addition and subtraction of numbers",
+                "Multiplication",
+                "Division",
+                "Fraction",
+                "Measurement",
+                "Geometrical Figures"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Reading, Understanding, Forming and Writing Numbers",
+                  "printed_page": 1,
+                  "pdf_page": 7
+                },
+                {
+                  "title": "Addition and subtraction of numbers",
+                  "printed_page": 31,
+                  "pdf_page": 37
+                },
+                {
+                  "title": "Multiplication",
+                  "printed_page": 53,
+                  "pdf_page": 59
+                },
+                {
+                  "title": "Division",
+                  "printed_page": 65,
+                  "pdf_page": 71
+                },
+                {
+                  "title": "Fraction",
+                  "printed_page": 77,
+                  "pdf_page": 83
+                },
+                {
+                  "title": "Measurement",
+                  "printed_page": 85,
+                  "pdf_page": 91
+                },
+                {
+                  "title": "Geometrical Figures",
+                  "printed_page": 105,
+                  "pdf_page": 111
                 }
               ]
             }
@@ -19130,7 +19184,7 @@
               "subject": "EVS",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             },
@@ -19142,7 +19196,7 @@
               "subject": "Basic Computer Skills",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             },
@@ -19154,8 +19208,9 @@
               "subject": "Maths",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
+              "primary": true,
+              "contents_verified": true
             }
           ],
           "syllabi": [
@@ -19170,7 +19225,7 @@
           "outlines": [
             {
               "label": "EVS",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 7,
@@ -19253,7 +19308,7 @@
             },
             {
               "label": "Basic Computer Skills",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Basic_Computer-skills_Level_A_english_medium.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 7,
@@ -19295,6 +19350,59 @@
                   "title": "Word Processing",
                   "printed_page": 83,
                   "pdf_page": 91
+                }
+              ]
+            },
+            {
+              "label": "Maths",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 5,
+              "chapters": [
+                "Reading, Understanding, Forming and Writing Numbers",
+                "Addition and subtraction of numbers",
+                "Multiplication",
+                "Division",
+                "Fraction",
+                "Measurement",
+                "Geometrical Figures"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Reading, Understanding, Forming and Writing Numbers",
+                  "printed_page": 1,
+                  "pdf_page": 7
+                },
+                {
+                  "title": "Addition and subtraction of numbers",
+                  "printed_page": 31,
+                  "pdf_page": 37
+                },
+                {
+                  "title": "Multiplication",
+                  "printed_page": 53,
+                  "pdf_page": 59
+                },
+                {
+                  "title": "Division",
+                  "printed_page": 65,
+                  "pdf_page": 71
+                },
+                {
+                  "title": "Fraction",
+                  "printed_page": 77,
+                  "pdf_page": 83
+                },
+                {
+                  "title": "Measurement",
+                  "printed_page": 85,
+                  "pdf_page": 91
+                },
+                {
+                  "title": "Geometrical Figures",
+                  "printed_page": 105,
+                  "pdf_page": 111
                 }
               ]
             }
@@ -19330,7 +19438,7 @@
               "subject": "EVS",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             },
@@ -19342,7 +19450,7 @@
               "subject": "Basic Computer Skills",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             },
@@ -19354,8 +19462,9 @@
               "subject": "Maths",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher resource uploaded 2020; confirm with accredited agency",
-              "primary": true
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
+              "primary": true,
+              "contents_verified": true
             }
           ],
           "syllabi": [
@@ -19370,7 +19479,7 @@
           "outlines": [
             {
               "label": "EVS",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/EVS_Level_A_english_medium.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 7,
@@ -19453,7 +19562,7 @@
             },
             {
               "label": "Basic Computer Skills",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Basic_Computer-skills_Level_A_english_medium.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 7,
@@ -19497,6 +19606,59 @@
                   "pdf_page": 91
                 }
               ]
+            },
+            {
+              "label": "Maths",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
+              "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_A_english_medium.pdf",
+              "status": "contents_verified",
+              "toc_pdf_page": 5,
+              "chapters": [
+                "Reading, Understanding, Forming and Writing Numbers",
+                "Addition and subtraction of numbers",
+                "Multiplication",
+                "Division",
+                "Fraction",
+                "Measurement",
+                "Geometrical Figures"
+              ],
+              "chapter_pages": [
+                {
+                  "title": "Reading, Understanding, Forming and Writing Numbers",
+                  "printed_page": 1,
+                  "pdf_page": 7
+                },
+                {
+                  "title": "Addition and subtraction of numbers",
+                  "printed_page": 31,
+                  "pdf_page": 37
+                },
+                {
+                  "title": "Multiplication",
+                  "printed_page": 53,
+                  "pdf_page": 59
+                },
+                {
+                  "title": "Division",
+                  "printed_page": 65,
+                  "pdf_page": 71
+                },
+                {
+                  "title": "Fraction",
+                  "printed_page": 77,
+                  "pdf_page": 83
+                },
+                {
+                  "title": "Measurement",
+                  "printed_page": 85,
+                  "pdf_page": 91
+                },
+                {
+                  "title": "Geometrical Figures",
+                  "printed_page": 105,
+                  "pdf_page": 111
+                }
+              ]
             }
           ],
           "pending": [
@@ -19530,7 +19692,7 @@
               "subject": "Maths",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             },
@@ -19542,7 +19704,7 @@
               "subject": "Computer Skill",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             }
@@ -19559,7 +19721,7 @@
           "outlines": [
             {
               "label": "Maths",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_B_english_medium.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 5,
@@ -19612,7 +19774,7 @@
             },
             {
               "label": "Computer Skill",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/basic_computer_level_b.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 5,
@@ -19696,7 +19858,7 @@
               "subject": "Maths",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             },
@@ -19708,7 +19870,7 @@
               "subject": "Computer Skill",
               "format": "pdf",
               "medium": "English",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "primary": true,
               "contents_verified": true
             }
@@ -19725,7 +19887,7 @@
           "outlines": [
             {
               "label": "Maths",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/Math_Level_B_english_medium.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 5,
@@ -19778,7 +19940,7 @@
             },
             {
               "label": "Computer Skill",
-              "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+              "edition": "NIOS OBE Adult-track resource (2016); confirm suitability and prescribed child-track curriculum with parent/agency",
               "url": "https://cdn.nios.ac.in/cms/documents/2020/Jul/09/basic_computer_level_b.pdf",
               "status": "contents_verified",
               "toc_pdf_page": 5,
