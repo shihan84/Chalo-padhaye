@@ -11,4 +11,7 @@ check(textbook_question('Copyright reserved; permission required for reproductio
 check(textbook_find('../../etc/passwd')===null,'Reject arbitrary paths');
 foreach([1=>'A',2=>'A',3=>'A',4=>'B',5=>'B',6=>'C',8=>'C'] as $grade=>$level)check(level_label(['grade'=>$grade],'nios')==='NIOS Level '.$level,'NIOS mapping');
 check(level_label(['grade'=>9],'nios')==='NIOS Secondary','Secondary mapping');check(level_label(['grade'=>11],'nios')==='NIOS Senior Secondary','Senior mapping');
+$root=dirname(__DIR__).'/runtime/book_sessions';$before=count(glob($root.'/*.json.lock')?:[]);
+try{private_state('book_sessions','nonexistent-'.bin2hex(random_bytes(16)),function(array &$s):void{},true);throw new RuntimeException('Unknown reading session accepted');}catch(RequestFailure $e){check($e->status===409,'Unknown reading session rejected');}
+check(count(glob($root.'/*.json.lock')?:[])===$before,'Unknown session must not create lock files');
 echo "Grounded reading checks, hints, exact answer validation, source exclusions and NIOS mappings passed\n";

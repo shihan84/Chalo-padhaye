@@ -85,5 +85,5 @@ function textbook_turn(array $student,array $request): array {
         $explanation=null;
         if($action==='explain'&&env_value('GROQ_API_KEY')){consume_limit('book_ai',$student['parent_id'],30,86400);$explanation=textbook_explanation($book,$page,$text,(int)$student['grade']);}
         return ['text'=>($explanation? $explanation."\n\n":'Read this page in the official book. ').$question['prompt'],'session_id'=>$token,'sources'=>textbook_sources($book,$page),'assessment'=>'not_answer','complete'=>false,'activity'=>'reading_check','ai_explanation'=>$explanation!==null];
-    });
+    },$action==='answer');
 }
