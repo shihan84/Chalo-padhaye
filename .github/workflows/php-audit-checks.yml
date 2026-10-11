@@ -1,7 +1,7 @@
 name: PHP audit checks
 on:
   pull_request:
-    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login]
+    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus]
   push:
     branches: [hostinger-php]
 permissions:
