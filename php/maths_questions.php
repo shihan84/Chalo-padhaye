@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/auth.php';
 require_once __DIR__.'/private_state.php';
 function maths_question(string $skill,int $grade): array {
     $a=random_int(2,9);$b=random_int(2,9);$n=random_int(2,5);$answer=0;$choices=[];$visual=null;
@@ -11,7 +12,7 @@ function maths_question(string $skill,int $grade): array {
     case 'solid_faces':
         $solids=['cube'=>6,'cuboid'=>6,'cylinder'=>2,'cone'=>1,'sphere'=>0];$solid=array_rand($solids);$answer=$solids[$solid];$prompt="How many flat faces does a $solid have?";$concept='A flat face is a flat surface of a solid. Curved surfaces are not counted as flat faces.';$hint='Imagine the solid. Count only the flat surfaces, not curved surfaces.';break;
     case 'place':
-        $power=random_int(1,$grade===3?2:4);$base=10**$power;$digit=random_int(1,9);$number=random_int(1,9)*($base*10)+$digit*$base+random_int(0,$base-1);$answer=$digit*$base;
+        $power=random_int(1,$grade===3?2:4);$base=10**$power;$digit=random_int(1,9);$number=($power===($grade===3?2:4)?0:random_int(1,9)*($base*10))+$digit*$base+random_int(0,$base-1);$answer=$digit*$base;
         $prompt="What is the value of the digit $digit in the ".['','tens','hundreds','thousands','ten-thousands'][$power]." place of $number?";$concept='The position of a digit determines its value. In 352, the 5 is worth 50.';$hint="Multiply the digit by $base.";break;
     case 'compare':
         $a=random_int(10,$grade===3?999:99999);$b=random_int(10,$grade===3?999:99999);$answer=$a===$b?'=':($a<$b?'<':'>');$choices=['<','=','>'];$prompt="Choose the sign: $a __ $b.";$concept='Compare the number of digits first. When equal, compare from the leftmost digit.';$hint='Which number is smaller, or are they equal?';break;
@@ -27,7 +28,7 @@ function maths_question(string $skill,int $grade): array {
         $visual=['kind'=>'fraction','n'=>$top,'d'=>$d];if($skill==='fraction_add')$visual['other']=$other;
         $concept=$skill==='fraction'?'A fraction counts equal parts. The denominator counts all parts; the numerator counts selected parts.':'For fractions with the same denominator, add the numerators and keep the denominator.';$hint=$skill==='fraction'?"Write shaded parts over all $d equal parts.":'Add the top numbers. Keep the bottom number.';break;
     case 'length':case 'weight':case 'capacity':
-        $factor=$skill==='length'?100:1000;$large=['length'=>'metres','weight'=>'kilograms','capacity'=>'litres'][$skill];$small=['length'=>'centimetres','weight'=>'grams','capacity'=>'millilitres'][$skill];$answer=$a*$factor;$prompt="How many $small are in $a $large?";$concept="One $large unit equals $factor $small.";$hint="Multiply $a by $factor.";break;
+        $factor=$skill==='length'?100:1000;$large=['length'=>'metres','weight'=>'kilograms','capacity'=>'litres'][$skill];$small=['length'=>'centimetres','weight'=>'grams','capacity'=>'millilitres'][$skill];$answer=$a*$factor;$prompt="How many $small are in $a $large?";$unit=['length'=>'metre','weight'=>'kilogram','capacity'=>'litre'][$skill];$concept="One $unit equals $factor $small.";$hint="Multiply $a by $factor.";break;
     case 'table_total':case 'table_most':
         $scale=$grade===5?[2,5][random_int(0,1)]:1;$values=['Apples'=>$a,'Bananas'=>$b,'Oranges'=>$a+$b];$visual=['kind'=>$grade===5?'pictograph':'table','values'=>$values,'scale'=>$scale];$answer=$skill==='table_total'?2*($a+$b)*$scale:'Oranges';$prompt=$skill==='table_total'?'How many fruits are recorded altogether?':'Which fruit has the largest count?';$concept=$grade===5?"Each dot represents $scale fruits. Count dots and use the key.":'A table connects each label with its count. Read every row before answering.';$hint=$skill==='table_total'?'Add the counts, using the pictograph key if shown.':'Compare the counts, then choose the label.';if($skill==='table_most')$choices=array_keys($values);break;
     case 'position':

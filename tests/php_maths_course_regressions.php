@@ -65,3 +65,11 @@ foreach([3,5] as $grade)foreach(['add','sub','multiply','divide','fraction','fra
  maths_expect($q['answer']===$expected,'Visible prompt answer key incorrect: '.$skill);
 }
 echo "Independent arithmetic, units, pictograph key, perimeter/area, rational, decimal and Roman prompt oracles passed\n";
+
+foreach([3,5] as $grade)for($i=0;$i<100;$i++){
+ $q=maths_question('place',$grade);preg_match('/digit (\d) in the (tens|hundreds|thousands|ten-thousands) place of (\d+)/',$q['prompt'],$m);
+ $base=['tens'=>10,'hundreds'=>100,'thousands'=>1000,'ten-thousands'=>10000][$m[2]];$number=(int)$m[3];
+ maths_expect($q['answer']===intdiv($number,$base)%10*$base,'Place-value answer does not match visible digit');
+ maths_expect($number<($grade===3?1000:100000),'Place value exceeds selected number range');
+}
+echo "Grade-bounded place-value prompt oracle passed\n";
