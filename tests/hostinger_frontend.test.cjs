@@ -31,15 +31,16 @@ test('all loaded browser code uses MySQL auth and logout revokes server token',(
 function syllabusSetup(){
  const elements=new Map();
  const el=id=>{if(!elements.has(id)){const classes=new Set();elements.set(id,{value:'10',textContent:'',innerHTML:'',classes,classList:{add:x=>classes.add(x),remove:x=>classes.delete(x),toggle:(x,force)=>force?classes.add(x):classes.delete(x)}})}return elements.get(id)};
- const c=vm.createContext({URL,$:el,curriculum:'telangana',fetch:async()=>({ok:true,json:async()=>({notice:'Reference edition only',directory_url:'https://www.scert.telangana.gov.in/DisplayContent.aspx',syllabus_url:'javascript:alert(1)',subjects:[{label:'Mathematics',chapters:['<img src=x onerror=alert(1)>'],source_edition:'Archived book',source_url:'https://scert.telangana.gov.in/PDF/publication/ebooks/10EM_MAT.pdf'}]})})});
+ el('#syllabusBoard').value='telangana';el('#librarySearch').value='';el('#libraryLanguage').value='primary';
+ const c=vm.createContext({URL,$:el,curriculum:'telangana',fetch:async()=>({ok:true,json:async()=>({board:'Telangana',label:'Class 10',reviewed_on:'2026-10-11',notice:'Reference edition only',sources:[{title:'Directory',url:'https://www.scert.telangana.gov.in/DisplayContent.aspx'},{title:'Unsafe',url:'javascript:alert(1)'}],outlines:[{label:'Mathematics',chapters:['<img src=x onerror=alert(1)>'],edition:'Archived book',url:'https://scert.telangana.gov.in/PDF/publication/ebooks/10EM_MAT.pdf'}],books:[],syllabi:[],pending:['Outlines pending']})})});
  vm.runInContext(fs.readFileSync('frontend/core.js','utf8').split('\n').find(x=>x.startsWith('function esc(')),c);
  vm.runInContext(fs.readFileSync('frontend/lessons.js','utf8'),c);
  return {c,el};
 }
-test('Telangana is labelled correctly and has a separate usable syllabus browser',async()=>{
+test('all board modes expose the textbook library and escape archived outlines',async()=>{
  const {c,el}=syllabusSetup();c.updateModeUI();assert.ok(el('#telanganaMode').classes.has('active'));assert.match(el('#subtitle').textContent,/Telangana/);assert.ok(!el('#syllabusCard').classes.has('hidden'));
  await c.loadSyllabus();assert.match(el('#syllabusList').innerHTML,/reference units/);assert.match(el('#syllabusList').innerHTML,/&lt;img/);assert.ok(!el('#syllabusList').innerHTML.includes('<img'));assert.ok(!el('#syllabusSources').innerHTML.includes('javascript:'));
- c.curriculum='cbse';c.updateModeUI();assert.ok(el('#syllabusCard').classes.has('hidden'));assert.ok(el('#cbseMode').classes.has('active'));
+ c.curriculum='cbse';c.updateModeUI();assert.ok(!el('#syllabusCard').classes.has('hidden'));assert.ok(el('#cbseMode').classes.has('active'));
 });
 test('official links reject unsafe schemes, hosts and credentials',()=>{
  const {c}=syllabusSetup();for(const u of ['javascript:alert(1)','https://evil.test/','https://scert.telangana.gov.in.evil.test/','https://a:b@scert.telangana.gov.in/'])assert.equal(c.scertLink(u,'Source'),'');
@@ -49,7 +50,7 @@ test('changing class while a request is in flight keeps the newer syllabus',asyn
  const {c,el}=syllabusSetup();const pending=[];c.fetch=()=>new Promise(resolve=>pending.push(resolve));
  const first=c.loadSyllabus();el('#syllabusGrade').value='3';const second=c.loadSyllabus();
  const response=notice=>({ok:true,json:async()=>({notice,subjects:[]})});pending[1](response('Class 3'));await second;pending[0](response('Class 10'));await first;
- assert.equal(el('#syllabusNotice').textContent,'Class 3');
+ assert.match(el('#syllabusNotice').textContent,/Class 3$/);assert.ok(!el('#syllabusNotice').textContent.endsWith('Class 10'));
 });
 test('closing a session uses its original child after the selector changes',async()=>{
  const calls=[];const c=vm.createContext({sessionId:'old-session',sessionStudentId:'child-a',current:()=>({id:'child-b'}),authFetch:async(url,o)=>{calls.push(JSON.parse(o.body))}});
@@ -89,4 +90,28 @@ test('switching practice unit ignores the older request response',async()=>{
  const first=c.loadPractice('class5-fractions');el('#practiceUnit').value='class3-add-subtract';const second=c.loadPractice();
  const response=unit=>({ok:true,json:async()=>({unit,history:[],run:null})});pending[1](response('class3-add-subtract'));await second;pending[0](response('class5-fractions'));await first;
  assert.match(el('#practiceProgress').textContent,/Foundation Maths/);
+});
+
+test('library filters preserve language books and reject unsafe publisher URLs',async()=>{
+ const {c,el}=syllabusSetup();await c.loadSyllabus();
+ vm.runInContext(`libraryData={books:[{title:'Santoor',subject:'English',primary:true,url:'https://www.ncert.nic.in/textbook.php?eesa1=0-10'},{title:'Ganit',subject:'Mathematics',primary:false,url:'https://www.ncert.nic.in/textbook.php?ehmm1=0-15'}],pending:[],syllabi:[]}`,c);
+ c.renderLibrary();assert.match(el('#syllabusList').innerHTML,/Santoor/);assert.ok(!el('#syllabusList').innerHTML.includes('>Ganit<'));
+ el('#libraryLanguage').value='all';c.renderLibrary();assert.match(el('#syllabusList').innerHTML,/Ganit/);
+ el('#librarySearch').value='santoor';c.renderLibrary();assert.ok(!el('#syllabusList').innerHTML.includes('>Ganit<'));
+ for(const url of ['http://ncert.nic.in/book.pdf','https://ncert.nic.in.evil.test/a','https://a:b@books.ebalbharati.in/a','javascript:alert(1)'])assert.equal(c.officialBookUrl(url),'');
+ assert.ok(c.officialBookUrl('https://ebooks.ebalbharati.in/pdfs/303060004.pdf'));
+});
+test('switching library board ignores an earlier board response and clears errors',async()=>{
+ const {c,el}=syllabusSetup(),pending=[];c.fetch=()=>new Promise(resolve=>pending.push(resolve));
+ const first=c.loadSyllabus();el('#syllabusBoard').value='cbse';const second=c.loadSyllabus();
+ pending[1]({ok:false,json:async()=>({error:'NCERT unavailable'})});await second;
+ pending[0]({ok:true,json:async()=>({notice:'Old Telangana data'})});await first;
+ assert.equal(el('#syllabusList').textContent,'NCERT unavailable');assert.equal(el('#syllabusSources').textContent,'');
+});
+test('missing textbook mappings clear the previous PDF and disable page tutoring',()=>{
+ const nodes=new Map(),el=id=>{if(!nodes.has(id))nodes.set(id,{disabled:false,value:7,textContent:'old',innerHTML:'',removeAttribute(name){delete this[name]},classList:{add(){},remove(){}}});return nodes.get(id)};
+ const c=vm.createContext({URL,$:el,toast(){}});vm.runInContext(fs.readFileSync('frontend/book.js','utf8').split('(function wireBookViewer')[0],c);
+ el('#openBookPdf').href='https://books.ebalbharati.in/pdfs/old.pdf';el('#bookFrame').src='old';
+ c.clearBookSource();assert.equal(el('#openBookPdf').href,undefined);assert.equal(el('#bookFrame').src,undefined);assert.equal(el('#teachBookPage').disabled,true);assert.equal(el('#quizBookPage').disabled,true);assert.equal(c.sourceForLesson({order:3}),null);
+ c.setBookPage(4);assert.equal(el('#bookFrame').src,undefined);
 });

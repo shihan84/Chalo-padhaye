@@ -1,7 +1,7 @@
 name: PHP audit checks
 on:
   pull_request:
-    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus, test/hostinger-functional-validation, feature/hostinger-learning-foundation]
+    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus, test/hostinger-functional-validation, feature/hostinger-learning-foundation, feature/hostinger-class5-fractions]
   push:
     branches: [hostinger-php]
 permissions:
@@ -15,6 +15,7 @@ jobs:
         with:
           node-version: 24
       - run: node --test tests/hostinger_frontend.test.cjs
+      - run: python tests/test_curriculum_sources.py
       - run: python tests/test_hostinger_package.py
       - run: python tests/test_hostinger_deploy.py
       - run: php -l deploy/hostinger/index.php

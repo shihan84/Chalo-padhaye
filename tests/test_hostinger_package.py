@@ -19,6 +19,8 @@ class PackageTests(unittest.TestCase):
                 self.assertIn('chalo-private/php/api/index.php',names)
                 self.assertIn('chalo-private/.env.example',names)
                 self.assertIn('chalo-private/data/telangana_syllabus.json',names)
+                self.assertIn('chalo-private/data/curriculum_sources.json',names)
+                self.assertIn('chalo-private/php/curriculum_library.php',names)
                 self.assertIn('public_html/practice.js',names)
                 self.assertIn('chalo-private/php/fractions.php',names)
                 self.assertLess(names.index('chalo-private/php/fractions.php'),names.index('chalo-private/php/practice.php'))

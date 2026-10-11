@@ -16,6 +16,18 @@ function expect(int $actual,int $expected,string $name): void {if($actual!==$exp
 if(($syllabus['label']??'')!=='Telangana SSC Class 10'||count($syllabus['subjects']??[])<6)throw new RuntimeException('SSC subjects should be exposed independently of tutor availability');
 foreach (['11','0','3abc','10.5','../10'] as $grade) {[$status]=call_api('GET','/syllabus?grade='.rawurlencode($grade));expect($status,422,'Reject unsupported syllabus grade');}
 [$status]=call_api('GET','/syllabus?curriculum=cbse&grade=10');expect($status,422,'No incorrect cross-board syllabus');
+foreach (['maharashtra'=>12,'cbse'=>12,'telangana'=>10,'nios'=>12] as $board=>$max) {
+    for ($grade=1;$grade<=$max;$grade++) {
+        [$status,$library]=call_api('GET','/curriculum-library?curriculum='.$board.'&grade='.$grade);
+        expect($status,200,'Public library '.$board.' '.$grade);
+        if ($library['curriculum']!==$board||$library['grade']!==$grade||$library['tutor_available']!==false||!count($library['pending'])) throw new RuntimeException('Library provenance/availability mismatch');
+    }
+}
+foreach (['curriculum=evil&grade=3','curriculum=cbse&grade=13','curriculum=telangana&grade=11','grade=3abc','grade=../3'] as $query) {[$status]=call_api('GET','/curriculum-library?'.$query);expect($status,422,'Reject invalid library selector');}
+[$status,$library]=call_api('GET','/curriculum-library?curriculum=cbse&grade=5');
+if (!in_array('Santoor',array_column($library['books'],'title'),true)) throw new RuntimeException('Current NCERT Class 5 English should be mapped');
+[$status,$library]=call_api('GET','/curriculum-library?curriculum=nios&grade=5');
+if (!str_contains($library['label'],'Level B')||count($library['books'])!==2) throw new RuntimeException('NIOS must use Level B official books, not Balbharati supplements');
 [$status,$a]=call_api('POST','/auth/register',['email'=>'parent-a@example.invalid','password'=>'fixture-password-a']);expect($status,201,'Parent A registration');$ta=$a['access_token'];
 [$status,$b]=call_api('POST','/auth/register',['email'=>'parent-b@example.invalid','password'=>'fixture-password-b']);expect($status,201,'Parent B registration');$tb=$b['access_token'];
 [$status,$row]=call_api('POST','/students',['full_name'=>'Fixture Child','grade'=>3],$ta);expect($status,201,'Student creation');$sid=$row['student']['id'];

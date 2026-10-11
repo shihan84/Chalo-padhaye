@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once dirname(__DIR__) . '/tutor.php';
 require_once dirname(__DIR__) . '/practice.php';
+require_once dirname(__DIR__) . '/curriculum_library.php';
 
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $uri=parse_url($_SERVER['REQUEST_URI']??'/',PHP_URL_PATH)?:'/';
@@ -19,6 +20,13 @@ try {
         } catch(Throwable $e) {}
         $storage=private_storage_ready();$ready=$database && $schema && $storage;
         json_response(['ok'=>$ready,'runtime'=>'php','database'=>$database,'schema'=>$schema,'private_storage'=>$storage,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$ready?200:503);
+    }
+    if ($method==='GET' && $path==='/curriculum-library') {
+        $curr=query_param('curriculum','maharashtra');$raw=query_param('grade','3');
+        if (!in_array($curr,['maharashtra','cbse','telangana','nios'],true)||!preg_match('/^(?:[1-9]|1[0-2])$/',$raw??'')) json_response(['error'=>'Choose a supported board and class'],422);
+        $result=curriculum_library($curr,(int)$raw);
+        if (!$result) json_response(['error'=>'This board does not publish that class in this library'],422);
+        json_response($result);
     }
     if ($method==='GET' && $path==='/syllabus') {
         $curr=query_param('curriculum','telangana');$raw=query_param('grade','10');

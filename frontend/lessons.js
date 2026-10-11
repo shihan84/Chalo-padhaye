@@ -4,27 +4,45 @@ function updateModeUI(){
  const mode=curriculum==='nios'?'homeMode':curriculum==='cbse'?'cbseMode':curriculum==='telangana'?'telanganaMode':'schoolMode';
  $('#'+mode).classList.add('active');
  $('#subtitle').textContent=curriculum==='nios'?'NIOS OBE • Homeschool':curriculum==='cbse'?'CBSE • NCERT School Study':curriculum==='telangana'?'Telangana State Board • SSC School Study':'Maharashtra State Board • School Study';
- $('#syllabusCard').classList.toggle('hidden',curriculum!=='telangana');
+ $('#syllabusCard').classList.remove('hidden');
 }
-let syllabusRequest=0;
-function scertLink(url,label){
- try{const u=new URL(url);if(u.protocol!=='https:'||!['scert.telangana.gov.in','www.scert.telangana.gov.in'].includes(u.hostname)||u.username||u.password)return '';return `<a href="${esc(u.href)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`}catch{return ''}
+let syllabusRequest=0,libraryData=null;
+const OFFICIAL_BOOK_HOSTS=['ncert.nic.in','www.ncert.nic.in','cbseacademic.nic.in','books.ebalbharati.in','ebooks.ebalbharati.in','scert.telangana.gov.in','www.scert.telangana.gov.in','www.nios.ac.in','nios.ac.in','cdn.nios.ac.in','rcpune.nios.ac.in','rcpatna.nios.ac.in','www.mahahsscboard.in'];
+function officialBookUrl(url){try{const u=new URL(url);return u.protocol==='https:'&&OFFICIAL_BOOK_HOSTS.includes(u.hostname)&&!u.username&&!u.password?u.href:''}catch{return ''}}
+function officialBookLink(url,label){const safe=officialBookUrl(url);return safe?`<a href="${esc(safe)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`:''}
+function scertLink(url,label){try{const u=new URL(url);return ['scert.telangana.gov.in','www.scert.telangana.gov.in'].includes(u.hostname)?officialBookLink(url,label):''}catch{return ''}}
+function setLibraryClassOptions(grade){
+ const max=$('#syllabusBoard').value==='telangana'?10:12;
+ $('#syllabusGrade').innerHTML=Array.from({length:max},(_,i)=>`<option value="${i+1}">${i+1}${i===9&&$('#syllabusBoard').value==='telangana'?' — SSC':''}</option>`).join('');
+ $('#syllabusGrade').value=String(Math.min(max,Math.max(1,Number(grade)||3)));
 }
+function resetLibraryToStudent(){ $('#syllabusBoard').value=curriculum;setLibraryClassOptions((current()||{}).grade||3);loadSyllabus() }
 async function loadSyllabus(){
- const request=++syllabusRequest,grade=$('#syllabusGrade').value;
- if(curriculum!=='telangana')return;
- $('#syllabusList').textContent='Loading syllabus…';$('#syllabusSources').textContent='';$('#syllabusNotice').textContent='';
+ const request=++syllabusRequest,grade=$('#syllabusGrade').value,board=$('#syllabusBoard').value;
+ if(typeof clearBookSource==='function'){clearBookSource();$('#bookViewerCard').classList.add('hidden')}
+ libraryData=null;$('#syllabusList').textContent='Loading syllabus and textbooks…';$('#syllabusSources').textContent='';$('#syllabusNotice').textContent='';
  try{
-  const r=await fetch(`/api/syllabus?curriculum=telangana&grade=${encodeURIComponent(grade)}`),j=await r.json();
-  if(request!==syllabusRequest||curriculum!=='telangana')return;
-  if(!r.ok)throw new Error(j.error||'Could not load syllabus');
-  $('#syllabusNotice').textContent=j.notice;
-  $('#syllabusSources').innerHTML=scertLink(j.directory_url,'SCERT textbook directory')+scertLink(j.syllabus_url,'SCERT syllabus');
-  $('#syllabusList').innerHTML=(j.subjects||[]).map(s=>`<details><summary>${esc(s.label)} · ${s.chapters.length?s.chapters.length+' reference units':'outline pending'}</summary><p class="small">${esc(s.source_edition)}</p>${scertLink(s.source_url,s.chapters.length?'Open source textbook':'Find textbook on SCERT')}${s.chapters.length?`<ol>${s.chapters.map(t=>`<li>${esc(t)}</li>`).join('')}</ol>`:'<p class="small">Chapter outline is awaiting verification. Choose your school’s language books in the SCERT directory.</p>'}</details>`).join('');
- }catch(e){if(request===syllabusRequest&&curriculum==='telangana')$('#syllabusList').textContent=e.message}
+  const r=await fetch(`/api/curriculum-library?curriculum=${encodeURIComponent(board)}&grade=${encodeURIComponent(grade)}`),j=await r.json();
+  if(request!==syllabusRequest)return;
+  if(!r.ok)throw new Error(j.error||'Could not load textbook sources');
+  libraryData=j;$('#syllabusNotice').textContent=`${j.board} · ${j.label} · Sources reviewed ${j.reviewed_on}. ${j.notice}`;
+  $('#syllabusSources').innerHTML=(j.sources||[]).map(s=>officialBookLink(s.url,s.title)).join('');renderLibrary();
+ }catch(e){if(request===syllabusRequest){libraryData=null;$('#syllabusList').textContent=e.message}}
+}
+function renderLibrary(){
+ const j=libraryData;if(!j)return;
+ const all=$('#libraryLanguage').value==='all',query=$('#librarySearch').value.trim().toLowerCase();
+ const books=(j.books||[]).map((b,index)=>({...b,index})).filter(b=>(all||b.primary||['Hindi','Urdu','Sanskrit','English'].includes(b.subject))&&`${b.title} ${b.source_title||""} ${b.subject} ${b.medium}`.toLowerCase().includes(query));
+ const pending=`<details class="librarypending" open><summary>Pending for this class</summary><ul>${(j.pending||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></details>`;
+ const coverage=`<details class="librarycoverage"><summary>Coverage across all boards</summary><ul>${(j.coverage||[]).map(x=>`<li>${esc(x.label)}: ${x.classes} class choices, ${x.book_entries} book entries, ${x.pending_classes} classes with pending verification.</li>`).join('')}</ul><p class="small">Counts are catalogue entries, including translations and shared NIOS levels. They are not counts of verified teaching-ready books.</p></details>`;
+ const syllabi=`<details><summary>Official syllabus documents · ${(j.syllabi||[]).length}</summary>${(j.syllabi||[]).map(s=>`<p>${officialBookLink(s.url,s.title)} <span class="small">${esc(s.edition||'Confirm edition with your school')}</span></p>`).join('')||'<p class="small">No separate verified syllabus document imported for this class. Use the publisher directory above and confirm the prescribed syllabus with your school.</p>'}</details>`;
+ const outlines=(j.outlines||[]).map(o=>`<details><summary>${esc(o.label)} · ${o.chapters.length} archived reference units</summary><p class="small">${esc(o.edition)}. This is not verified as the current exam syllabus.</p>${officialBookLink(o.url,'Open reference source')}<ol>${o.chapters.map(t=>`<li>${esc(t)}</li>`).join('')}</ol></details>`).join('');
+ const subjects=j.subjects?`<p>Subject checklist: ${j.subjects.map(esc).join(', ')}.</p>`:'';
+ const list=books.map(b=>`<div class="librarybook"><b>${esc(b.title)}</b>${b.source_title?`<p class="small">Publisher title: ${esc(b.source_title)}</p>`:""}<p class="small">${esc(b.subject||'Textbook')} · ${esc(b.medium||'See publisher')} · ${esc(b.edition||'Edition pending')}</p><p class="small">${b.status==='archived_reference'?'Archived reference':'Listed by official publisher; individual PDF availability and prescribed edition not yet checked'}</p>${officialBookLink(b.url,b.format==='pdf'?'Open publisher PDF ↗':'Open book & chapter downloads ↗')}${b.format==='pdf'&&officialBookUrl(b.url)?`<button data-library-book="${b.index}">Read PDF here</button>`:''}</div>`).join('');
+ $('#syllabusList').innerHTML=coverage+pending+syllabi+subjects+outlines+`<h3>Textbooks · ${books.length} shown / ${(j.books||[]).length} listed</h3><p class="small">NCERT links open the publisher’s chapter/download selector. Balbharati titles retain the publisher’s wording. For other media use the official directory.</p>`+(list||'<p>No mapped books match this selection. Use the official directory above; direct mappings remain pending.</p>');
 }
 
-async function fillSubjects(){if(typeof loadPractice==='function')loadPractice();if(curriculum==='telangana'){const g=(current()||{}).grade;$('#syllabusGrade').value=String(g>=1&&g<=10?g:10);loadSyllabus()}else{syllabusRequest++;$('#syllabusList').textContent=''}await endSession();activeLesson=null;testState=null;const old=$('#subject').value;$('#subject').innerHTML='';subjectList().forEach(x=>{const suffix=x.supplemental?' · supplemental':x.official?' · official':'';const o=new Option(x.label+suffix,x.id);o.disabled=x.available===false;o.dataset.supplemental=x.supplemental?'1':'0';$('#subject').add(o)});if([...$('#subject').options].some(o=>o.value===old&&!o.disabled))$('#subject').value=old;else{const f=[...$('#subject').options].find(o=>!o.disabled);if(f)$('#subject').value=f.value}resetChat(false);await loadLessons()}
+async function fillSubjects(){if(typeof loadPractice==='function')loadPractice();resetLibraryToStudent();await endSession();activeLesson=null;testState=null;const old=$('#subject').value;$('#subject').innerHTML='';subjectList().forEach(x=>{const suffix=x.supplemental?' · supplemental':x.official?' · official':'';const o=new Option(x.label+suffix,x.id);o.disabled=x.available===false;o.dataset.supplemental=x.supplemental?'1':'0';$('#subject').add(o)});if([...$('#subject').options].some(o=>o.value===old&&!o.disabled))$('#subject').value=old;else{const f=[...$('#subject').options].find(o=>!o.disabled);if(f)$('#subject').value=f.value}resetChat(false);await loadLessons()}
 function resetChat(close=true){contextGeneration++;if(close)endSession();stopVoice('');sessionId=null;lastTutorText='';$('#replay').disabled=true;$('#assessment').textContent='';const p=current();if(!p)return;$('#chat').innerHTML='';const name=p.full_name.split(' ')[0];let hello=curriculum==='nios'?`Hi ${name}! Homeschool mode ready hai.`:curriculum==='cbse'?`Hi ${name}! Grade ${p.grade} CBSE study ready hai.`:`Hi ${name}! Grade ${p.grade} school study ready hai.`;add(hello,'bot');if(activeLesson)add(`Current chapter: ${activeLesson.title} • ${stepLabel(activeLesson.current_step)}`,'system');const opt=$('#subject').selectedOptions[0];if(opt&&opt.dataset.supplemental==='1')add('This subject uses a labelled supplemental source, not an official NIOS textbook.','system')}
 async function setMode(m){if(m==='school')m=preferredSchoolCurriculum();if(curriculum===m)return;curriculum=m;updateModeUI();await fillSubjects();loadResume()}
 function setActivity(a,auto=false){activity=a;$$('.chip').forEach(b=>b.classList.toggle('active',b.dataset.activity===a));if(auto&&!chatBusy){const p={teach:'Teach the next small step.',practice:'Give me one practice question.',quiz:'Ask the next quiz question.',revision:'Revise this chapter with one question.',reading:'Start a short reading practice.',project:'Give only the first project step.'};sendText(p[a],{display:false})}}
