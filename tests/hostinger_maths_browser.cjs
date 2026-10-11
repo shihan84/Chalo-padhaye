@@ -20,7 +20,7 @@ function answer(q){
   const q=data.run.question;
   if(q.answer_type==='choice'){const wrong=q.choices.find(c=>c!==answer(q));data=await action(page.locator('#mathsLesson [data-maths-choice]').nth(q.choices.indexOf(wrong)));}else{await page.locator('#mathsAnswer').fill('999');data=await action(page.locator('#mathsSubmit'))}
   assert.ok(data.run.question.hint&&!data.run.question.resolved);await page.locator('#mathsLesson').getByText(/Hint:/).waitFor();
-  await page.reload();await page.locator('#mathsLesson').getByText(/Hint:/).waitFor();
+  await page.reload();await page.locator('#mathsSummary').filter({hasText:new RegExp('Maharashtra Class '+grade)}).waitFor();await page.locator('#mathsLesson').getByText(/Hint:/).waitFor();
   for(let i=0;i<30&&!data.run.completed;i++){
    const q=data.run.question;
    if(!q.resolved){const a=answer(q);if(q.answer_type==='choice')data=await action(page.locator('#mathsLesson [data-maths-choice]').nth(q.choices.indexOf(a)));else{await page.locator('#mathsAnswer').fill(a);data=await action(page.locator('#mathsSubmit'))}}

@@ -13,7 +13,7 @@ foreach([3,5] as $grade){
  maths_fail(fn()=>maths_state($student,['action'=>'start','chapter_id'=>$second,'request_id'=>uuid_v4()]),403);
  $state=maths_state($student,['action'=>'start','chapter_id'=>$first,'request_id'=>uuid_v4()]);$q=maths_hidden($student);
  maths_expect(!isset($state['run']['question']['answer'])&&!isset($state['run']['question']['hint']),'Answer or early hint leaked');
- $bad=$q['answer_type']==='choice'?current(array_values(array_diff($q['choices'],[(string)$q['answer']])):'999999';
+ $bad=$q['answer_type']==='choice'?current(array_values(array_diff($q['choices'],[(string)$q['answer']]))):'999999';
  $body=['action'=>'answer','run_id'=>$state['run']['id'],'question_id'=>$q['id'],'request_id'=>uuid_v4(),'answer'=>$bad];
  $state=maths_state($student,$body);maths_expect(!$state['run']['question']['resolved']&&isset($state['run']['question']['hint']),'First wrong needs a hint');
  maths_fail(fn()=>maths_state($student,['action'=>'next','run_id'=>$state['run']['id'],'question_id'=>$q['id'],'request_id'=>uuid_v4()]),409);
@@ -34,7 +34,7 @@ foreach([3,5] as $grade){
  for($i=0;$i<30;$i++){
   $q=maths_hidden($student);
   if($state['run']['stage']==='test'){
-   $wrong=$q['answer_type']==='choice'?current(array_values(array_diff($q['choices'],[(string)$q['answer']])):'999999';
+   $wrong=$q['answer_type']==='choice'?current(array_values(array_diff($q['choices'],[(string)$q['answer']]))):'999999';
    $state=maths_state($student,['action'=>'answer','run_id'=>$state['run']['id'],'question_id'=>$q['id'],'request_id'=>uuid_v4(),'answer'=>$wrong]);
   }
   $state=maths_state($student,['action'=>'answer','run_id'=>$state['run']['id'],'question_id'=>$q['id'],'request_id'=>uuid_v4(),'answer'=>maths_fixture_answer($q)]);

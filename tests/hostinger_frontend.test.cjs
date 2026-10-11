@@ -6,7 +6,7 @@ function setup(){
   const elements=new Map(),calls=[];
   const el=id=>{if(!elements.has(id))elements.set(id,{value:'',innerHTML:'',textContent:'',classList:{toggle(){},add(){},remove(){},contains(){return true}},add(o){this.value ||= o.value}});return elements.get(id)};
   const storage=new Map();
-  const c=vm.createContext({console,Option:function(text,value){this.value=value},$:el,$$:()=>[],document:{body:{classList:{toggle(){}}}},sessionStorage:{setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},localStorage:{removeItem(){}},accessToken:'token',refreshToken:'',students:[],curriculum:'maharashtra',preferredSchoolCurriculum:()=> 'maharashtra',updateModeUI(){},fillSubjects:async()=>{},loadResume(){},showTab(){},toast(){},storeSession(j){c.accessToken=j.access_token},clearSession(){c.accessToken=''},esc:String,
+  const c=vm.createContext({console,Option:function(text,value){this.value=value},$:el,$$:()=>[],document:{body:{classList:{toggle(){}}}},sessionStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},localStorage:{removeItem(){}},accessToken:'token',refreshToken:'',students:[],curriculum:'maharashtra',preferredSchoolCurriculum:()=> 'maharashtra',updateModeUI(){},fillSubjects:async()=>{},loadResume(){},showTab(){},toast(){},storeSession(j){c.accessToken=j.access_token},clearSession(){c.accessToken=''},esc:String,
     fetch:async(url,opts)=>{calls.push({url,opts});return {ok:true,json:async()=>({user:{id:'parent',role:'parent'},students:[]})}},authFetch:async(url,opts)=>c.fetch(url,opts)});
   let code=fs.readFileSync('frontend/student-auth.js','utf8').replace('installStudentLoginUI();ensureStudentLoginCard();installChildProfileUI();','');vm.runInContext(code,c);
   return {c,el,calls};
@@ -144,4 +144,12 @@ test('guided course discards delayed responses after a child or board change',as
 test('maths diagrams reject invalid dimensions and escape table labels',()=>{
  const {c}=mathsSetup();assert.equal(c.mathsVisual({kind:'polygon',sides:999}),'');assert.equal(c.mathsVisual({kind:'angle',degrees:Infinity}),'');
  assert.ok(!c.mathsVisual({kind:'table',values:{'<script>':3}}).includes('<script>'));assert.match(c.mathsVisual({kind:'polygon',sides:5}),/Polygon with 5 straight sides/);
+});
+
+test('reload restores only a child belonging to the signed-in account',async()=>{
+ for(const saved of ['b','unrelated']){
+  const {c,el}=setup();c.sessionStorage.setItem('cp_selected_child:parent',saved);
+  c.fetch=async url=>({ok:true,json:async()=>url==='/api/students'?{students:[{id:'a',grade:3,full_name:'A'},{id:'b',grade:5,full_name:'B'}]}:{user:{id:'parent',role:'parent'}}});
+  await c.loadStudents();assert.equal(el('#student').value,saved==='b'?'b':'a');
+ }
 });
