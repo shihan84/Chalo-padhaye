@@ -7,7 +7,7 @@ $pdo=null;$locked=false;
 try {
     if ($argc!==2 || !is_file($argv[1])) throw new RuntimeException('Schema file required');
     $pdo=db();
-    $lock=$pdo->prepare('SELECT GET_LOCK(?,10)');$lock->execute(['chalo-bootstrap-'.hash('sha256',(string)env_value('DB_NAME'))]);
+    $lock=$pdo->prepare('SELECT GET_LOCK(?,10)');$lock->execute(['chalo-bootstrap-'.substr(hash('sha256',(string)env_value('DB_NAME')),0,40)]);
     $locked=(int)$lock->fetchColumn()===1;
     if (!$locked) throw new RuntimeException('Database bootstrap lock unavailable');
     $count=(int)$pdo->query('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE()')->fetchColumn();
@@ -24,7 +24,7 @@ try {
     fwrite(STDERR,"Database initialization failed; inspect schema state before retrying\n");$failed=true;
 } finally {
     if ($pdo && $locked) {
-        $unlock=$pdo->prepare('SELECT RELEASE_LOCK(?)');$unlock->execute(['chalo-bootstrap-'.hash('sha256',(string)env_value('DB_NAME'))]);
+        $unlock=$pdo->prepare('SELECT RELEASE_LOCK(?)');$unlock->execute(['chalo-bootstrap-'.substr(hash('sha256',(string)env_value('DB_NAME')),0,40)]);
     }
 }
 if (!empty($failed)) exit(1);
