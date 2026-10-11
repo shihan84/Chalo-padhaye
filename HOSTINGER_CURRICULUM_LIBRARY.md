@@ -39,8 +39,8 @@ All 46 choices retain explicit pending verification; this is source access, not 
 2. SCERT's reviewed directory lists 2025–26. Its direct pages, EBooks page and DisplayImage endpoint returned HTTP 502 during this review. Classes 1–9 have no imported direct book mapping; Class 10's three older reference outlines remain archived, not 2026–27 exam syllabus.
 3. NIOS Level B English EVS has no linked PDF in the publisher's table; OBE language books and child-track versus adult-track curricula need accredited-agency confirmation. The OBE reference curriculum documents include adult-track wording, explicitly labelled in the app.
 4. The NIOS Senior Secondary table links to `seccurriculum.pdf`; its applicability is ambiguous. Do not promote it to a verified Senior Secondary syllabus without examining the document.
-5. Primary/middle CBSE annual examination syllabus and Maharashtra examination PDFs still need school/board confirmation. Direct publisher PDF availability is not exhaustively checked.
-6. Indexed textbook retrieval, grounded teaching, chapter quizzes and progression remain unavailable. A book link is not enough to enable AI tutoring. Existing Class 3 foundation maths and Class 5 fractions practice remain available with server grading.
+5. Primary/middle CBSE annual examination syllabus and Maharashtra examination PDFs still need school/board confirmation. See `HOSTINGER_TEXTBOOK_AUDIT.md` for the subsequent availability checks; a PDF signature does not verify its complete contents or school prescription.
+6. Verified page text is now indexed for 12 PDFs / 191 chapter entries, with page explanations and reading checks. Chapter quizzes and progression remain pending. A book link alone does not enable page tutoring. See `HOSTINGER_GROUNDED_TEXTBOOKS.md`. Existing Class 3 foundation maths and Class 5 fractions practice remain available with server grading.
 7. Telangana Intermediate Classes 11–12 belong to a separate board; they are not labelled SCERT/SSC coverage.
 
 ## Fixes and verification
