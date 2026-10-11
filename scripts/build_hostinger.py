@@ -12,7 +12,7 @@ def build(output):
         entries.append((ROOT/'frontend'/name,'public_html/'+name))
     for name in ('index.php','.htaccess'):
         entries.append((ROOT/'deploy/hostinger'/name,'public_html/'+name))
-    for name in ('bootstrap.php','auth.php','learning.php','lessons.php','tutor.php','deployment_check.php','api/index.php'):
+    for name in ('bootstrap.php','auth.php','learning.php','lessons.php','tutor.php','deployment_check.php','initialize_database.php','api/index.php'):
         entries.append((ROOT/'php'/name,'chalo-private/php/'+name))
     entries.extend([(ROOT/'data/lesson_plans.json','chalo-private/data/lesson_plans.json'),
                     (ROOT/'.env.hostinger.example','chalo-private/.env.example'),

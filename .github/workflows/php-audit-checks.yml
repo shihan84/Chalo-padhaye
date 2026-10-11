@@ -42,7 +42,12 @@ jobs:
       DB_PASSWORD: audit-fixture-only
     steps:
       - uses: actions/checkout@v4
-      - run: mysql -h 127.0.0.1 -u root -paudit-fixture-only audit_test < database/mysql/schema.sql
+      - run: php php/initialize_database.php database/mysql/schema.sql
+      - run: |
+          if php php/initialize_database.php database/mysql/schema.sql; then
+            echo "Initializer must refuse an existing database"
+            exit 1
+          fi
       - run: |
           php -S 127.0.0.1:8080 php/api/index.php > /tmp/chalo-php-test.log 2>&1 &
           server_pid=$!

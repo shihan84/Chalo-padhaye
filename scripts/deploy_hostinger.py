@@ -91,6 +91,25 @@ def health(domain):
         raise ValueError('Hostinger PHP database health check failed')
 
 
+def remote_readiness(transport,root):
+    stage('Checking server PHP/database readiness')
+    channel=transport.open_session(timeout=20)
+    channel.settimeout(30)
+    channel.exec_command('php '+shlex.quote(root+'/chalo-private/php/deployment_check.php'))
+    readiness={}
+    output=channel.makefile('rb').read(16384)
+    if channel.recv_exit_status()==0:
+        try:
+            readiness=json.loads(output)
+            print('Server readiness: '+json.dumps({key:readiness.get(key) for key in ('php','pdo_mysql','curl','database','schema','missing_tables','existing_tables','database_error_code','database_error_kind','configured_host_is_localhost','local_tcp_database','local_tcp_existing_tables','local_tcp_error_code')}),flush=True)
+        except Exception:
+            print('Server CLI check did not return readiness JSON',flush=True)
+    else:
+        print('Server CLI check could not run',flush=True)
+    channel.close()
+    return readiness
+
+
 def deploy(env):
     domain,port,dotenv=configuration(env)
     import paramiko
@@ -125,7 +144,27 @@ def deploy(env):
             changed=[]
             try:
                 stage('Uploading Hostinger package')
-                for name,data in files.items():
+                for name,data in sorted(files.items(),key=lambda entry:entry[0].startswith('public_html/')):
+                    if name=='public_html/index.html':
+                        readiness=remote_readiness(transport,root)
+                        if readiness.get('database') is True and readiness.get('existing_tables')==0:
+                            stage('Initializing verified empty application database')
+                            schema_path=root+'/chalo-private/bootstrap-schema-'+env.get('GITHUB_RUN_ID','local')+'.sql'
+                            sftp.put(str(Path(__file__).resolve().parents[1]/'database/mysql/schema.sql'),schema_path)
+                            sftp.chmod(schema_path,0o600)
+                            channel=transport.open_session(timeout=20)
+                            channel.settimeout(60)
+                            channel.exec_command('php '+shlex.quote(root+'/chalo-private/php/initialize_database.php')+' '+shlex.quote(schema_path))
+                            channel.makefile('rb').read(4096)
+                            status=channel.recv_exit_status()
+                            channel.close()
+                            sftp.remove(schema_path)
+                            if status!=0:
+                                raise ValueError('Empty-database initialization failed; review database state')
+                            print('Fresh database initialized; no existing tables were modified',flush=True)
+                            readiness=remote_readiness(transport,root)
+                        if readiness.get('database') is not True or readiness.get('schema') is not True:
+                            raise ValueError('Database/schema is not ready; public website has not been replaced')
                     target=root+'/'+name
                     ensure_dir(sftp,str(Path(target).parent))
                     old=None
@@ -145,20 +184,6 @@ def deploy(env):
                     sftp.chmod(candidate,0o600 if name=='chalo-private/.env' else 0o644)
                     sftp.posix_rename(candidate,target)
                     changed.append((target,old))
-                stage('Checking server PHP/database readiness')
-                channel=transport.open_session(timeout=20)
-                channel.settimeout(30)
-                channel.exec_command('php '+shlex.quote(root+'/chalo-private/php/deployment_check.php'))
-                output=channel.makefile('rb').read(16384)
-                if channel.recv_exit_status()==0:
-                    try:
-                        readiness=json.loads(output)
-                        print('Server readiness: '+json.dumps({key:readiness.get(key) for key in ('php','pdo_mysql','curl','database','schema','missing_tables','existing_tables','database_error_code','database_error_kind','configured_host_is_localhost','local_tcp_database','local_tcp_existing_tables','local_tcp_error_code')}),flush=True)
-                    except Exception:
-                        print('Server CLI check did not return readiness JSON',flush=True)
-                else:
-                    print('Server CLI check could not run',flush=True)
-                channel.close()
                 stage('Checking live HTTPS PHP and database health')
                 health(domain)
             except Exception as failure:
