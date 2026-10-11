@@ -8,11 +8,11 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def build(output):
     entries=[]
-    for name in ('index.html','app.css','favicon.svg','core.js','lessons.js','book.js','interaction.js','student-auth.js','extras.js'):
+    for name in ('index.html','app.css','favicon.svg','core.js','lessons.js','book.js','interaction.js','student-auth.js','extras.js','practice.js'):
         entries.append((ROOT/'frontend'/name,'public_html/'+name))
     for name in ('index.php','.htaccess'):
         entries.append((ROOT/'deploy/hostinger'/name,'public_html/'+name))
-    for name in ('bootstrap.php','auth.php','learning.php','lessons.php','tutor.php','deployment_check.php','initialize_database.php','api/index.php'):
+    for name in ('bootstrap.php','auth.php','private_state.php','practice.php','learning.php','lessons.php','tutor.php','deployment_check.php','initialize_database.php','api/index.php'):
         entries.append((ROOT/'php'/name,'chalo-private/php/'+name))
     entries.extend([(ROOT/'data/lesson_plans.json','chalo-private/data/lesson_plans.json'),
                     (ROOT/'data/telangana_syllabus.json','chalo-private/data/telangana_syllabus.json'),

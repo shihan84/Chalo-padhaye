@@ -1,7 +1,7 @@
 name: PHP audit checks
 on:
   pull_request:
-    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus]
+    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus, test/hostinger-functional-validation]
   push:
     branches: [hostinger-php]
 permissions:
@@ -21,6 +21,7 @@ jobs:
       - run: php -v
       - run: find php tests -name '*.php' -print0 | xargs -0 -n1 php -l
       - run: php tests/php_regressions.php
+      - run: php tests/php_practice_regressions.php
   mysql-api:
     runs-on: ubuntu-latest
     services:
@@ -42,6 +43,11 @@ jobs:
       DB_PASSWORD: audit-fixture-only
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install --prefix /tmp/chalo-browser --no-save playwright@1.64.0
+      - run: /tmp/chalo-browser/node_modules/.bin/playwright install --with-deps chromium
       - run: php php/initialize_database.php database/mysql/schema.sql
       - run: |
           if php php/initialize_database.php database/mysql/schema.sql; then
@@ -49,11 +55,18 @@ jobs:
             exit 1
           fi
       - run: |
-          php -S 127.0.0.1:8080 php/api/index.php > /tmp/chalo-php-test.log 2>&1 &
+          php -S 127.0.0.1:8080 -t frontend tests/php_fixture_router.php > /tmp/chalo-php-test.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid"' EXIT
           for attempt in $(seq 1 30); do
             if curl --fail --silent http://127.0.0.1:8080/api/health; then break; fi
             sleep 1
           done
+          NODE_PATH=/tmp/chalo-browser/node_modules node tests/hostinger_browser.cjs
           php tests/php_http_integration.php
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hostinger-browser-evidence
+          path: /tmp/chalo-browser-evidence
+          if-no-files-found: ignore

@@ -30,23 +30,11 @@ if(($chat['error']??'')!=='textbook_retrieval_unavailable')throw new RuntimeExce
 [$status]=call_api('POST','/chat',['student_id'=>$sid,'session_id'=>$session,'message'=>'4','subject'=>'math','curriculum'=>'nios'],$ta);expect($status,403,'Cross-curriculum session denied');
 [$status]=call_api('POST','/end-session',['student_id'=>$sid,'session_id'=>$session],$ta);expect($status,200,'Close session');
 [$status]=call_api('POST','/chat',['student_id'=>$sid,'session_id'=>$session,'message'=>'4','subject'=>'math','curriculum'=>'maharashtra'],$ta);expect($status,403,'Closed session denied');
-// Exercise real lesson progression, replay and reviews against MySQL.
+// Browsers cannot forge board mastery by sending assessment or score counts.
 $defs=lesson_defs('maharashtra',3,'math');
 $lesson=['student_id'=>$sid,'curriculum'=>'maharashtra','subject'=>'math','lesson_id'=>$defs[0]['id']];
-[$status,$opened]=call_api('POST','/lessons/start',$lesson,$ta);expect($status,200,'Start structured lesson');
-foreach(['learn'=>2,'practice'=>3,'revision'=>2] as $step=>$count){
-    for($i=0;$i<$count;$i++){
-        [$status,$result]=call_api('POST','/lessons/step',$lesson+['step_id'=>$step,'assessment'=>'correct'],$ta);
-        expect($status,200,'Complete '.$step);
-    }
-}
-[$status,$replay]=call_api('POST','/lessons/step',$lesson+['step_id'=>'learn','assessment'=>'correct'],$ta);expect($status,200,'Replay completed step');
-if($replay['progress']['current_step']!=='test')throw new RuntimeException('Replay regressed chapter');
-[$status]=call_api('POST','/lessons/test',$lesson+['question_count'=>1,'correct_count'=>1],$ta);expect($status,422,'Reject incomplete test');
-[$status,$passed]=call_api('POST','/lessons/test',$lesson+['question_count'=>5,'correct_count'=>5],$ta);expect($status,200,'Pass full chapter test');
-if($passed['progress']['status']!=='mastered')throw new RuntimeException('Passing chapter was not mastered');
-[$status,$review]=call_api('POST','/lessons/test',$lesson+['question_count'=>5,'correct_count'=>0],$ta);expect($status,200,'Record failed review');
-if($review['progress']['status']!=='mastered'||(int)$review['progress']['percent_complete']!==100)throw new RuntimeException('Failed review erased mastery');
+[$status]=call_api('POST','/lessons/step',$lesson+['step_id'=>'learn','assessment'=>'correct'],$ta);expect($status,409,'Reject client assessment');
+[$status]=call_api('POST','/lessons/test',$lesson+['question_count'=>5,'correct_count'=>5],$ta);expect($status,409,'Reject client score');
 
 // Independent foreign keys must not allow a child to point at another child's progress.
 [$status,$other]=call_api('POST','/students',['full_name'=>'Fixture B Child','grade'=>3],$tb);expect($status,201,'Create second-parent child');
@@ -96,8 +84,44 @@ foreach(['maharashtra','nios','cbse','telangana'] as $curr){
 [$status]=call_api('GET','/dashboard?student_id='.$sid,[],$tb);expect($status,403,'Cross-family dashboard denied');
 [$status]=call_api('GET','/roadmap?student_id='.$sid.'&curriculum=telangana',[],$tb);expect($status,403,'Cross-family roadmap denied');
 [$status]=call_api('GET','/daily-plan?student_id='.$sid.'&curriculum=telangana',[],$tb);expect($status,403,'Cross-family daily plan denied');
+// Server-owned foundation assessment, hint-first feedback, idempotency and retries.
+[$status]=call_api('GET','/practice?student_id='.$sid,[],$tb);expect($status,403,'Other family cannot read practice');
+[$status]=call_api('POST','/practice/start',['student_id'=>$sid],$tb);expect($status,403,'Other family cannot reset practice');
+[$status,$practice]=call_api('POST','/practice/start',['student_id'=>$sid],$ta);expect($status,200,'Start foundation unit');
+$firstSignature=$practice['run']['question']['prompt'];$oldRun=$practice['run']['id'];$signatures=[];
+for($index=0;$index<10;$index++){
+ $run=$practice['run'];$q=$run['question'];$signatures[]=$q['prompt'];
+ if(array_key_exists('answer',$q))throw new RuntimeException('Answer key leaked before attempt');
+ $expected=$q['op']==='+'?$q['a']+$q['b']:$q['a']-$q['b'];
+ $payload=['student_id'=>$sid,'run_id'=>$run['id'],'question_id'=>$q['id'],'request_id'=>uuid_v4(),'action'=>'answer','answer'=>(string)$expected,'correct_count'=>10,'assessment'=>'correct'];
+ if($index===0){
+   $wrong=$payload;$wrong['answer']='999';
+   [$status,$hint]=call_api('POST','/practice/answer',$wrong,$ta);expect($status,200,'First wrong answer receives hint');
+   if(empty($hint['run']['question']['hint'])||$hint['run']['question']['resolved']||isset($hint['run']['question']['answer']))throw new RuntimeException('Hint-first rule broken');
+   [$status,$duplicate]=call_api('POST','/practice/answer',$wrong,$ta);expect($status,200,'Retry identical network request');
+   if($duplicate!==$hint)throw new RuntimeException('Duplicate answer counted twice');
+   [$status]=call_api('POST','/practice/answer',$payload,$ta);expect($status,409,'Reject reusing request ID with altered answer');
+   $payload['request_id']=uuid_v4();
+ }
+ [$status,$practice]=call_api('POST','/practice/answer',$payload,$ta);expect($status,200,'Grade computed answer');
+ if(!$practice['run']['question']['resolved'])throw new RuntimeException('Correct answer did not resolve question');
+ [$status]=call_api('POST','/practice/answer',$payload+[], $tb);expect($status,403,'Other family cannot submit answer');
+ $next=['student_id'=>$sid,'run_id'=>$run['id'],'question_id'=>$q['id'],'request_id'=>uuid_v4(),'action'=>'next'];
+ [$status,$practice]=call_api('POST','/practice/answer',$next,$ta);expect($status,200,'Advance resolved question');
+ [$status,$duplicate]=call_api('POST','/practice/answer',$next,$ta);expect($status,200,'Idempotent next');
+ if($duplicate!==$practice)throw new RuntimeException('Duplicate next skipped a question');
+}
+if(!$practice['run']['completed']||$practice['run']['correct']!==10||$practice['run']['unassisted']!==9||count($practice['history'])!==1)throw new RuntimeException('Practice grading/history incorrect');
+[$status,$resumed]=call_api('GET','/practice?student_id='.$sid,[],$ta);expect($status,200,'Reload saved practice');
+if($resumed!==$practice)throw new RuntimeException('Practice state did not survive request');
+[$status,$fresh]=call_api('POST','/practice/start',['student_id'=>$sid],$ta);expect($status,200,'Fresh retry');
+if($fresh['run']['id']===$oldRun||in_array($fresh['run']['question']['prompt'],$signatures,true))throw new RuntimeException('Practice again reused old questions');
+[$status]=call_api('POST','/practice/answer',$next,$ta);expect($status,409,'Reject obsolete run');
+[$status]=call_api('POST','/tts',['student_id'=>$sid,'text'=>'hello'],$tb);expect($status,403,'Other family cannot spend voice budget');
 db()->prepare('UPDATE auth_sessions SET expires_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 1 MINUTE) WHERE token_hash=?')->execute([hash('sha256',$newToken)]);
 [$status]=call_api('GET','/auth/me',[],$newToken);expect($status,401,'Expired session denied');
 [$status]=call_api('POST','/auth/logout',[],$ta);expect($status,200,'Logout parent');
 [$status]=call_api('GET','/auth/me',[],$ta);expect($status,401,'Parent logout revokes token');
+for($i=0;$i<31;$i++) { [$status]=call_api('POST','/auth/login',['email'=>'rate-test@example.invalid','password'=>'wrong']); }
+expect($status,429,'Throttle repeated logins');
 echo "PHP HTTP integration regressions passed\n";

@@ -60,6 +60,7 @@ async function createChild(){
 }
 
 function applyAccountRole(){
+  ['#goalTitle','#goalDue','#addGoal'].forEach(id=>{if($(id))$(id).disabled=cpAccountRole!=='parent'});
   document.body.classList.toggle('student-mode',cpAccountRole==='student');
   const parentNav=$('.nav button[data-tab="parent"]');if(parentNav)parentNav.classList.toggle('hidden',cpAccountRole==='student');
   if(cpAccountRole==='student'){

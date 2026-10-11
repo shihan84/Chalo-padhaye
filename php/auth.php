@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/bootstrap.php';
+require_once __DIR__ . '/private_state.php';
 
 function uuid_v4(): string {
     $d = random_bytes(16);
@@ -52,6 +53,7 @@ function require_student_access(string $studentId): array {
     return $st;
 }
 function register_parent(array $b): array {
+    consume_limit('register',client_ip(),30,3600);
     $email=strtolower(trim((string)($b['email']??''))); $password=(string)($b['password']??''); $name=trim((string)($b['full_name']??''));
     if (strlen($email)>254||strlen($name)>160||!filter_var($email,FILTER_VALIDATE_EMAIL)) json_response(['error'=>'Valid email required'],422);
     if (strlen($password)<8 || strlen($password)>72) json_response(['error'=>'Password must be 8-72 bytes'],422);
@@ -68,9 +70,11 @@ function register_parent(array $b): array {
 }
 function login_user(array $b): array {
     $email=strtolower(trim((string)($b['email']??''))); $password=(string)($b['password']??'');
-    if (strlen($password)>72) json_response(['error'=>'Invalid email or password'],401);
+    consume_limit('login_ip',client_ip(),30,900);
+    consume_limit('login_account',$email,60,3600);
+    if (strlen($email)>254 || strlen($password)>72) json_response(['error'=>'Invalid email or password'],401);
     $s=db()->prepare('SELECT id,email,password_hash,role,full_name FROM users WHERE email=? LIMIT 1'); $s->execute([$email]); $u=$s->fetch();
-    if (!$u || !password_verify($password,$u['password_hash'])) json_response(['error'=>'Invalid email or password'],401);
+    if (!password_verify($password,$u['password_hash']??'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.') || !$u) json_response(['error'=>'Invalid email or password'],401);
     if (password_needs_rehash($u['password_hash'],PASSWORD_DEFAULT)) db()->prepare('UPDATE users SET password_hash=? WHERE id=?')->execute([password_hash($password,PASSWORD_DEFAULT),$u['id']]);
     return ['user'=>public_user($u)]+create_session($u['id']);
 }
