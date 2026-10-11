@@ -71,3 +71,22 @@ test('a delayed tutor response cannot enter the newly selected child chat',async
  resolve({ok:true,json:async()=>({session_id:'old-reply-session',text:'Late reply'})});await pending;
  assert.ok(!messages.includes('Late reply'));assert.equal(c.sessionId,null);assert.equal(calls.at(-1).body.student_id,'child-a');assert.equal(calls.at(-1).u,'/api/end-session');
 });
+function practiceSetup(){
+ const elements=new Map();const el=id=>{if(!elements.has(id))elements.set(id,{value:id==='#practiceUnit'?'class5-fractions':'',innerHTML:'',textContent:'',disabled:false,querySelectorAll:()=>[],focus(){}});return elements.get(id)};
+ const c=vm.createContext({$:el,current:()=>({id:'child',grade:5}),accessToken:'token',esc:String,stopVoice(){},authFetch:async()=>({ok:true,json:async()=>({unit:'class5-fractions',history:[],run:null})})});
+ vm.runInContext(fs.readFileSync('frontend/practice.js','utf8'),c);return{c,el};
+}
+test('fraction bars show equal parts and reject oversized or invalid diagrams',()=>{
+ const {c}=practiceSetup();const html=c.fractionBar({n:2,d:4});assert.equal((html.match(/fraction-piece/g)||[]).length,4);assert.equal((html.match(/fraction-piece shaded/g)||[]).length,2);assert.match(html,/2 shaded parts.*4 equal parts/);
+ assert.equal(c.fractionBar({n:2,d:999}), '');assert.equal(c.fractionBar({n:6,d:4}),'');assert.equal(c.fractionBar({n:1,d:0}),'');assert.match(c.fractionBar({n:0,d:12,unknown:true}),/Unknown number/);
+});
+test('fraction progress describes specific weak skills using actual totals',()=>{
+ const {c}=practiceSetup();const text=c.practiceProgressText([{status:'practised',unassisted:7,total:10,skills:{identify:{correct:1,total:2},compare:{correct:2,total:2}}}],'Class 5 Fractions');
+ assert.match(text,/Recognise fractions 1\/2/);assert.match(text,/Compare fractions 2\/2/);assert.match(text,/Next: practise Recognise fractions/);assert.ok(!text.includes('Compare fractions.'));
+});
+test('switching practice unit ignores the older request response',async()=>{
+ const {c,el}=practiceSetup();const pending=[];c.authFetch=()=>new Promise(r=>pending.push(r));
+ const first=c.loadPractice('class5-fractions');el('#practiceUnit').value='class3-add-subtract';const second=c.loadPractice();
+ const response=unit=>({ok:true,json:async()=>({unit,history:[],run:null})});pending[1](response('class3-add-subtract'));await second;pending[0](response('class5-fractions'));await first;
+ assert.match(el('#practiceProgress').textContent,/Foundation Maths/);
+});
