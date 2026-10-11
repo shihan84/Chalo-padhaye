@@ -72,16 +72,17 @@ function textbook_turn(array $student,array $request): array {
     $reply=trim((string)($request['answer']??''));if($action==='answer'&&($reply===''||strlen($reply)>100))throw new RequestFailure(422,'Enter one word, at most 100 bytes');
     consume_limit('book_burst',$student['parent_id'],6,60);consume_limit('book_calls',$student['parent_id'],100,86400);
     if($action!=='answer')$token=bin2hex(random_bytes(16));
-    $key=$student['id'].':'.$token;
+    // One active reading check per child bounds persistent storage across retries.
+    $key=$student['id'];
     return private_state('book_sessions',$key,function(array &$state)use($student,$book,$page,$action,$reply,$token,$text):array {
         if($action==='answer'){
-            if(($state['book']??'')!==$book['id']||($state['page']??0)!==$page||($state['expires']??0)<time()||!isset($state['question']))throw new RequestFailure(409,'This reading check expired or belongs to another page. Start a new check');
+            if(!hash_equals((string)($state['token']??''),$token)||($state['book']??'')!==$book['id']||($state['page']??0)!==$page||($state['expires']??0)<time()||!isset($state['question']))throw new RequestFailure(409,'This reading check expired or belongs to another page. Start a new check');
             $out=textbook_grade($state['question'],$reply);if($out['complete'])unset($state['question']);
             return $out+['session_id'=>$token,'sources'=>textbook_sources($book,$page),'activity'=>'reading_check'];
         }
         $question=textbook_question($text);
         if(!$question)throw new RequestFailure(422,'No clear reading-check sentence on this page. Choose another PDF page');
-        $state=['book'=>$book['id'],'page'=>$page,'expires'=>time()+1800,'question'=>$question];
+        $state=['token'=>$token,'book'=>$book['id'],'page'=>$page,'expires'=>time()+1800,'question'=>$question];
         $explanation=null;
         if($action==='explain'&&env_value('GROQ_API_KEY')){consume_limit('book_ai',$student['parent_id'],30,86400);$explanation=textbook_explanation($book,$page,$text,(int)$student['grade']);}
         return ['text'=>($explanation? $explanation."\n\n":'Read this page in the official book. ').$question['prompt'],'session_id'=>$token,'sources'=>textbook_sources($book,$page),'assessment'=>'not_answer','complete'=>false,'activity'=>'reading_check','ai_explanation'=>$explanation!==null];

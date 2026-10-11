@@ -59,6 +59,10 @@ if($hint['complete']||!str_contains($hint['text'],'Hint:'))throw new RuntimeExce
 [$status,$correct]=call_api('POST','/book-tutor',array_replace($answerBody,['answer'=>'sides']),$ta);expect($status,200,'Server validates reading word');
 if(!$correct['complete']||$correct['assessment']!=='correct')throw new RuntimeException('Reading exact word should match');
 $q=db()->prepare('SELECT COUNT(*) FROM student_progress WHERE student_id=?');$q->execute([$sid]);if((int)$q->fetchColumn()!==0)throw new RuntimeException('Reading must not award subject mastery');
+$bookRoot=dirname(__DIR__).'/runtime/book_sessions';$filesBefore=count(glob($bookRoot.'/*.json')?:[]);
+[$status,$newCheck]=call_api('POST','/book-tutor',$pageBody,$ta);expect($status,200,'Replace child reading check');
+[$status]=call_api('POST','/book-tutor',array_replace($answerBody,['answer'=>'sides']),$ta);expect($status,409,'Replaced reading token rejected');
+if(count(glob($bookRoot.'/*.json')?:[])!==$filesBefore)throw new RuntimeException('Reading retries must not grow storage');
 // Browsers cannot forge board mastery by sending assessment or score counts.
 $defs=lesson_defs('maharashtra',3,'math');
 $lesson=['student_id'=>$sid,'curriculum'=>'maharashtra','subject'=>'math','lesson_id'=>$defs[0]['id']];
