@@ -12,9 +12,10 @@ def build(output):
         entries.append((ROOT/'frontend'/name,'public_html/'+name))
     for name in ('index.php','.htaccess'):
         entries.append((ROOT/'deploy/hostinger'/name,'public_html/'+name))
-    for name in ('bootstrap.php','auth.php','private_state.php','fractions.php','practice.php','learning.php','lessons.php','tutor.php','deployment_check.php','initialize_database.php','api/index.php'):
+    for name in ('bootstrap.php','auth.php','private_state.php','fractions.php','practice.php','learning.php','lessons.php','tutor.php','curriculum_library.php','deployment_check.php','initialize_database.php','api/index.php'):
         entries.append((ROOT/'php'/name,'chalo-private/php/'+name))
-    entries.extend([(ROOT/'data/lesson_plans.json','chalo-private/data/lesson_plans.json'),
+    entries.extend([(ROOT/'data/curriculum_sources.json','chalo-private/data/curriculum_sources.json'),
+                    (ROOT/'data/lesson_plans.json','chalo-private/data/lesson_plans.json'),
                     (ROOT/'data/telangana_syllabus.json','chalo-private/data/telangana_syllabus.json'),
                     (ROOT/'.env.hostinger.example','chalo-private/.env.example'),
                     (ROOT/'HOSTINGER_DEPLOYMENT.md','DEPLOYMENT.md')])
