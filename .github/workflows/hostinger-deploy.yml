@@ -1,0 +1,44 @@
+name: Hostinger release
+on:
+  push:
+    branches: [deploy/hostinger-release]
+permissions:
+  contents: read
+concurrency:
+  group: hostinger-release
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test tests/hostinger_frontend.test.cjs
+      - run: python tests/test_hostinger_package.py
+      - run: python tests/test_hostinger_deploy.py
+      - run: find php deploy/hostinger -name '*.php' -print0 | xargs -0 -n1 php -l
+      - run: python -m pip install paramiko==4.0.0
+      - run: python scripts/deploy_hostinger.py
+        env:
+          HOSTINGER_DOMAIN: ${{ vars.HOSTINGER_DOMAIN }}
+          HOSTINGER_SSH_FINGERPRINT: ${{ vars.HOSTINGER_SSH_FINGERPRINT }}
+          HOSTINGER_SSH_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
+          HOSTINGER_SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT }}
+          HOSTINGER_SSH_USER: ${{ secrets.HOSTINGER_SSH_USER }}
+          HOSTINGER_SSH_PASSWORD: ${{ secrets.HOSTINGER_SSH_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_MODEL: ${{ secrets.GROQ_MODEL }}
+          FISH_AUDIO_API_KEY: ${{ secrets.FISH_AUDIO_API_KEY }}
+          FISH_AUDIO_MODEL: ${{ secrets.FISH_AUDIO_MODEL }}
+          FISH_AUDIO_VOICE_ID: ${{ secrets.FISH_AUDIO_VOICE_ID }}

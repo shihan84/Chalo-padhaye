@@ -13,3 +13,9 @@ Check `/`, `/core.js`, `/api/config` and `/api/health`. Health must report `ok:t
 This is an account/profile release. Trusted textbook tutoring remains unavailable and server-owned assessments, rate limits, account recovery and hosted browser verification remain open. Prefer a separate staging domain for first deployment.
 
 Hostinger references: https://www.hostinger.com/support/1583307-how-to-create-an-htaccess-file-at-hostinger/ and https://support.hostinger.com/en/articles/6152127-how-to-deploy-laravel-8-at-hostinger (public-root separation guidance).
+
+## SSH workflow
+
+`.github/workflows/hostinger-deploy.yml` deploys only on pushes to `deploy/hostinger-release`. It uses the existing `HOSTINGER_SSH_HOST`, `HOSTINGER_SSH_PORT`, `HOSTINGER_SSH_USER`, `HOSTINGER_SSH_PASSWORD`, database and model secrets. Set repository variables `HOSTINGER_DOMAIN` (the exact existing Hostinger domain) and `HOSTINGER_SSH_FINGERPRINT` (trusted `SHA256:...` server host key fingerprint). Verify the fingerprint through a trusted Hostinger channel before setting it; the script checks it before sending the SSH password. No secret values are printed.
+
+The SSH script selects the domain directory under the authenticated home, retains previous versions of replaced files in a private backup folder, writes environment configuration outside `public_html`, and restores replaced files if upload/HTTPS database health fails. It does not import SQL or alter DNS. Directory-layout, SFTP extension, PHP permissions and Apache routing compatibility still require a first staging run; an SSH fingerprint or passing unit tests alone do not establish deployment success.
