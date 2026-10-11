@@ -3,7 +3,8 @@ declare(strict_types=1);
 // CLI only: report readiness without credentials or family records.
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 require_once __DIR__.'/bootstrap.php';
-$out=['php'=>PHP_VERSION,'pdo_mysql'=>extension_loaded('pdo_mysql'),'curl'=>extension_loaded('curl'),'database'=>false,'schema'=>false,'missing_tables'=>[]];
+require_once __DIR__.'/private_state.php';
+$out=['private_storage'=>private_storage_ready(),'php'=>PHP_VERSION,'pdo_mysql'=>extension_loaded('pdo_mysql'),'curl'=>extension_loaded('curl'),'database'=>false,'schema'=>false,'missing_tables'=>[]];
 try {
     $pdo=db();$pdo->query('SELECT 1');$out['database']=true;
     $q=$pdo->query('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE()');

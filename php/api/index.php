@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once dirname(__DIR__) . '/tutor.php';
+require_once dirname(__DIR__) . '/practice.php';
 
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $uri=parse_url($_SERVER['REQUEST_URI']??'/',PHP_URL_PATH)?:'/';
@@ -16,8 +17,8 @@ try {
             }
             $schema=true;
         } catch(Throwable $e) {}
-        $ready=$database && $schema;
-        json_response(['ok'=>$ready,'runtime'=>'php','database'=>$database,'schema'=>$schema,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$ready?200:503);
+        $storage=private_storage_ready();$ready=$database && $schema && $storage;
+        json_response(['ok'=>$ready,'runtime'=>'php','database'=>$database,'schema'=>$schema,'private_storage'=>$storage,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$ready?200:503);
     }
     if ($method==='GET' && $path==='/syllabus') {
         $curr=query_param('curriculum','telangana');$raw=query_param('grade','10');
@@ -28,6 +29,18 @@ try {
     }
     if ($method==='GET' && $path==='/config') json_response(['backend'=>'hostinger-php','auth'=>'mysql','custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))]);
 
+    if ($method==='GET' && $path==='/practice') {
+        $sid=(string)($_GET['student_id']??'');require_student_access($sid);json_response(practice_read($sid));
+    }
+    if ($method==='POST' && in_array($path,['/practice/start','/practice/answer'],true)) {
+        $b=request_json();$sid=(string)($b['student_id']??'');require_student_access($sid);
+        json_response($path==='/practice/start'?practice_start($sid):practice_update($sid,$b));
+    }
+    // Client-provided assessment/counts cannot establish mastery.
+    if ($method==='POST' && in_array($path,['/lessons/step','/lessons/test'],true)) {
+        $b=request_json();require_student_access((string)($b['student_id']??''));
+        json_response(['error'=>'Use server-graded foundation practice. Board lesson assessment is not available yet'],409);
+    }
     if ($method==='POST' && $path==='/auth/register') json_response(register_parent(request_json()),201);
     if ($method==='POST' && $path==='/auth/login') json_response(login_user(request_json()));
     if ($method==='POST' && $path==='/auth/logout') { require_user(); logout_user(); json_response(['ok'=>true]); }
@@ -85,6 +98,7 @@ try {
     }
 
     if ($method==='POST' && $path==='/auth/student/register') {
+        consume_limit('student_register',client_ip(),30,3600);
         $b=request_json(); $email=strtolower(trim((string)($b['email']??'')));$password=(string)($b['password']??'');$code=strtoupper(trim((string)($b['invite_code']??'')));
         if(!filter_var($email,FILTER_VALIDATE_EMAIL)||strlen($password)<8||strlen($password)>72||$code==='')json_response(['error'=>'Valid email, password (8-72 bytes), and invite code required'],422);
         $pdo=db();$pdo->beginTransaction();
@@ -127,7 +141,7 @@ try {
         $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);json_response(['curriculum'=>$curr,'level'=>level_label($student,$curr),'subjects'=>roadmap_data($student,$curr,student_progress_rows($id))]);
     }
     if ($method==='GET' && $path==='/daily-plan') {
-        $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);$items=daily_plan_data($student,$curr,student_progress_rows($id));$planned=[];foreach(student_records($id) as $r){if($r['status']!=='planned'||($r['due_date']&&$r['due_date']>gmdate('Y-m-d')))continue;$planned[]=['kind'=>'portfolio','record_id'=>$r['id'],'record_type'=>$r['record_type'],'title'=>$r['title'],'minutes'=>(int)$r['minutes'],'reason'=>'Parent-planned activity','subject'=>$r['subject']];if(count($planned)>=3)break;}$items=array_merge($planned,$items);
+        $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);$items=daily_plan_data($student,$curr,student_progress_rows($id));$planned=[];foreach(student_records($id) as $r){if($r['status']!=='planned'||($r['due_date']&&$r['due_date']>gmdate('Y-m-d')))continue;$planned[]=['kind'=>'portfolio','record_id'=>$r['id'],'record_type'=>$r['record_type'],'title'=>$r['title'],'minutes'=>(int)$r['minutes'],'reason'=>'Parent-planned activity','subject'=>$r['subject']];if(count($planned)>=3)break;}$items=array_merge($planned,[['kind'=>'practice','title'=>'Maths foundation practice','minutes'=>15,'reason'=>'Ten fresh addition and subtraction questions; independently authored admission practice','supplemental'=>true]],$items);
         json_response(['curriculum'=>$curr,'level'=>level_label($student,$curr),'items'=>$items,'total_minutes'=>array_sum(array_map(fn($x)=>max(0,(int)($x['minutes']??0)),$items)),'portfolio_available'=>true,'note'=>'This is a Chalo Padhaye study plan. Include breaks and adjust the pace to the child.']);
     }
     if ($method==='GET' && $path==='/catalog') json_response(curriculum_catalog());
@@ -138,15 +152,6 @@ try {
     }
     if ($method==='POST' && $path==='/lessons/start') {
         $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');if(!in_array($c,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);json_response(['ok'=>true,'lesson'=>$lesson,'progress'=>$p]);
-    }
-    if ($method==='POST' && $path==='/lessons/step') {
-        $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');$step=(string)($b['step_id']??'');$assessment=(string)($b['assessment']??'not_answer');$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);$templates=lesson_steps_template();$template=null;foreach($templates as$t)if($t['id']===$step)$template=$t;if(!$template||$step==='test')json_response(['error'=>'Unknown lesson step'],400);$rows=ensure_steps($sid,$p);$sr=null;foreach($rows as$r)if($r['step_id']===$step)$sr=$r;if(!$sr)json_response(['error'=>'Lesson step record not found'],404);if($sr['status']==='completed'||$p['status']==='mastered')json_response(['ok'=>true,'step'=>$sr,'progress'=>$p]);if($step!==$p['current_step'])json_response(['error'=>'This is not the current lesson step'],403);if($sr['status']==='locked')json_response(['error'=>'Complete the previous lesson step first'],403);
-        $attempts=(int)$sr['attempts'];$correct=(int)$sr['correct_count'];if(in_array($assessment,['correct','partial','incorrect'],true)){$attempts++;if($assessment==='correct')$correct++;}$min=(int)($template['minimum_checks']??1);$completed=$step==='learn'?($attempts>=$min&&$correct>=1):($correct>=$min);$score=array_key_exists('score',$b)?max(0,min(100,(int)$b['score'])):$sr['score'];db()->prepare('UPDATE lesson_step_records SET status=?,attempts=?,correct_count=?,score=?,started_at=COALESCE(started_at,UTC_TIMESTAMP()),completed_at=IF(?,UTC_TIMESTAMP(),completed_at),updated_at=UTC_TIMESTAMP() WHERE id=?')->execute([$completed?'completed':'in_progress',$attempts,$correct,$score,$completed?1:0,$sr['id']]);
-        if($completed){$idx=0;foreach($templates as$i=>$t)if($t['id']===$step)$idx=$i;$next=$templates[$idx+1]??null;$percent=$templates?(int)round(($idx+1)*100/count($templates)):0;if($next){db()->prepare("UPDATE lesson_step_records SET status='available',updated_at=UTC_TIMESTAMP() WHERE lesson_progress_id=? AND step_id=? AND status='locked'")->execute([$p['id'],$next['id']]);}$status=($next&&$next['id']==='test')?'test_ready':'in_progress';db()->prepare('UPDATE lesson_progress SET status=?,current_step=?,percent_complete=?,updated_at=UTC_TIMESTAMP() WHERE id=?')->execute([$status,$next['id']??$step,$percent,$p['id']]);$p=get_progress($sid,$c,$subject,$lid);}
-        $q=db()->prepare('SELECT * FROM lesson_step_records WHERE id=?');$q->execute([$sr['id']]);json_response(['ok'=>true,'step'=>$q->fetch(),'progress'=>$p]);
-    }
-    if ($method==='POST' && $path==='/lessons/test') {
-        $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);if(!in_array($p['status'],['test_ready','parent_unlocked','mastered'],true))json_response(['error'=>'Complete Learn, Practice and Revision before the chapter test'],403);$qc=(int)($b['question_count']??5);$expected=5;foreach(lesson_steps_template() as$t)if($t['id']==='test')$expected=(int)($t['question_count']??5);$correct=(int)($b['correct_count']??0);if($qc!==$expected||$correct<0||$correct>$qc)json_response(['error'=>'Submit the full test with valid counts'],422);$score=(int)round($correct*100/$qc);$passed=$score>=lesson_pass_score();$mastered=$p['status']==='mastered';$attempt=(int)$p['test_attempts']+1;$summary=json_encode($b['summary']??[],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);db()->prepare('INSERT INTO lesson_test_attempts(id,student_id,lesson_progress_id,attempt_no,score,passed,correct_count,question_count,summary) VALUES(?,?,?,?,?,?,?,?,?)')->execute([uuid_v4(),$sid,$p['id'],$attempt,$score,$passed?1:0,$correct,$qc,$summary]);db()->prepare("UPDATE lesson_step_records SET status=?,attempts=?,correct_count=GREATEST(correct_count,?),score=?,started_at=COALESCE(started_at,UTC_TIMESTAMP()),completed_at=IF(?,COALESCE(completed_at,UTC_TIMESTAMP()),NULL),updated_at=UTC_TIMESTAMP() WHERE lesson_progress_id=? AND step_id='test'")->execute([($passed||$mastered)?'completed':'in_progress',$attempt,$correct,$score,($passed||$mastered)?1:0,$p['id']]);db()->prepare('UPDATE lesson_progress SET status=?,current_step="test",percent_complete=?,test_score=?,test_attempts=?,mastered_at=IF(?,COALESCE(mastered_at,UTC_TIMESTAMP()),NULL),updated_at=UTC_TIMESTAMP() WHERE id=?')->execute([($passed||$mastered)?'mastered':'test_ready',($passed||$mastered)?100:75,$mastered?max($score,(int)$p['test_score']):$score,$attempt,($passed||$mastered)?1:0,$p['id']]);json_response(['ok'=>true,'passed'=>$passed,'score'=>$score,'pass_score'=>lesson_pass_score(),'attempt_no'=>$attempt,'progress'=>get_progress($sid,$c,$subject,$lid)]);
     }
     if ($method==='POST' && $path==='/chat') {
         $b=request_json();$sid=(string)($b['student_id']??'');$message=trim((string)($b['message']??''));
@@ -168,12 +173,18 @@ try {
         $b=request_json();$sid=(string)($b['student_id']??'');$session=(string)($b['session_id']??'');require_student_access($sid);$q=db()->prepare('UPDATE tutor_sessions SET ended_at=UTC_TIMESTAMP() WHERE id=? AND student_id=? AND ended_at IS NULL');$q->execute([$session,$sid]);json_response(['ok'=>true]);
     }
     if ($method==='POST' && $path==='/tts') {
-        require_user();$b=request_json();$text=trim((string)($b['text']??''));$key=env_value('FISH_AUDIO_API_KEY');$voice=env_value('FISH_AUDIO_VOICE_ID');if(!$key||!$voice)json_response(['error'=>'Custom voice is not configured'],503);if($text==='')json_response(['error'=>'Text required'],422);if(strlen($text)>1800)$text=substr($text,0,1800);
-        $ch=curl_init('https://api.fish.audio/v1/tts');curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_RETURNTRANSFER=>true,CURLOPT_HTTPHEADER=>['Authorization: Bearer '.$key,'Content-Type: application/json'],CURLOPT_POSTFIELDS=>json_encode(['text'=>$text,'reference_id'=>$voice,'format'=>'mp3','model'=>env_value('FISH_AUDIO_MODEL','s2.1-pro-free')]),CURLOPT_TIMEOUT=>60]);$audio=curl_exec($ch);$status=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);$ct=(string)curl_getinfo($ch,CURLINFO_CONTENT_TYPE);curl_close($ch);if($audio===false||$status<200||$status>=300)json_response(['error'=>'Voice provider request failed'],502);http_response_code(200);header('Content-Type: '.($ct?:'audio/mpeg'));header('Cache-Control: no-store');echo $audio;exit;
+        $user=require_user();$b=request_json();$student=require_student_access((string)($b['student_id']??''));
+        consume_limit('voice_calls',$student['parent_id'],60,86400);
+        $text=trim((string)($b['text']??''));$key=env_value('FISH_AUDIO_API_KEY');$voice=env_value('FISH_AUDIO_VOICE_ID');if(!$key||!$voice)json_response(['error'=>'Custom voice is not configured'],503);if($text==='')json_response(['error'=>'Text required'],422);if(strlen($text)>1800)json_response(['error'=>'Voice text must be at most 1800 bytes'],422);consume_limit('voice_bytes',$student['parent_id'],36000,86400,strlen($text));
+        consume_limit('voice_burst',$student['parent_id'],3,60);
+        $ch=curl_init('https://api.fish.audio/v1/tts');curl_setopt_array($ch,[CURLOPT_POST=>true,CURLOPT_RETURNTRANSFER=>true,CURLOPT_HTTPHEADER=>['Authorization: Bearer '.$key,'Content-Type: application/json'],CURLOPT_POSTFIELDS=>json_encode(['text'=>$text,'reference_id'=>$voice,'format'=>'mp3','model'=>env_value('FISH_AUDIO_MODEL','s2.1-pro-free')]),CURLOPT_CONNECTTIMEOUT=>10,CURLOPT_TIMEOUT=>30]);$audio=curl_exec($ch);$status=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE);$ct=(string)curl_getinfo($ch,CURLINFO_CONTENT_TYPE);curl_close($ch);if($audio===false||$status<200||$status>=300)json_response(['error'=>'Voice provider request failed'],502);http_response_code(200);header('Content-Type: '.($ct?:'audio/mpeg'));header('Cache-Control: no-store');echo $audio;exit;
     }
 
     json_response(['error'=>'API route not implemented','path'=>$path],404);
+} catch(RequestFailure $e) {
+    if($e->status===429) header('Retry-After: 900');
+    json_response(['error'=>$e->getMessage()],$e->status);
 } catch(Throwable $e) {
-    error_log('Chalo Padhaye API error: '.$e->getMessage());
+    error_log('Chalo Padhaye API error: '.get_class($e));
     json_response(['error'=>'Internal server error'],500);
 }

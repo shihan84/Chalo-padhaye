@@ -51,3 +51,23 @@ test('changing class while a request is in flight keeps the newer syllabus',asyn
  const response=notice=>({ok:true,json:async()=>({notice,subjects:[]})});pending[1](response('Class 3'));await second;pending[0](response('Class 10'));await first;
  assert.equal(el('#syllabusNotice').textContent,'Class 3');
 });
+test('closing a session uses its original child after the selector changes',async()=>{
+ const calls=[];const c=vm.createContext({sessionId:'old-session',sessionStudentId:'child-a',current:()=>({id:'child-b'}),authFetch:async(url,o)=>{calls.push(JSON.parse(o.body))}});
+ vm.runInContext(fs.readFileSync('frontend/lessons.js','utf8').split('\n')[0],c);await c.endSession();
+ assert.equal(calls[0].student_id,'child-a');assert.equal(c.sessionId,null);assert.equal(c.sessionStudentId,null);
+});
+test('weekly planner shows a server error instead of an empty goals list',async()=>{
+ const elements=new Map(),el=id=>{if(!elements.has(id))elements.set(id,{innerHTML:'old',textContent:''});return elements.get(id)};
+ const c=vm.createContext({$:el,weekRequest:0,current:()=>({id:'a',grade:3}),curriculum:'telangana',esc:String,authFetch:async()=>({ok:false,json:async()=>({error:'Session expired'})})});
+ const line=fs.readFileSync('frontend/extras.js','utf8').split('\n').find(x=>x.startsWith('async function loadWeek('));vm.runInContext(line,c);await c.loadWeek();
+ assert.match(el('#weekPlan').innerHTML,/Session expired/);assert.equal(el('#goalList').innerHTML,'');
+});
+test('a delayed tutor response cannot enter the newly selected child chat',async()=>{
+ const elements=new Map(),el=id=>{if(!elements.has(id))elements.set(id,{value:id==='#subject'?'math':'',innerHTML:'',textContent:'',disabled:false,classList:{add(){},remove(){}},focus(){}});return elements.get(id)};
+ let resolve;const calls=[],messages=[];
+ const c=vm.createContext({$:el,$$:()=>[],chatBusy:false,contextGeneration:0,accessToken:'token',curriculum:'telangana',activity:'teach',activeLesson:null,sessionId:null,sessionStudentId:null,current:()=>({id:'child-a'}),stopVoice(){},add:t=>messages.push(t),authFetch:(u,o)=>{calls.push({u,body:JSON.parse(o.body)});return u==='/api/chat'?new Promise(r=>resolve=r):Promise.resolve({ok:true})}});
+ vm.runInContext(fs.readFileSync('frontend/interaction.js','utf8').replace(/installInteractionPanel\(\);\s*$/,''),c);
+ const pending=c.sendText('hello');c.current=()=>({id:'child-b'});c.contextGeneration++;
+ resolve({ok:true,json:async()=>({session_id:'old-reply-session',text:'Late reply'})});await pending;
+ assert.ok(!messages.includes('Late reply'));assert.equal(c.sessionId,null);assert.equal(calls.at(-1).body.student_id,'child-a');assert.equal(calls.at(-1).u,'/api/end-session');
+});
