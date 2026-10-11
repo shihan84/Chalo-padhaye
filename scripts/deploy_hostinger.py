@@ -69,7 +69,7 @@ def health(domain):
         if response.url!='https://'+domain+'/api/health':
             raise ValueError('Health check redirected away from the deployment URL')
         data=json.loads(response.read(65536))
-    if data.get('ok') is not True or data.get('database') is not True or data.get('runtime')!='php':
+    if data.get('ok') is not True or data.get('database') is not True or data.get('schema') is not True or data.get('runtime')!='php':
         raise ValueError('Hostinger PHP database health check failed')
 
 

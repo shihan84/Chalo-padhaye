@@ -8,8 +8,16 @@ $path='/' . ltrim((string)preg_replace('#^/api#','',$uri),'/');
 
 try {
     if ($method==='GET' && $path==='/health') {
-        $database=false; try { db()->query('SELECT 1'); $database=true; } catch(Throwable $e) {}
-        json_response(['ok'=>$database,'runtime'=>'php','database'=>$database,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$database?200:503);
+        $database=false; $schema=false;
+        try {
+            db()->query('SELECT 1'); $database=true;
+            foreach (['users','students','auth_sessions','student_invites','student_progress','tutor_sessions','tutor_messages','homeschool_records','lesson_progress','lesson_step_records','lesson_test_attempts'] as $table) {
+                db()->query('SELECT * FROM `'.$table.'` LIMIT 0');
+            }
+            $schema=true;
+        } catch(Throwable $e) {}
+        $ready=$database && $schema;
+        json_response(['ok'=>$ready,'runtime'=>'php','database'=>$database,'schema'=>$schema,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$ready?200:503);
     }
     if ($method==='GET' && $path==='/config') json_response(['backend'=>'hostinger-php','auth'=>'mysql','custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))]);
 

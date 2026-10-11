@@ -27,7 +27,7 @@ jobs:
       - run: python scripts/deploy_hostinger.py
         env:
           HOSTINGER_DOMAIN: chalopadhaye.com
-          HOSTINGER_SSH_FINGERPRINT: ${{ vars.HOSTINGER_SSH_FINGERPRINT }}
+          HOSTINGER_SSH_FINGERPRINT: SHA256:CTI5B54rLm/lNqrGkxMkE2PUXS1UPZiqGU17/hXAPWw
           HOSTINGER_SSH_HOST: ${{ secrets.HOSTINGER_SSH_HOST }}
           HOSTINGER_SSH_PORT: ${{ secrets.HOSTINGER_SSH_PORT }}
           HOSTINGER_SSH_USER: ${{ secrets.HOSTINGER_SSH_USER }}
