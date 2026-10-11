@@ -87,7 +87,7 @@ def health(domain):
         if response.url!='https://'+domain+'/api/health':
             raise ValueError('Health check redirected away from the deployment URL')
         data=json.loads(response.read(65536))
-    if data.get('ok') is not True or data.get('database') is not True or data.get('schema') is not True or data.get('runtime')!='php':
+    if data.get('ok') is not True or data.get('database') is not True or data.get('schema') is not True or data.get('runtime')!='php' or data.get('private_storage') is not True:
         raise ValueError('Hostinger PHP database health check failed')
 
 
@@ -101,7 +101,7 @@ def remote_readiness(transport,root):
     if channel.recv_exit_status()==0:
         try:
             readiness=json.loads(output)
-            print('Server readiness: '+json.dumps({key:readiness.get(key) for key in ('php','pdo_mysql','curl','database','schema','missing_tables','existing_tables','database_error_code','database_error_kind','configured_host_is_localhost','local_tcp_database','local_tcp_existing_tables','local_tcp_error_code')}),flush=True)
+            print('Server readiness: '+json.dumps({key:readiness.get(key) for key in ('php','pdo_mysql','curl','database','schema','private_storage','missing_tables','existing_tables','database_error_code','database_error_kind','configured_host_is_localhost','local_tcp_database','local_tcp_existing_tables','local_tcp_error_code')}),flush=True)
         except Exception:
             print('Server CLI check did not return readiness JSON',flush=True)
     else:
@@ -163,7 +163,7 @@ def deploy(env):
                                 raise ValueError('Empty-database initialization failed; review database state')
                             print('Fresh database initialized; no existing tables were modified',flush=True)
                             readiness=remote_readiness(transport,root)
-                        if readiness.get('database') is not True or readiness.get('schema') is not True:
+                        if readiness.get('database') is not True or readiness.get('schema') is not True or readiness.get('private_storage') is not True:
                             raise ValueError('Database/schema is not ready; public website has not been replaced')
                     target=root+'/'+name
                     ensure_dir(sftp,str(Path(target).parent))

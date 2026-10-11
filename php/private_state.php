@@ -12,7 +12,8 @@ function private_state(string $namespace, string $key, callable $update): mixed 
     if (!preg_match('/^[a-z_]+$/',$namespace)) throw new RuntimeException('Invalid storage namespace');
     if (!is_dir($root) && !@mkdir($root,0700,true) && !is_dir($root)) throw new RequestFailure(503,'Learning storage is temporarily unavailable');
     $path=$root.'/'.hash('sha256',$key).'.json';
-    if (is_link($path)) throw new RequestFailure(503,'Learning storage is temporarily unavailable');
+    if (!is_file($path) && $namespace==='limits' && count(glob($root.'/*.json')?:[])>=10000) throw new RequestFailure(503,'Please try again later');
+    if (is_link($path) || is_link($path.'.lock')) throw new RequestFailure(503,'Learning storage is temporarily unavailable');
     $file=@fopen($path.'.lock','c+');
     if (!$file) throw new RequestFailure(503,'Learning storage is temporarily unavailable');
     @chmod($path.'.lock',0600);
@@ -39,3 +40,8 @@ function consume_limit(string $scope,string $key,int $limit,int $seconds,int $co
     });
 }
 function client_ip(): string { return (string)($_SERVER['REMOTE_ADDR']??'unknown'); }
+
+function private_storage_ready(): bool {
+    try { private_state('readiness','storage',function(array &$s):void{$s=['checked'=>true];}); return true; }
+    catch(Throwable $e) { return false; }
+}

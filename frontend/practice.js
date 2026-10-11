@@ -15,10 +15,10 @@ function renderPractice(){
 }
 async function practiceCall(path,body){
  const p=current();if(!p)return;const request=++practiceRequest,token=accessToken;
- const r=await authFetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,student_id:p.id})}:{}),j=await r.json();
+ try{const r=await authFetch(path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,student_id:p.id})}:{}),j=await r.json();
  if(!practiceIsCurrent(request,p.id,token))return;
  if(!r.ok)throw new Error(j.error||'Practice could not be loaded');
- practiceData=j;renderPractice();$('#practiceStatus').textContent='';
+ practiceData=j;renderPractice();$('#practiceStatus').textContent='';}catch(e){if(practiceIsCurrent(request,p.id,token))throw e}
 }
 async function loadPractice(){practiceData=null;$('#practiceBody').innerHTML='<p>Loading practice...</p>';$('#practiceProgress').textContent='';const p=current();if(!p){practiceRequest++;return}try{await practiceCall(`/api/practice?student_id=${encodeURIComponent(p.id)}`)}catch(e){$('#practiceBody').textContent=e.message}}
 async function startPractice(){if(practiceBusy)return;if(practiceData&&practiceData.run&&!practiceData.run.completed&&!window.confirm('Start fresh questions? Your current unfinished practice will be replaced.'))return;practiceBusy=true;stopVoice();try{await practiceCall('/api/practice/start',{})}catch(e){$('#practiceStatus').textContent=e.message}finally{practiceBusy=false;if(practiceData)renderPractice()}}

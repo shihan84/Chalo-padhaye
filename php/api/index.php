@@ -17,8 +17,8 @@ try {
             }
             $schema=true;
         } catch(Throwable $e) {}
-        $ready=$database && $schema;
-        json_response(['ok'=>$ready,'runtime'=>'php','database'=>$database,'schema'=>$schema,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$ready?200:503);
+        $storage=private_storage_ready();$ready=$database && $schema && $storage;
+        json_response(['ok'=>$ready,'runtime'=>'php','database'=>$database,'schema'=>$schema,'private_storage'=>$storage,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$ready?200:503);
     }
     if ($method==='GET' && $path==='/syllabus') {
         $curr=query_param('curriculum','telangana');$raw=query_param('grade','10');

@@ -16,7 +16,7 @@ Scope: Hostinger PHP only. Separate feature PR; no main/Vercel edits and no bran
 
 No production database DDL is required. Practice and quota state is kept in `chalo-private/runtime` outside the web root, with hashed filenames, private permissions, process locks and atomic replacement. Release archives exclude runtime state; deployment and rollback do not replace it. Include the private runtime directory in hosting backups along with MySQL. This implementation targets the existing single Hostinger server, not a distributed cluster.
 
-Only the latest 20 completed practice runs and 100 question signatures are kept for each child. Counters reset on access after their windows expire. Recovery email, scheduled backup/retention jobs and multi-server state storage remain future work; they are not advertised as delivered.
+Only the latest 20 completed practice runs and 100 question signatures are kept for each child. Counters reset on access after their windows expire. Creation of quota files is capped at 10,000; storage exhaustion fails closed. Monitor this cap and archive expired quota state during maintenance while PHP workers are stopped. Deployment readiness verifies private storage writes before replacing the public entry page. Recovery email, scheduled backup/retention jobs and multi-server state storage remain future work; they are not advertised as delivered.
 
 ## Verification
 
