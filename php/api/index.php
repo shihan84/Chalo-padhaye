@@ -3,6 +3,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/tutor.php';
 require_once dirname(__DIR__) . '/practice.php';
 require_once dirname(__DIR__) . '/curriculum_library.php';
+require_once dirname(__DIR__) . '/maths_course.php';
 
 $method=$_SERVER['REQUEST_METHOD']??'GET';
 $uri=parse_url($_SERVER['REQUEST_URI']??'/',PHP_URL_PATH)?:'/';
@@ -37,6 +38,12 @@ try {
     }
     if ($method==='GET' && $path==='/config') json_response(['backend'=>'hostinger-php','auth'=>'mysql','custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))]);
 
+    if ($method==='GET' && $path==='/maths-course') {
+        $student=require_student_access((string)($_GET['student_id']??''));json_response(maths_state($student));
+    }
+    if ($method==='POST' && $path==='/maths-course') {
+        $b=request_json();$student=require_student_access((string)($b['student_id']??''));json_response(maths_state($student,$b));
+    }
     if ($method==='GET' && $path==='/practice') {
         $sid=(string)($_GET['student_id']??'');require_student_access($sid);json_response(practice_read($sid,practice_unit($_GET['unit']??PRACTICE_UNIT)));
     }
@@ -126,7 +133,7 @@ try {
     if ($method==='GET' && $path==='/dashboard') {
         $id=query_param('student_id','')??'';$student=require_student_access($id);$progress=student_progress_rows($id);$sessions=student_sessions($id);$records=student_records($id);
         $scores=array_values(array_map(fn($x)=>(int)$x['score'],array_filter($progress,fn($x)=>$x['score']!==null)));$weak=array_values(array_filter($progress,fn($x)=>(int)$x['attempts']>0));usort($weak,fn($a,$b)=>(int)$a['score']<=>(int)$b['score']);$mastered=array_filter($progress,fn($x)=>(int)$x['score']>=80);
-        json_response(['student'=>$student,'stats'=>['sessions'=>count($sessions),'topics'=>count($progress),'mastered'=>count($mastered),'average_mastery'=>$scores?(int)round(array_sum($scores)/count($scores)):0],'week'=>week_metrics($sessions,$records),'progress'=>$progress,'weak_topics'=>array_slice($weak,0,5),'recent_sessions'=>array_slice($sessions,0,8),'last_session'=>$sessions[0]??null,'portfolio_available'=>true,'recent_portfolio'=>array_slice($records,0,8)]);
+        json_response(['student'=>$student,'stats'=>['sessions'=>count($sessions),'topics'=>count($progress),'mastered'=>count($mastered),'average_mastery'=>$scores?(int)round(array_sum($scores)/count($scores)):0],'week'=>week_metrics($sessions,$records),'progress'=>$progress,'weak_topics'=>array_slice($weak,0,5),'recent_sessions'=>array_slice($sessions,0,8),'last_session'=>$sessions[0]??null,'portfolio_available'=>true,'recent_portfolio'=>array_slice($records,0,8),'maths_course'=>in_array((int)$student['grade'],[3,5],true)?maths_state($student):null]);
     }
     if ($method==='GET' && $path==='/portfolio') { $id=query_param('student_id','')??'';require_student_access($id);json_response(['available'=>true,'records'=>student_records($id),'migration'=>null]); }
     if ($method==='POST' && $path==='/portfolio') {
@@ -149,7 +156,7 @@ try {
         $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);json_response(['curriculum'=>$curr,'level'=>level_label($student,$curr),'subjects'=>roadmap_data($student,$curr,student_progress_rows($id))]);
     }
     if ($method==='GET' && $path==='/daily-plan') {
-        $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);$items=daily_plan_data($student,$curr,student_progress_rows($id));$planned=[];foreach(student_records($id) as $r){if($r['status']!=='planned'||($r['due_date']&&$r['due_date']>gmdate('Y-m-d')))continue;$planned[]=['kind'=>'portfolio','record_id'=>$r['id'],'record_type'=>$r['record_type'],'title'=>$r['title'],'minutes'=>(int)$r['minutes'],'reason'=>'Parent-planned activity','subject'=>$r['subject']];if(count($planned)>=3)break;}$items=array_merge($planned,[['kind'=>'practice','unit'=>(int)$student['grade']>=5?FRACTIONS_UNIT:PRACTICE_UNIT,'title'=>(int)$student['grade']>=5?'Class 5 fractions practice':'Class 3 addition and subtraction','minutes'=>15,'reason'=>'Ten fresh questions; independently authored admission practice','supplemental'=>true]],$items);
+        $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);$items=daily_plan_data($student,$curr,student_progress_rows($id));$planned=[];foreach(student_records($id) as $r){if($r['status']!=='planned'||($r['due_date']&&$r['due_date']>gmdate('Y-m-d')))continue;$planned[]=['kind'=>'portfolio','record_id'=>$r['id'],'record_type'=>$r['record_type'],'title'=>$r['title'],'minutes'=>(int)$r['minutes'],'reason'=>'Parent-planned activity','subject'=>$r['subject']];if(count($planned)>=3)break;}$guided=[];if($curr==='maharashtra'&&in_array((int)$student['grade'],[3,5],true)){$maths=maths_state($student);$guided=[['kind'=>'maths_course','title'=>'Guided Maharashtra mathematics','minutes'=>15,'reason'=>$maths['mastered_checkpoints'].' chapter skill checkpoints passed; resume learning or revise weak skills']];}$items=array_merge($guided,$planned,[['kind'=>'practice','unit'=>(int)$student['grade']>=5?FRACTIONS_UNIT:PRACTICE_UNIT,'title'=>(int)$student['grade']>=5?'Class 5 fractions practice':'Class 3 addition and subtraction','minutes'=>15,'reason'=>'Ten fresh questions; independently authored admission practice','supplemental'=>true]],$items);
         json_response(['curriculum'=>$curr,'level'=>level_label($student,$curr),'items'=>$items,'total_minutes'=>array_sum(array_map(fn($x)=>max(0,(int)($x['minutes']??0)),$items)),'portfolio_available'=>true,'note'=>'This is a Chalo Padhaye study plan. Include breaks and adjust the pace to the child.']);
     }
     if ($method==='GET' && $path==='/catalog') json_response(curriculum_catalog());

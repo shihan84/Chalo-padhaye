@@ -1,0 +1,306 @@
+{
+  "version": 1,
+  "scope": "Independently authored skill lessons aligned to reviewed textbook chapters; not a complete exam syllabus or official textbook questions.",
+  "courses": {
+    "3": {
+      "book_id": "book-64d40e25d00ab6c5913f91ce",
+      "sha256": "64d40e25d00ab6c5913f91ce1aaaba94068e06870fa42cb51c6d9ac6ccf02918",
+      "edition": "First edition 2026; approved from 2026\u201327",
+      "chapters": [
+        {
+          "id": "mh3-math-01",
+          "title": "Find Shapes Around Us",
+          "pdf_page": 13,
+          "end_page": 18,
+          "skills": [
+            "solid_name",
+            "solid_faces"
+          ]
+        },
+        {
+          "id": "mh3-math-02",
+          "title": "Play with Numbers",
+          "pdf_page": 19,
+          "end_page": 36,
+          "skills": [
+            "place",
+            "compare"
+          ]
+        },
+        {
+          "id": "mh3-math-03",
+          "title": "Addition and Subtraction",
+          "pdf_page": 37,
+          "end_page": 48,
+          "skills": [
+            "add",
+            "sub"
+          ]
+        },
+        {
+          "id": "mh3-math-04",
+          "title": "Fractions",
+          "pdf_page": 49,
+          "end_page": 58,
+          "skills": [
+            "fraction"
+          ]
+        },
+        {
+          "id": "mh3-math-05",
+          "title": "Length and Weight",
+          "pdf_page": 59,
+          "end_page": 65,
+          "skills": [
+            "length",
+            "weight"
+          ]
+        },
+        {
+          "id": "mh3-math-06",
+          "title": "Data Handling",
+          "pdf_page": 66,
+          "end_page": 70,
+          "skills": [
+            "table_total",
+            "table_most"
+          ]
+        },
+        {
+          "id": "mh3-math-07",
+          "title": "Notion of Maps (Najri Nakasha)",
+          "pdf_page": 71,
+          "end_page": 77,
+          "skills": [
+            "position"
+          ]
+        },
+        {
+          "id": "mh3-math-08",
+          "title": "Multiplication",
+          "pdf_page": 78,
+          "end_page": 91,
+          "skills": [
+            "multiply"
+          ]
+        },
+        {
+          "id": "mh3-math-09",
+          "title": "Division",
+          "pdf_page": 92,
+          "end_page": 103,
+          "skills": [
+            "divide"
+          ]
+        },
+        {
+          "id": "mh3-math-10",
+          "title": "Fun with Shapes (Two-dimensional)",
+          "pdf_page": 104,
+          "end_page": 114,
+          "skills": [
+            "shape_sides"
+          ]
+        },
+        {
+          "id": "mh3-math-11",
+          "title": "Symmetry",
+          "pdf_page": 115,
+          "end_page": 118,
+          "skills": [
+            "symmetry"
+          ]
+        },
+        {
+          "id": "mh3-math-12",
+          "title": "Volume and Capacity",
+          "pdf_page": 119,
+          "end_page": 122,
+          "skills": [
+            "capacity"
+          ]
+        },
+        {
+          "id": "mh3-math-13",
+          "title": "Measurement of Time",
+          "pdf_page": 123,
+          "end_page": 130,
+          "skills": [
+            "clock_minutes",
+            "elapsed"
+          ]
+        },
+        {
+          "id": "mh3-math-14",
+          "title": "Patterns",
+          "pdf_page": 131,
+          "end_page": 140,
+          "skills": [
+            "sequence"
+          ]
+        }
+      ]
+    },
+    "5": {
+      "book_id": "book-f3462657b04cda3917e27702",
+      "sha256": "f3462657b04cda3917e277023f5dc3b7ea97252b4536ff337fab4b0533d91fd8",
+      "edition": "Publisher-listed copy; school-prescribed edition needs confirmation",
+      "chapters": [
+        {
+          "id": "mh5-math-01",
+          "title": "Roman Numerals",
+          "pdf_page": 11,
+          "end_page": 12,
+          "skills": [
+            "roman"
+          ]
+        },
+        {
+          "id": "mh5-math-02",
+          "title": "Number Work",
+          "pdf_page": 13,
+          "end_page": 19,
+          "skills": [
+            "place",
+            "compare"
+          ]
+        },
+        {
+          "id": "mh5-math-03",
+          "title": "Addition and Subtraction",
+          "pdf_page": 20,
+          "end_page": 24,
+          "skills": [
+            "add",
+            "sub"
+          ]
+        },
+        {
+          "id": "mh5-math-04",
+          "title": "Multiplication and Division",
+          "pdf_page": 25,
+          "end_page": 30,
+          "skills": [
+            "multiply",
+            "divide"
+          ]
+        },
+        {
+          "id": "mh5-math-05",
+          "title": "Fractions",
+          "pdf_page": 31,
+          "end_page": 43,
+          "skills": [
+            "fraction",
+            "fraction_add"
+          ]
+        },
+        {
+          "id": "mh5-math-06",
+          "title": "Angles",
+          "pdf_page": 44,
+          "end_page": 50,
+          "skills": [
+            "angle"
+          ]
+        },
+        {
+          "id": "mh5-math-07",
+          "title": "Circles",
+          "pdf_page": 51,
+          "end_page": 55,
+          "skills": [
+            "diameter"
+          ]
+        },
+        {
+          "id": "mh5-math-08",
+          "title": "Multiples and Factors",
+          "pdf_page": 56,
+          "end_page": 61,
+          "skills": [
+            "factor",
+            "multiply"
+          ]
+        },
+        {
+          "id": "mh5-math-09",
+          "title": "Decimal Fractions",
+          "pdf_page": 62,
+          "end_page": 68,
+          "skills": [
+            "decimal"
+          ]
+        },
+        {
+          "id": "mh5-math-10",
+          "title": "Measuring Time",
+          "pdf_page": 69,
+          "end_page": 73,
+          "skills": [
+            "elapsed"
+          ]
+        },
+        {
+          "id": "mh5-math-11",
+          "title": "Problems on Measurement",
+          "pdf_page": 74,
+          "end_page": 77,
+          "skills": [
+            "length",
+            "weight",
+            "capacity"
+          ]
+        },
+        {
+          "id": "mh5-math-12",
+          "title": "Perimeter and Area",
+          "pdf_page": 78,
+          "end_page": 84,
+          "skills": [
+            "perimeter",
+            "area"
+          ]
+        },
+        {
+          "id": "mh5-math-13",
+          "title": "Three Dimensional Objects and Nets",
+          "pdf_page": 85,
+          "end_page": 88,
+          "skills": [
+            "solid_faces",
+            "net"
+          ]
+        },
+        {
+          "id": "mh5-math-14",
+          "title": "Pictographs",
+          "pdf_page": 89,
+          "end_page": 92,
+          "skills": [
+            "table_total",
+            "table_most"
+          ]
+        },
+        {
+          "id": "mh5-math-15",
+          "title": "Patterns",
+          "pdf_page": 93,
+          "end_page": 95,
+          "skills": [
+            "sequence"
+          ]
+        },
+        {
+          "id": "mh5-math-16",
+          "title": "Preparation for Algebra",
+          "pdf_page": 96,
+          "end_page": 100,
+          "skills": [
+            "algebra"
+          ]
+        }
+      ]
+    }
+  }
+}

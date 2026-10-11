@@ -32,6 +32,17 @@ if (!str_contains($library['label'],'Level B')||count($library['books'])!==2) th
 [$status,$b]=call_api('POST','/auth/register',['email'=>'parent-b@example.invalid','password'=>'fixture-password-b']);expect($status,201,'Parent B registration');$tb=$b['access_token'];
 [$status,$row]=call_api('POST','/students',['full_name'=>'Fixture Child','grade'=>3],$ta);expect($status,201,'Student creation');$sid=$row['student']['id'];
 [$status]=call_api('GET','/students/'.$sid,[],$tb);expect($status,403,'Cross-parent profile denied');
+// Guided course uses authenticated family ownership and server-generated state.
+[$status]=call_api('GET','/maths-course?student_id='.$sid);expect($status,401,'Guided course requires auth');
+[$status]=call_api('GET','/maths-course?student_id='.$sid,[],$tb);expect($status,403,'Guided course family isolation');
+[$status,$course]=call_api('GET','/maths-course?student_id='.$sid,[],$ta);expect($status,200,'Guided Class 3 course');
+if(count($course['chapters'])!==14||$course['chapters'][1]['status']!=='locked')throw new RuntimeException('Guided chapter coverage/locks');
+$guided=['student_id'=>$sid,'action'=>'start','chapter_id'=>$course['chapters'][0]['id'],'request_id'=>uuid_v4()];
+[$status,$course]=call_api('POST','/maths-course',$guided,$ta);expect($status,200,'Start guided course');
+if(isset($course['run']['question']['answer']))throw new RuntimeException('Guided key leaked');
+[$status]=call_api('POST','/maths-course',$guided,$tb);expect($status,403,'Guided mutation family isolation');
+[$status]=call_api('POST','/maths-course',array_replace($guided,['request_id'=>uuid_v4(),'chapter_id'=>'mh5-math-01']),$ta);expect($status,422,'Guided wrong grade rejected');
+[$status]=call_api('POST','/maths-course',['student_id'=>$sid,'action'=>'answer','request_id'=>uuid_v4(),'run_id'=>$course['run']['id'],'question_id'=>$course['run']['question']['id'],'answer'=>[], 'score'=>100],$ta);expect($status,422,'Malformed guided answer cannot manufacture score');
 [$status,$invite]=call_api('POST','/students/'.$sid.'/invite',[],$ta);expect($status,201,'Create invite');if(strlen($invite['invite_code'])!==32)throw new RuntimeException('Invite should be 128-bit hex');
 [$status,$child]=call_api('POST','/auth/student/register',['email'=>'student@example.invalid','password'=>'fixture-password-c','invite_code'=>$invite['invite_code']]);expect($status,201,'Claim invite');$tc=$child['access_token'];
 [$status]=call_api('POST','/students/'.$sid.'/invite',[],$ta);expect($status,409,'Linked account cannot be implicitly replaced');

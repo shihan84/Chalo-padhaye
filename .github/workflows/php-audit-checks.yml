@@ -1,7 +1,7 @@
 name: PHP audit checks
 on:
   pull_request:
-    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus, test/hostinger-functional-validation, feature/hostinger-learning-foundation, feature/hostinger-class5-fractions, feature/hostinger-curriculum-library, feature/hostinger-grounded-textbooks]
+    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus, test/hostinger-functional-validation, feature/hostinger-learning-foundation, feature/hostinger-class5-fractions, feature/hostinger-curriculum-library, feature/hostinger-grounded-textbooks, audit/hostinger-textbooks-2026-10-11]
   push:
     branches: [hostinger-php]
 permissions:
@@ -18,6 +18,7 @@ jobs:
       - run: python tests/test_curriculum_sources.py
       - run: python tests/test_textbook_corpus.py
       - run: php tests/php_textbook_regressions.php
+      - run: php tests/php_maths_course_regressions.php
       - run: python tests/test_hostinger_package.py
       - run: python tests/test_hostinger_deploy.py
       - run: php -l deploy/hostinger/index.php
@@ -67,6 +68,7 @@ jobs:
             sleep 1
           done
           NODE_PATH=/tmp/chalo-browser/node_modules node tests/hostinger_browser.cjs
+          NODE_PATH=/tmp/chalo-browser/node_modules node tests/hostinger_maths_browser.cjs
           php tests/php_http_integration.php
       - uses: actions/upload-artifact@v4
         if: always()

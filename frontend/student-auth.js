@@ -73,6 +73,8 @@ async function loadStudents(){
   const user=await authUser();cpAuthUserId=user.id;cpAccountRole=user.role;
   const j=await mysqlRequest('/api/students',undefined,true);students=j.students||[];
   $('#student').innerHTML='';students.forEach(s=>$('#student').add(new Option(`${s.full_name} — Grade ${s.grade} — ${s.board||''}`,s.id)));
+  const savedChild=sessionStorage.getItem('cp_selected_child:'+user.id);
+  if(students.some(s=>s.id===savedChild))$('#student').value=savedChild;
   $('#childProfileCard').classList.toggle('hidden',cpAccountRole!=='parent');
   if(cpAccountRole==='student'&&!students.length)throw new Error('This account has no linked learning profile.');
   curriculum=preferredSchoolCurriculum();updateModeUI();applyAccountRole();
