@@ -8,11 +8,13 @@ import os
 from pathlib import Path
 import re
 import socket
+import shlex
 import stat
 import sys
 import tempfile
 import time
 from urllib.request import urlopen
+from urllib.error import HTTPError
 from zipfile import ZipFile
 from build_hostinger import build
 
@@ -71,7 +73,17 @@ def ensure_dir(sftp,path):
 
 def health(domain):
     # System HTTPS trust remains enabled; reject cross-domain redirects.
-    with urlopen('https://'+domain+'/api/health',timeout=20) as response:
+    try:
+        response=urlopen('https://'+domain+'/api/health',timeout=20)
+    except HTTPError as error:
+        print('Live health HTTP status: '+str(error.code),flush=True)
+        try:
+            status=json.loads(error.read(65536))
+            print('Live readiness: '+json.dumps({key:status.get(key) for key in ('ok','database','schema','runtime')}),flush=True)
+        except Exception:
+            print('Live health did not return application JSON',flush=True)
+        raise
+    with response:
         if response.url!='https://'+domain+'/api/health':
             raise ValueError('Health check redirected away from the deployment URL')
         data=json.loads(response.read(65536))
@@ -133,6 +145,20 @@ def deploy(env):
                     sftp.chmod(candidate,0o600 if name=='chalo-private/.env' else 0o644)
                     sftp.posix_rename(candidate,target)
                     changed.append((target,old))
+                stage('Checking server PHP/database readiness')
+                channel=transport.open_session(timeout=20)
+                channel.settimeout(30)
+                channel.exec_command('php '+shlex.quote(root+'/chalo-private/php/deployment_check.php'))
+                output=channel.makefile('rb').read(16384)
+                if channel.recv_exit_status()==0:
+                    try:
+                        readiness=json.loads(output)
+                        print('Server readiness: '+json.dumps({key:readiness.get(key) for key in ('php','pdo_mysql','curl','database','schema','missing_tables','existing_tables','database_error_code')}),flush=True)
+                    except Exception:
+                        print('Server CLI check did not return readiness JSON',flush=True)
+                else:
+                    print('Server CLI check could not run',flush=True)
+                channel.close()
                 stage('Checking live HTTPS PHP and database health')
                 health(domain)
             except Exception as failure:
