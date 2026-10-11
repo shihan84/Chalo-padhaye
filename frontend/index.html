@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chalo Padhaye</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/app.css?v=20261011-hostinger">
+<link rel="stylesheet" href="/app.css?v=20261011-telangana">
 </head>
 <body>
 <div class="top"><div><h1>Chalo Padhaye 📚</h1><p id="subtitle" class="sub">School + Homeschool Learning</p></div><button id="logout" class="hidden">Logout</button></div>
@@ -12,7 +12,8 @@
 <div class="studentbar"><select id="student"></select><div class="nav"><button data-tab="learn" class="active">📖 Learn</button><button data-tab="today">🗓️ Today</button><button data-tab="week">📅 Week</button><button data-tab="roadmap">🧭 Roadmap</button><button data-tab="parent">📊 Parent</button></div></div>
 <section id="learnPanel">
 <div id="resumeCard" class="card hero hidden"><div class="section-title"><div><b>Continue last lesson</b><div id="resumeText" class="small"></div></div><button id="resumeBtn" class="primary">Continue</button></div></div>
-<div class="modes"><button id="schoolMode" class="mode active">🏫 <b>School Study</b><br><span class="small">Student's school board</span></button><button id="homeMode" class="mode">🏠 <b>Homeschool Learning</b><br><span class="small">NIOS OBE + labelled supplements</span></button><button id="cbseMode" class="mode">🎓 <b>CBSE Study</b><br><span class="small">CBSE 2026–27 + official NCERT</span></button></div>
+<div class="modes"><button id="schoolMode" class="mode active">🏫 <b>School Study</b><br><span class="small">Student's school board</span></button><button id="homeMode" class="mode">🏠 <b>Homeschool Learning</b><br><span class="small">NIOS OBE + labelled supplements</span></button><button id="cbseMode" class="mode">🎓 <b>CBSE Study</b><br><span class="small">CBSE 2026–27 + official NCERT</span></button><button id="telanganaMode" class="mode">📚 <b>Telangana Study</b><br><span class="small">State Board + SSC syllabus</span></button></div>
+<div id="syllabusCard" class="card hidden"><div class="section-title"><div><h2>Telangana Syllabus</h2><p class="sub">SCERT textbooks and chapter outlines</p></div><label>Class <select id="syllabusGrade" aria-label="Syllabus class"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10 — SSC</option></select></label></div><p id="syllabusNotice" class="notice"></p><p id="syllabusSources"></p><div id="syllabusList" class="lessonlist" aria-live="polite"></div></div>
 <div class="picker"><select id="subject"></select><div class="chips"><button class="chip active" data-activity="teach">Teach</button><button class="chip" data-activity="practice">Practice</button><button class="chip" data-activity="quiz">Quick Quiz</button><button class="chip" data-activity="revision">Revision</button><button class="chip" data-activity="reading">Reading</button><button class="chip" data-activity="project">Project</button></div></div>
 <div id="lessonCard" class="card"><div class="section-title"><div><h2>Chapter Progress</h2><p id="lessonSummary" class="sub">Choose a subject to load chapters.</p></div><button id="refreshLessons">Refresh</button></div><div id="activeLessonBanner" class="active-lesson hidden"></div><div id="lessonNotice" class="notice hidden"></div><div id="lessonList" class="lessonlist"></div></div>
 <div class="card"><div id="chat" class="chat"></div><div class="voicebar"><button id="replay" disabled>🔊 Replay</button><button id="stopVoice" class="stop" disabled>⏹ Stop</button><button id="mute">🔈 Voice on</button><select id="voiceChoice" title="Browser voice"></select><label class="range small">Speed <input id="speed" type="range" min="0.65" max="1.00" step="0.03" value="0.82"><span id="speedVal">0.82×</span></label><span id="voiceStatus" class="small"></span></div><div class="row"><button id="mic" class="yellow">🎤</button><select id="micLang" class="miclang"><option value="en-IN">English</option><option value="hi-IN">Hindi</option></select><input id="q" placeholder="Type or speak your answer..."><button id="send" class="primary">Send</button></div><div id="assessment" class="status"></div><p id="status" class="status"></p><p class="small">One concept → one question → wait → hint first. Tutor pace adapts when the learner is unsure or struggling.</p></div>
@@ -24,10 +25,10 @@
 </div>
 <footer style="text-align:center;padding:18px 10px 8px;color:#677283;font-size:13px">Project build by <strong style="color:#151515">Syeda Safa WajihUddin</strong></footer>
 <div id="toast" class="hidden" style="position:fixed;right:16px;bottom:16px;background:#111;color:#fff;padding:11px 14px;border-radius:11px;z-index:50"></div>
-<script src="/core.js?v=20261011-hostinger"></script>
-<script src="/lessons.js?v=20261011-hostinger"></script>
-<script src="/book.js?v=20261011-hostinger"></script>
-<script src="/interaction.js?v=20261011-hostinger"></script>
-<script src="/student-auth.js?v=20261011-hostinger"></script>
-<script src="/extras.js?v=20261011-hostinger"></script>
+<script src="/core.js?v=20261011-telangana"></script>
+<script src="/lessons.js?v=20261011-telangana"></script>
+<script src="/book.js?v=20261011-telangana"></script>
+<script src="/interaction.js?v=20261011-telangana"></script>
+<script src="/student-auth.js?v=20261011-telangana"></script>
+<script src="/extras.js?v=20261011-telangana"></script>
 </body></html>

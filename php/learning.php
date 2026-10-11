@@ -42,3 +42,13 @@ function daily_plan_data(array $student,string $curriculum,array $progress): arr
     $items=array_slice($items,0,$grade<=3?2:3);
     if($curriculum==='nios'){$items[]=['kind'=>'offline_suggestion','record_type'=>'reading','title'=>'Independent reading / read aloud','minutes'=>$grade<=3?15:20,'reason'=>'Daily reading habit'];$items[]=['kind'=>'offline_suggestion','record_type'=>'physical','title'=>'Movement / outdoor play','minutes'=>$grade<=3?20:25,'reason'=>'Daily physical activity'];}return $items;
 }
+
+// Public syllabus metadata contains no student data and never enables tutor retrieval.
+function telangana_syllabus(int $grade): ?array {
+    static $data=null;
+    if ($data===null) $data=json_decode((string)@file_get_contents(dirname(__DIR__).'/data/telangana_syllabus.json'),true)?:[];
+    $entry=$data['grades'][(string)$grade]??null;
+    if (!$entry) return null;
+    $metadata=$data;unset($metadata['grades']);
+    return $metadata+['grade'=>$grade,'label'=>$entry['label'],'subjects'=>$entry['subjects']];
+}

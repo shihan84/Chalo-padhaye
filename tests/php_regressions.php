@@ -19,4 +19,12 @@ check($answer['error']==='textbook_retrieval_unavailable','Missing retrieval mus
 check($answer['interaction']['type']==='none','No fabricated learner question');
 check(curriculum_catalog()['maharashtra']['3'][0]['available']===false,'Catalog must not claim retrieval availability');
 $u=uuid_v4();check((bool)preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/',$u),'UUID must be RFC 4122 v4');
+$ssc=telangana_syllabus(10);
+check($ssc['label']==='Telangana SSC Class 10','SSC should be explicitly labelled');
+check(telangana_syllabus(11)===null,'Unsupported classes must not invent syllabus');
+$subjects=array_column($ssc['subjects'],null,'id');
+check(count($subjects['math']['chapters'])===14,'Reference maths outline should load');
+check($subjects['english']['source_edition']==='2024–25 textbook','Older editions must be disclosed');
+check($subjects['physical_science']['outline_status']==='pending_verification','Unverified science outline must stay explicit');
+check(curriculum_catalog()['telangana']['10'][0]['available']===false,'Syllabus metadata must not enable ungrounded tutoring');
 echo "PHP helper regressions passed\n";

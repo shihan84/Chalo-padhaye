@@ -1,0 +1,501 @@
+{
+  "version": 1,
+  "curriculum": "telangana",
+  "publisher": "SCERT Telangana",
+  "medium": "English",
+  "directory_edition": "2025-26",
+  "reviewed_at": "2026-10-11",
+  "directory_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+  "syllabus_url": "https://www.scert.telangana.gov.in/Displaycontent.aspx?encry=Z%2B4YBPX%2BcaUE5uiQSu6xdg%3D%3D",
+  "notice": "The SCERT directory is labelled 2025–26. Chapter outlines below are edition-specific references, not a verified 2026–27 SSC exam syllabus. Confirm the current exam syllabus and language choices with your school. AI tutoring is not available yet.",
+  "grades": {
+    "1": {
+      "label": "Telangana State Board Class 1",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "2": {
+      "label": "Telangana State Board Class 2",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "3": {
+      "label": "Telangana State Board Class 3",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "evs",
+          "label": "Environmental Studies",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "4": {
+      "label": "Telangana State Board Class 4",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "evs",
+          "label": "Environmental Studies",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "5": {
+      "label": "Telangana State Board Class 5",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "evs",
+          "label": "Environmental Studies",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "6": {
+      "label": "Telangana State Board Class 6",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "general_science",
+          "label": "General Science",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "social_studies",
+          "label": "Social Studies",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "7": {
+      "label": "Telangana State Board Class 7",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "general_science",
+          "label": "General Science",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "social_studies",
+          "label": "Social Studies",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "8": {
+      "label": "Telangana State Board Class 8",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "physical_science",
+          "label": "Physical Science",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "biological_science",
+          "label": "Biological Science",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "social_studies",
+          "label": "Social Studies",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "environmental_education",
+          "label": "Environmental Education",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "9": {
+      "label": "Telangana State Board Class 9",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "physical_science",
+          "label": "Physical Science",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "biological_science",
+          "label": "Biological Science",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "social_studies",
+          "label": "Social Studies",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "environmental_education",
+          "label": "Environmental Education",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    },
+    "10": {
+      "label": "Telangana SSC Class 10",
+      "subjects": [
+        {
+          "id": "math",
+          "label": "Mathematics",
+          "chapters": [
+            "Real Numbers",
+            "Sets",
+            "Polynomials",
+            "Pair of Linear Equations in Two Variables",
+            "Quadratic Equations",
+            "Progressions",
+            "Coordinate Geometry",
+            "Similar Triangles",
+            "Tangents and Secants to a Circle",
+            "Mensuration",
+            "Trigonometry",
+            "Applications of Trigonometry",
+            "Probability",
+            "Statistics"
+          ],
+          "outline_status": "reference_outline",
+          "source_url": "https://scert.telangana.gov.in/PDF/publication/ebooks/10EM_MAT.pdf",
+          "source_edition": "Archived SCERT textbook; edition not verified"
+        },
+        {
+          "id": "english",
+          "label": "English",
+          "chapters": [
+            "Personality Development",
+            "Wit and Humour",
+            "Human Relations",
+            "Films and Theatre",
+            "Social Issues",
+            "Bio-Diversity",
+            "Nation and Diversity",
+            "Human Rights"
+          ],
+          "outline_status": "reference_outline",
+          "source_url": "https://scert.telangana.gov.in/pdf/publication/ebooks/10%20english%202024-25.pdf",
+          "source_edition": "2024–25 textbook"
+        },
+        {
+          "id": "languages",
+          "label": "School-selected languages",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "physical_science",
+          "label": "Physical Science",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "biological_science",
+          "label": "Biological Science",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        },
+        {
+          "id": "social_studies",
+          "label": "Social Studies",
+          "chapters": [
+            "India: Relief Features",
+            "Ideas of Development",
+            "Production and Employment",
+            "Climate of India",
+            "Indian Rivers and Water Resources",
+            "The Population",
+            "Settlements - Migrations",
+            "Rampur: A Village Economy",
+            "Globalisation",
+            "Food Security",
+            "Sustainable Development with Equity",
+            "World Between the World Wars",
+            "National Liberation Movements in the Colonies",
+            "National Movement in India—Partition & Independence: 1939–1947",
+            "The Making of Independent India’s Constitution",
+            "Election Process in India",
+            "Independent India (The First 30 Years: 1947–77)",
+            "Emerging Political Trends 1977 to 2000",
+            "Post-War World and India",
+            "Social Movements in Our Times",
+            "The Movement for the Formation of Telangana State"
+          ],
+          "outline_status": "reference_outline",
+          "source_url": "https://scert.telangana.gov.in/pdf/publication/ebooks2019/10%20social%20em-21.pdf",
+          "source_edition": "2021–22 textbook"
+        },
+        {
+          "id": "environmental_education",
+          "label": "Environmental Education",
+          "chapters": [],
+          "outline_status": "pending_verification",
+          "source_url": "https://www.scert.telangana.gov.in/DisplayContent.aspx?encry=ammkNW4%2Fgx%2BNeApstGPX%2BA%3D%3D",
+          "source_edition": "2025–26 directory; chapter outline pending"
+        }
+      ]
+    }
+  }
+}

@@ -18,6 +18,7 @@ class PackageTests(unittest.TestCase):
                 self.assertIn('public_html/index.php',names)
                 self.assertIn('chalo-private/php/api/index.php',names)
                 self.assertIn('chalo-private/.env.example',names)
+                self.assertIn('chalo-private/data/telangana_syllabus.json',names)
                 self.assertFalse(any(x.endswith('/.env') or '.git/' in x or x.endswith('.sql') or x.endswith('.pdf') for x in names))
                 self.assertEqual([x for x in names if x.startswith('public_html/') and x.endswith('.php')],['public_html/index.php'])
                 self.assertIn("dirname(__DIR__).'/chalo-private/php/api/index.php'",z.read('public_html/index.php').decode())
