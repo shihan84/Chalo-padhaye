@@ -19,6 +19,13 @@ try {
         $ready=$database && $schema;
         json_response(['ok'=>$ready,'runtime'=>'php','database'=>$database,'schema'=>$schema,'custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))],$ready?200:503);
     }
+    if ($method==='GET' && $path==='/syllabus') {
+        $curr=query_param('curriculum','telangana');$raw=query_param('grade','10');
+        if ($curr!=='telangana'||!preg_match('/^(?:[1-9]|10)$/',$raw??'')) json_response(['error'=>'Choose Telangana class 1–10'],422);
+        $result=telangana_syllabus((int)$raw);
+        if (!$result) json_response(['error'=>'Syllabus metadata is unavailable'],503);
+        json_response($result);
+    }
     if ($method==='GET' && $path==='/config') json_response(['backend'=>'hostinger-php','auth'=>'mysql','custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))]);
 
     if ($method==='POST' && $path==='/auth/register') json_response(register_parent(request_json()),201);

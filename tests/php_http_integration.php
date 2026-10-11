@@ -12,6 +12,10 @@ function call_api(string $method,string $path,array $body=[],?string $token=null
     return [(int)($m[1]??0),json_decode($raw?:'',true)];
 }
 function expect(int $actual,int $expected,string $name): void {if($actual!==$expected)throw new RuntimeException("$name: got $actual, expected $expected");}
+[$status,$syllabus]=call_api('GET','/syllabus?curriculum=telangana&grade=10');expect($status,200,'Public SSC syllabus');
+if(($syllabus['label']??'')!=='Telangana SSC Class 10'||count($syllabus['subjects']??[])<6)throw new RuntimeException('SSC subjects should be exposed independently of tutor availability');
+foreach (['11','0','3abc','10.5','../10'] as $grade) {[$status]=call_api('GET','/syllabus?grade='.rawurlencode($grade));expect($status,422,'Reject unsupported syllabus grade');}
+[$status]=call_api('GET','/syllabus?curriculum=cbse&grade=10');expect($status,422,'No incorrect cross-board syllabus');
 [$status,$a]=call_api('POST','/auth/register',['email'=>'parent-a@example.invalid','password'=>'fixture-password-a']);expect($status,201,'Parent A registration');$ta=$a['access_token'];
 [$status,$b]=call_api('POST','/auth/register',['email'=>'parent-b@example.invalid','password'=>'fixture-password-b']);expect($status,201,'Parent B registration');$tb=$b['access_token'];
 [$status,$row]=call_api('POST','/students',['full_name'=>'Fixture Child','grade'=>3],$ta);expect($status,201,'Student creation');$sid=$row['student']['id'];
