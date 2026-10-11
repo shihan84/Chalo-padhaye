@@ -117,6 +117,48 @@ if($resumed!==$practice)throw new RuntimeException('Practice state did not survi
 [$status,$fresh]=call_api('POST','/practice/start',['student_id'=>$sid],$ta);expect($status,200,'Fresh retry');
 if($fresh['run']['id']===$oldRun||in_array($fresh['run']['question']['prompt'],$signatures,true))throw new RuntimeException('Practice again reused old questions');
 [$status]=call_api('POST','/practice/answer',$next,$ta);expect($status,409,'Reject obsolete run');
+// Class 5 fractions have independent runs; answer payloads never select the question key.
+[$status]=call_api('GET','/practice?student_id='.$sid.'&unit=class5-fractions',[],$tb);expect($status,403,'Other family cannot read fractions');
+[$status]=call_api('GET','/practice?student_id='.$sid.'&unit=bogus',[],$ta);expect($status,422,'Reject unknown unit');
+[$status,$fraction]=call_api('POST','/practice/start',['student_id'=>$sid,'unit'=>'class5-fractions'],$ta);expect($status,200,'Start fractions');
+[$status,$kept]=call_api('GET','/practice?student_id='.$sid,[],$ta);expect($status,200,'Existing Class 3 still available');
+if($kept!==$fresh)throw new RuntimeException('Fractions overwrote Class 3 state');
+$fractionSignatures=[];
+for($index=0;$index<10;$index++){
+ $run=$fraction['run'];$q=$run['question'];$fractionSignatures[]=json_encode($q['bars']);
+ if(isset($q['answer'])||isset($q['signature']))throw new RuntimeException('Private answer fields leaked');
+ $answer=match($q['skill']){
+  'identify'=>($q['a']*2).'/'.($q['d']*2),
+  'equivalent'=>(string)($q['a']*intdiv($q['target'],$q['d'])),
+  'compare'=>($q['a']*$q['other_d'])===($q['b']*$q['d'])?'=':(($q['a']*$q['other_d'])<($q['b']*$q['d'])?'<':'>'),
+  'fraction_add'=>($q['a']+$q['b']).'/'.$q['d'],
+  'fraction_subtract'=>($q['a']-$q['b']).'/'.$q['d'],
+ };
+ $payload=['student_id'=>$sid,'unit'=>'class5-fractions','run_id'=>$run['id'],'question_id'=>$q['id'],'request_id'=>uuid_v4(),'answer'=>$answer];
+ if($index===0){
+  $bad=$payload;$bad['answer']='1/0';[$status]=call_api('POST','/practice/answer',$bad,$ta);expect($status,422,'Reject zero denominator');
+  $wrong=$payload;$wrong['answer']='999';$wrong['request_id']=uuid_v4();
+  [$status,$hint]=call_api('POST','/practice/answer',$wrong,$ta);expect($status,200,'Fraction hint after first wrong answer');
+  if(empty($hint['run']['question']['hint'])||$hint['run']['question']['resolved']||$hint['run']['question']['tries']!==1)throw new RuntimeException('Fractions hint/input validation failed');
+  [$status]=call_api('POST','/practice/answer',$payload,$tb);expect($status,403,'Other family cannot grade fractions');
+  $wrongUnit=$payload;$wrongUnit['unit']='class3-add-subtract';[$status]=call_api('POST','/practice/answer',$wrongUnit,$ta);expect($status,409,'Prevent run substitution between units');
+ }
+ [$status,$fraction]=call_api('POST','/practice/answer',$payload,$ta);expect($status,200,'Grade fraction skill');
+ [$status,$same]=call_api('POST','/practice/answer',$payload,$ta);expect($status,200,'Idempotent fraction answer');
+ if($same!==$fraction)throw new RuntimeException('Fraction answer replay changed the score');
+ if(!$fraction['run']['question']['resolved'])throw new RuntimeException('Correct fraction not accepted');
+ [$status,$fraction]=call_api('POST','/practice/answer',['student_id'=>$sid,'unit'=>'class5-fractions','run_id'=>$run['id'],'question_id'=>$q['id'],'request_id'=>uuid_v4(),'action'=>'next'],$ta);expect($status,200,'Advance fraction question');
+}
+$summary=$fraction['history'][0];
+if(!$fraction['run']['completed']||$summary['unassisted']!==9||count($summary['skills'])!==5)throw new RuntimeException('Fractions summary incorrect');
+foreach($summary['skills'] as $skill)if($skill['total']!==2)throw new RuntimeException('Fractions diagnostic is unbalanced');
+[$status,$saved]=call_api('GET','/practice?student_id='.$sid.'&unit=class5-fractions',[],$ta);expect($status,200,'Resume saved fractions');
+if($saved!==$fraction)throw new RuntimeException('Fractions result was not saved');
+[$status,$again]=call_api('POST','/practice/start',['student_id'=>$sid,'unit'=>'class5-fractions'],$ta);expect($status,200,'Fresh fraction retry');
+if(in_array(json_encode($again['run']['question']['bars']),$fractionSignatures,true))throw new RuntimeException('Fractions retry repeated an old shaded question');
+[$status,$plan]=call_api('GET','/daily-plan?student_id='.$sid.'&curriculum=telangana',[],$ta);expect($status,200,'Grade 5 plan');
+$blocks=array_values(array_filter($plan['items'],fn($x)=>$x['kind']==='practice'));
+if(($blocks[0]['unit']??'')!=='class5-fractions')throw new RuntimeException('Grade 5 plan did not choose fractions');
 [$status]=call_api('POST','/tts',['student_id'=>$sid,'text'=>'hello'],$tb);expect($status,403,'Other family cannot spend voice budget');
 db()->prepare('UPDATE auth_sessions SET expires_at=DATE_SUB(UTC_TIMESTAMP(),INTERVAL 1 MINUTE) WHERE token_hash=?')->execute([hash('sha256',$newToken)]);
 [$status]=call_api('GET','/auth/me',[],$newToken);expect($status,401,'Expired session denied');

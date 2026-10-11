@@ -30,11 +30,11 @@ try {
     if ($method==='GET' && $path==='/config') json_response(['backend'=>'hostinger-php','auth'=>'mysql','custom_voice'=>(bool)(env_value('FISH_AUDIO_API_KEY')&&env_value('FISH_AUDIO_VOICE_ID'))]);
 
     if ($method==='GET' && $path==='/practice') {
-        $sid=(string)($_GET['student_id']??'');require_student_access($sid);json_response(practice_read($sid));
+        $sid=(string)($_GET['student_id']??'');require_student_access($sid);json_response(practice_read($sid,practice_unit($_GET['unit']??PRACTICE_UNIT)));
     }
     if ($method==='POST' && in_array($path,['/practice/start','/practice/answer'],true)) {
         $b=request_json();$sid=(string)($b['student_id']??'');require_student_access($sid);
-        json_response($path==='/practice/start'?practice_start($sid):practice_update($sid,$b));
+        json_response($path==='/practice/start'?practice_start($sid,practice_unit($b['unit']??PRACTICE_UNIT)):practice_update($sid,$b));
     }
     // Client-provided assessment/counts cannot establish mastery.
     if ($method==='POST' && in_array($path,['/lessons/step','/lessons/test'],true)) {
@@ -141,7 +141,7 @@ try {
         $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);json_response(['curriculum'=>$curr,'level'=>level_label($student,$curr),'subjects'=>roadmap_data($student,$curr,student_progress_rows($id))]);
     }
     if ($method==='GET' && $path==='/daily-plan') {
-        $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);$items=daily_plan_data($student,$curr,student_progress_rows($id));$planned=[];foreach(student_records($id) as $r){if($r['status']!=='planned'||($r['due_date']&&$r['due_date']>gmdate('Y-m-d')))continue;$planned[]=['kind'=>'portfolio','record_id'=>$r['id'],'record_type'=>$r['record_type'],'title'=>$r['title'],'minutes'=>(int)$r['minutes'],'reason'=>'Parent-planned activity','subject'=>$r['subject']];if(count($planned)>=3)break;}$items=array_merge($planned,[['kind'=>'practice','title'=>'Maths foundation practice','minutes'=>15,'reason'=>'Ten fresh addition and subtraction questions; independently authored admission practice','supplemental'=>true]],$items);
+        $id=query_param('student_id','')??'';$curr=query_param('curriculum','nios')??'nios';if(!in_array($curr,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($id);$items=daily_plan_data($student,$curr,student_progress_rows($id));$planned=[];foreach(student_records($id) as $r){if($r['status']!=='planned'||($r['due_date']&&$r['due_date']>gmdate('Y-m-d')))continue;$planned[]=['kind'=>'portfolio','record_id'=>$r['id'],'record_type'=>$r['record_type'],'title'=>$r['title'],'minutes'=>(int)$r['minutes'],'reason'=>'Parent-planned activity','subject'=>$r['subject']];if(count($planned)>=3)break;}$items=array_merge($planned,[['kind'=>'practice','unit'=>(int)$student['grade']>=5?FRACTIONS_UNIT:PRACTICE_UNIT,'title'=>(int)$student['grade']>=5?'Class 5 fractions practice':'Class 3 addition and subtraction','minutes'=>15,'reason'=>'Ten fresh questions; independently authored admission practice','supplemental'=>true]],$items);
         json_response(['curriculum'=>$curr,'level'=>level_label($student,$curr),'items'=>$items,'total_minutes'=>array_sum(array_map(fn($x)=>max(0,(int)($x['minutes']??0)),$items)),'portfolio_available'=>true,'note'=>'This is a Chalo Padhaye study plan. Include breaks and adjust the pace to the child.']);
     }
     if ($method==='GET' && $path==='/catalog') json_response(curriculum_catalog());
