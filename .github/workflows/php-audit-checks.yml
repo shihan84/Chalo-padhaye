@@ -1,7 +1,7 @@
 name: PHP audit checks
 on:
   pull_request:
-    branches: [hostinger-php]
+    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10]
   push:
     branches: [hostinger-php]
 permissions:
@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test tests/hostinger_frontend.test.cjs
       - run: php -v
       - run: find php tests -name '*.php' -print0 | xargs -0 -n1 php -l
       - run: php tests/php_regressions.php

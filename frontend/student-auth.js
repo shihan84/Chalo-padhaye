@@ -9,13 +9,14 @@ function installStudentLoginUI(){
     <input id="email" type="email" placeholder="Parent email" autocomplete="email"><br><br>
     <input id="password" type="password" placeholder="Password" autocomplete="current-password"><br><br>
     <button id="loginBtn" class="primary">Login</button>
+    <div id="parentRegistration"><input id="parentName" maxlength="160" placeholder="Parent name (optional)"><button id="registerParent">Create parent account</button></div>
     <button id="showStudentSetup" class="hidden">First-time student setup</button>
     <div id="studentSetup" class="student-setup hidden">
       <h3>Create student account</h3>
       <p class="small">Use an email the family controls, create a password, and enter the invite code generated from the Parent Dashboard.</p>
       <input id="studentSetupEmail" type="email" placeholder="Student login email"><br><br>
-      <input id="studentSetupPassword" type="password" minlength="6" placeholder="Create password"><br><br>
-      <input id="studentInviteCode" maxlength="12" placeholder="Invite code"><br><br>
+      <input id="studentSetupPassword" type="password" minlength="8" placeholder="Create password"><br><br>
+      <input id="studentInviteCode" maxlength="32" placeholder="Invite code"><br><br>
       <button id="createStudentLogin" class="primary">Create & link student login</button>
     </div>
     <p id="loginStatus" class="status"></p>`;
@@ -24,10 +25,12 @@ function installStudentLoginUI(){
   $('#studentLoginTab').onclick=()=>setLoginMode('student');
   $('#showStudentSetup').onclick=()=>$('#studentSetup').classList.toggle('hidden');
   $('#createStudentLogin').onclick=createStudentLogin;
+  $('#registerParent').onclick=registerParent;
 }
 
 function setLoginMode(mode){
   cpLoginMode=mode;
+  $('#parentRegistration').classList.toggle('hidden',mode!=='parent');
   $('#parentLoginTab').classList.toggle('active',mode==='parent');
   $('#studentLoginTab').classList.toggle('active',mode==='student');
   $('#loginTitle').textContent=mode==='student'?'Student Login':'Parent Login';
@@ -38,44 +41,22 @@ function setLoginMode(mode){
   $('#loginStatus').textContent='';
 }
 
-async function authUser(){
-  const r=await fetch(`${CFG.supabase_url}/auth/v1/user`,{headers:{apikey:CFG.supabase_anon_key,Authorization:`Bearer ${accessToken}`}});
-  if(!r.ok)throw new Error('Login session could not be verified.');
-  return r.json();
+async function mysqlRequest(path, body, authenticated=false){
+  const opts=body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)};
+  const r=await (authenticated?authFetch(path,opts):fetch(path,opts));
+  const j=await r.json();if(!r.ok)throw new Error(j.error||j.detail||'Request failed');return j;
 }
-
-async function claimStudentInvite(code){
-  const r=await fetch(`${CFG.supabase_url}/rest/v1/rpc/claim_student_invite`,{method:'POST',headers:{apikey:CFG.supabase_anon_key,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({p_code:String(code||'').trim().toUpperCase()})});
-  let j=null;try{j=await r.json()}catch{}
-  if(!r.ok)throw new Error((j&&j.message)||'Invite code is invalid, expired, or student login migration is not installed.');
-  return j;
-}
-
+async function authUser(){return (await mysqlRequest('/api/auth/me',undefined,true)).user}
 async function createStudentLogin(){
-  const email=$('#studentSetupEmail').value.trim(),password=$('#studentSetupPassword').value,code=$('#studentInviteCode').value.trim();
-  if(!email||password.length<6||!code)return $('#loginStatus').textContent='Enter student email, password (6+ characters), and invite code.';
   $('#loginStatus').textContent='Creating student account...';
-  try{
-    const r=await fetch(`${CFG.supabase_url}/auth/v1/signup`,{method:'POST',headers:{apikey:CFG.supabase_anon_key,'Content-Type':'application/json'},body:JSON.stringify({email,password})});
-    const j=await r.json();if(!r.ok)throw new Error(j.msg||j.error_description||'Could not create student account');
-    localStorage.setItem('cp_pending_student_invite',code.toUpperCase());
-    localStorage.setItem('cp_pending_student_email',email);
-    if(j.access_token){
-      storeSession(j);await claimStudentInvite(code);localStorage.removeItem('cp_pending_student_invite');localStorage.removeItem('cp_pending_student_email');
-      cpLoginMode='student';await loadStudents();showLoggedInApp();
-    }else{
-      $('#loginStatus').textContent='Account created. Verify the student email if Supabase asks for confirmation, then use Student Login. The invite code is saved on this device.';
-      $('#email').value=email;$('#password').value='';$('#studentSetup').classList.add('hidden');
-    }
-  }catch(e){$('#loginStatus').textContent=e.message}
+  try{const j=await mysqlRequest('/api/auth/student/register',{email:$('#studentSetupEmail').value.trim(),password:$('#studentSetupPassword').value,invite_code:$('#studentInviteCode').value.trim()});storeSession(j);cpLoginMode='student';await loadStudents();showLoggedInApp()}catch(e){$('#loginStatus').textContent=e.message}
 }
-
-async function maybeClaimPendingInvite(user){
-  const code=localStorage.getItem('cp_pending_student_invite'),email=localStorage.getItem('cp_pending_student_email');
-  if(!code||!user)return;
-  if(email&&String(user.email||'').toLowerCase()!==email.toLowerCase())return;
-  await claimStudentInvite(code);
-  localStorage.removeItem('cp_pending_student_invite');localStorage.removeItem('cp_pending_student_email');
+async function registerParent(){
+  $('#loginStatus').textContent='Creating parent account...';
+  try{const j=await mysqlRequest('/api/auth/register',{email:$('#email').value.trim(),password:$('#password').value,full_name:$('#parentName').value.trim()});storeSession(j);cpLoginMode='parent';await loadStudents();showLoggedInApp()}catch(e){$('#loginStatus').textContent=e.message}
+}
+async function createChild(){
+  try{await mysqlRequest('/api/students',{full_name:$('#childName').value.trim(),grade:Number($('#childGrade').value),board:$('#childBoard').value,medium:'English'},true);$('#childName').value='';await loadStudents();showTab('learn');toast('Child profile created.')}catch(e){toast(e.message)}
 }
 
 function applyAccountRole(){
@@ -88,23 +69,13 @@ function applyAccountRole(){
 }
 
 async function loadStudents(){
-  const user=await authUser();cpAuthUserId=user.id||'';
-  try{await maybeClaimPendingInvite(user)}catch(e){if(cpLoginMode==='student')throw e}
-  let url=`${CFG.supabase_url}/rest/v1/students?select=id,full_name,grade,medium,board,student_user_id&order=created_at.asc`;
-  let r=await authFetch(url,{headers:{apikey:CFG.supabase_anon_key}});
-  if(!r.ok){
-    // Keep the parent app usable before 006_student_login.sql is installed.
-    r=await authFetch(`${CFG.supabase_url}/rest/v1/students?select=id,full_name,grade,medium,board&order=created_at.asc`,{headers:{apikey:CFG.supabase_anon_key}});
-    if(!r.ok)throw new Error('Could not load student profiles');
-  }
-  students=await r.json();
-  if(!students.length)throw new Error(cpLoginMode==='student'?'This login is not linked to a student profile yet. Use the parent-generated invite code.':'No student profiles found');
-  cpAccountRole=students.some(s=>s.student_user_id&&s.student_user_id===cpAuthUserId)?'student':'parent';
-  if(cpLoginMode==='student'&&cpAccountRole!=='student')throw new Error('This is a parent account. Use Parent Login.');
-  if(cpLoginMode==='parent'&&cpAccountRole==='student')throw new Error('This is a student account. Use Student Login.');
-  if(cpAccountRole==='student')students=students.filter(s=>s.student_user_id===cpAuthUserId);
+  const user=await authUser();cpAuthUserId=user.id;cpAccountRole=user.role;
+  const j=await mysqlRequest('/api/students',undefined,true);students=j.students||[];
   $('#student').innerHTML='';students.forEach(s=>$('#student').add(new Option(`${s.full_name} — Grade ${s.grade} — ${s.board||''}`,s.id)));
-  curriculum=preferredSchoolCurriculum();updateModeUI();applyAccountRole();await fillSubjects();loadResume();
+  $('#childProfileCard').classList.toggle('hidden',cpAccountRole!=='parent');
+  if(cpAccountRole==='student'&&!students.length)throw new Error('This account has no linked learning profile.');
+  curriculum=preferredSchoolCurriculum();updateModeUI();applyAccountRole();
+  if(students.length){await fillSubjects();loadResume()}else{showTab('parent');toast('Create your first child profile to begin.')}
 }
 
 function showLoggedInApp(){
@@ -113,10 +84,7 @@ function showLoggedInApp(){
 
 async function login(){
   $('#loginStatus').textContent='Signing in...';
-  try{
-    const r=await fetch(`${CFG.supabase_url}/auth/v1/token?grant_type=password`,{method:'POST',headers:{apikey:CFG.supabase_anon_key,'Content-Type':'application/json'},body:JSON.stringify({email:$('#email').value.trim(),password:$('#password').value})});
-    const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Login failed');storeSession(j);await loadStudents();showLoggedInApp();
-  }catch(e){accessToken='';sessionStorage.removeItem('cp_token');$('#loginStatus').textContent=e.message}
+  try{const j=await mysqlRequest('/api/auth/login',{email:$('#email').value.trim(),password:$('#password').value});storeSession(j);await loadStudents();showLoggedInApp()}catch(e){clearSession();$('#loginStatus').textContent=e.message}
 }
 
 function ensureStudentLoginCard(){
@@ -132,11 +100,15 @@ async function generateStudentInvite(){
   const p=current();if(!p)return;
   const out=$('#studentInviteResult');out.classList.remove('hidden');out.textContent='Generating secure invite...';
   try{
-    const r=await fetch(`${CFG.supabase_url}/rest/v1/rpc/create_student_invite`,{method:'POST',headers:{apikey:CFG.supabase_anon_key,Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({p_student_id:p.id})});
-    const j=await r.json();if(!r.ok)throw new Error(j.message||'Could not create invite. Run 006_student_login.sql first.');
-    const row=Array.isArray(j)?j[0]:j,code=row&&row.invite_code;if(!code)throw new Error('Invite code was not returned.');
+    const row=await mysqlRequest(`/api/students/${encodeURIComponent(p.id)}/invite`,{},true),code=row.invite_code;
+    if(!code)throw new Error('Invite code was not returned.');
     out.innerHTML=`Student: <b>${esc(p.full_name)}</b><br><br>Invite code: <code>${esc(code)}</code><br><span class="small">Expires ${row.expires_at?new Date(row.expires_at).toLocaleString():'in 24 hours'}.</span>`;
   }catch(e){out.textContent=e.message}
 }
 
-installStudentLoginUI();ensureStudentLoginCard();
+function installChildProfileUI(){
+  const card=document.createElement('div');card.id='childProfileCard';card.className='card no-print';
+  card.innerHTML=`<h2>Add child profile</h2><div class="formgrid"><input id="childName" maxlength="160" placeholder="Child name"><input id="childGrade" type="number" min="1" max="12" value="3"><select id="childBoard"><option>Maharashtra State Board</option><option>CBSE</option><option>Telangana SSC</option><option>NIOS</option></select></div><button id="createChild" class="primary">Create profile</button>`;
+  $('#parentPanel').insertBefore(card,$('#parentPanel').firstChild);$('#createChild').onclick=createChild;
+}
+installStudentLoginUI();ensureStudentLoginCard();installChildProfileUI();

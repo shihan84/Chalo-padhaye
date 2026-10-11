@@ -6,9 +6,10 @@ function toast(t){$('#toast').textContent=t;$('#toast').classList.remove('hidden
 function add(t,c){const d=document.createElement('div');d.className='msg '+c;d[c==='bot'?'innerHTML':'textContent']=c==='bot'?'<p>'+esc(t).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')+'</p>':t;$('#chat').appendChild(d);$('#chat').scrollTop=$('#chat').scrollHeight}
 function current(){return students.find(x=>x.id===$('#student').value)}
 function storeSession(j){accessToken=j.access_token||accessToken;refreshToken=j.refresh_token||refreshToken;if(accessToken)sessionStorage.setItem('cp_token',accessToken);if(refreshToken)sessionStorage.setItem('cp_refresh',refreshToken)}
-async function refreshSession(){if(!refreshToken)return false;try{const r=await fetch(`${CFG.supabase_url}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:CFG.supabase_anon_key,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:refreshToken})});const j=await r.json();if(!r.ok)return false;storeSession(j);return true}catch{return false}}
+function clearSession(){accessToken=refreshToken='';sessionStorage.removeItem('cp_token');sessionStorage.removeItem('cp_refresh')}
+async function refreshSession(){return false}
 async function authFetch(url,opts={}){let o={...opts,headers:{...(opts.headers||{}),Authorization:`Bearer ${accessToken}`}};let r=await fetch(url,o);if(r.status===401&&await refreshSession()){o={...opts,headers:{...(opts.headers||{}),Authorization:`Bearer ${accessToken}`}};r=await fetch(url,o)}return r}
-function preferredSchoolCurriculum(){const p=current();return p&&/cbse/i.test(p.board||'')?'cbse':'maharashtra'}
+function preferredSchoolCurriculum(){const p=current();return p&&/cbse/i.test(p.board||'')?'cbse':p&&/telangana/i.test(p.board||'')?'telangana':p&&/nios/i.test(p.board||'')?'nios':'maharashtra'}
 function subjectList(c=curriculum){const p=current();return p?((CATALOG[c]||{})[String(p.grade)]||[]):[]}
 function subjectLabel(id,c=curriculum,grade=(current()||{}).grade){return ((((CATALOG[c]||{})[String(grade)]||[]).find(x=>x.id===id)||{}).label)||id||'General'}
 function parseSubject(raw){if((raw||'').includes(':')){const [c,...r]=raw.split(':');return{curriculum:c,subject:r.join(':')}}return{curriculum:'maharashtra',subject:raw||''}}
