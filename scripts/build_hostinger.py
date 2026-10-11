@@ -8,17 +8,18 @@ ROOT=Path(__file__).resolve().parents[1]
 
 def build(output,corpus=None):
     entries=[]
-    for name in ('index.html','app.css','favicon.svg','core.js','lessons.js','book.js','interaction.js','student-auth.js','extras.js','practice.js'):
+    for name in ('index.html','app.css','favicon.svg','core.js','lessons.js','book.js','interaction.js','student-auth.js','extras.js','practice.js','maths-course.js'):
         entries.append((ROOT/'frontend'/name,'public_html/'+name))
     for name in ('index.php','.htaccess'):
         entries.append((ROOT/'deploy/hostinger'/name,'public_html/'+name))
-    for name in ('bootstrap.php','auth.php','private_state.php','fractions.php','practice.php','learning.php','lessons.php','textbook.php','tutor.php','curriculum_library.php','deployment_check.php','initialize_database.php','api/index.php'):
+    for name in ('bootstrap.php','auth.php','private_state.php','fractions.php','practice.php','learning.php','lessons.php','textbook.php','tutor.php','curriculum_library.php','maths_questions.php','maths_course.php','deployment_check.php','initialize_database.php','api/index.php'):
         entries.append((ROOT/'php'/name,'chalo-private/php/'+name))
     entries.extend([(ROOT/'data/curriculum_sources.json','chalo-private/data/curriculum_sources.json'),
                     (ROOT/'data/lesson_plans.json','chalo-private/data/lesson_plans.json'),
                     (ROOT/'data/telangana_syllabus.json','chalo-private/data/telangana_syllabus.json'),
                     (ROOT/'.env.hostinger.example','chalo-private/.env.example'),
                     (ROOT/'HOSTINGER_DEPLOYMENT.md','DEPLOYMENT.md')])
+    entries.append((ROOT/'data/maths_courses.json','chalo-private/data/maths_courses.json'))
     entries.append((ROOT/'data/textbook_manifest.json','chalo-private/data/textbook_manifest.json'))
     if corpus:
         import json

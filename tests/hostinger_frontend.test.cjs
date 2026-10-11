@@ -132,3 +132,16 @@ test('missing publisher syllabus downloads show a warning without a broken link'
  assert.match(html,/Publisher download unavailable/);assert.match(html,/Missing &lt;script&gt;/);
  assert.ok(!html.includes('href="https://cbseacademic.nic.in/missing.pdf"'));assert.ok(html.includes('href="https://cbseacademic.nic.in/available.pdf"'));
 });
+function mathsSetup(){
+ const nodes=new Map(),el=id=>{if(!nodes.has(id))nodes.set(id,{innerHTML:'',textContent:'',value:'',classList:{toggle(){}},querySelectorAll:()=>[]});return nodes.get(id)};
+ const c=vm.createContext({URL,$:el,current:()=>({id:'a',grade:3}),curriculum:'maharashtra',accessToken:'token',authFetch:async()=>({ok:true,json:async()=>({chapters:[],run:null})}),esc:s=>String(s).replaceAll('<','&lt;').replaceAll('>','&gt;'),fractionBar:()=>'',officialBookLink:()=>'',stopVoice(){},speakTutor(){},crypto:{randomUUID:()=> 'fixture-request'}});
+ vm.runInContext(fs.readFileSync('frontend/maths-course.js','utf8'),c);return{c,el};
+}
+test('guided course discards delayed responses after a child or board change',async()=>{
+ const {c,el}=mathsSetup();let resolve;c.authFetch=()=>new Promise(r=>resolve=r);const pending=c.loadMathsCourse();c.current=()=>({id:'b',grade:5});resolve({ok:true,json:async()=>({scope:'Wrong child',chapters:[],run:null})});await pending;
+ assert.ok(!el('#mathsScope').textContent.includes('Wrong child'));assert.equal(vm.runInContext('mathsData',c),null);
+});
+test('maths diagrams reject invalid dimensions and escape table labels',()=>{
+ const {c}=mathsSetup();assert.equal(c.mathsVisual({kind:'polygon',sides:999}),'');assert.equal(c.mathsVisual({kind:'angle',degrees:Infinity}),'');
+ assert.ok(!c.mathsVisual({kind:'table',values:{'<script>':3}}).includes('<script>'));assert.match(c.mathsVisual({kind:'polygon',sides:5}),/Polygon with 5 straight sides/);
+});
