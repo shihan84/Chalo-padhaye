@@ -7359,7 +7359,8 @@
           "pending": [
             "Remaining chapter outlines and school-prescribed editions need verification.",
             "Page lessons are available only for indexed books; remaining books need verified text extraction.",
-            "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books."
+            "No separate annual CBSE primary/middle examination syllabus imported; use school-prescribed NCERT books.",
+            "NCERT has conflicting language labels for two Class 7 selector URLs: Kriti-I Sindhi/Telugu and Exploring Society Part-II Marathi/Telugu. Confirm the language inside the publisher book before use; no replacement URL has been guessed."
           ]
         },
         "8": {
@@ -9853,14 +9854,24 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/InterdisAreas_SecP1_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Computational Thinking & AI",
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart1/CTAI_SecP1_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Physical Education & Well Being",
@@ -9971,7 +9982,8 @@
           "outlines": [],
           "pending": [
             "Remaining chapter outlines and school-prescribed editions need verification.",
-            "Page lessons are available only for indexed books; remaining books need verified text extraction."
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
+            "CBSE Class 9 Interdisciplinary Areas and Computational Thinking & AI PDFs are listed by CBSE but returned HTTP 404 twice on 2026-10-11; use the official curriculum directory and recheck when the publisher repairs them."
           ]
         },
         "10": {
@@ -12436,7 +12448,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/GeographyHi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Hindustani Melodic",
@@ -12471,7 +12488,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/HistoryHindi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Home Science",
@@ -12499,7 +12521,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/KTPI_hi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Legal Studies",
@@ -12541,7 +12568,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/PhysicalEducationHi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Physics",
@@ -12562,7 +12594,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/PoliticalScienceHi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Psychology",
@@ -12603,7 +12640,8 @@
           "outlines": [],
           "pending": [
             "Remaining chapter outlines and school-prescribed editions need verification.",
-            "Page lessons are available only for indexed books; remaining books need verified text extraction."
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
+            "Five CBSE 2026–27 Hindi syllabus downloads (Geography, History, Political Science, Physical Education and Knowledge Tradition–Practices of India) returned HTTP 404 twice on 2026-10-11. English documents remain separately listed; confirm the required medium and recheck the official curriculum directory."
           ]
         },
         "12": {
@@ -14169,7 +14207,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/GeographyHi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Hindustani Melodic",
@@ -14204,7 +14247,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/HistoryHindi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Home Science",
@@ -14232,7 +14280,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/KTPI_hi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Legal Studies",
@@ -14274,7 +14327,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/PhysicalEducationHi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Physics",
@@ -14295,7 +14353,12 @@
               "url": "https://cbseacademic.nic.in/web_material/CurriculumMain27/SecPart2/PoliticalScienceHi_SecP2_2026-27.pdf",
               "kind": "syllabus",
               "status": "publisher_listing",
-              "edition": "2026–27"
+              "edition": "2026–27",
+              "source_access": {
+                "status": "unavailable",
+                "http_status": 404,
+                "checked_on": "2026-10-11"
+              }
             },
             {
               "title": "Psychology",
@@ -14336,7 +14399,8 @@
           "outlines": [],
           "pending": [
             "Remaining chapter outlines and school-prescribed editions need verification.",
-            "Page lessons are available only for indexed books; remaining books need verified text extraction."
+            "Page lessons are available only for indexed books; remaining books need verified text extraction.",
+            "Five CBSE 2026–27 Hindi syllabus downloads (Geography, History, Political Science, Physical Education and Knowledge Tradition–Practices of India) returned HTTP 404 twice on 2026-10-11. English documents remain separately listed; confirm the required medium and recheck the official curriculum directory."
           ]
         }
       }

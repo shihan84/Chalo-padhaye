@@ -125,3 +125,10 @@ test('page lesson responses are discarded after switching child or PDF page',asy
  assert.notEqual(el('#bookTutorText').textContent,'Wrong child reply');
  assert.equal(vm.runInContext('bookTutorSession',c),null);
 });
+test('missing publisher syllabus downloads show a warning without a broken link',async()=>{
+ const {c,el}=syllabusSetup();await c.loadSyllabus();
+ vm.runInContext(`libraryData={books:[],pending:[],syllabi:[{title:'Missing <script>',url:'https://cbseacademic.nic.in/missing.pdf',source_access:{status:'unavailable',http_status:404,checked_on:'2026-10-11'}},{title:'Available syllabus',url:'https://cbseacademic.nic.in/available.pdf'}]}`,c);
+ c.renderLibrary();const html=el('#syllabusList').innerHTML;
+ assert.match(html,/Publisher download unavailable/);assert.match(html,/Missing &lt;script&gt;/);
+ assert.ok(!html.includes('href="https://cbseacademic.nic.in/missing.pdf"'));assert.ok(html.includes('href="https://cbseacademic.nic.in/available.pdf"'));
+});
