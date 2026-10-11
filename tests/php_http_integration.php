@@ -20,7 +20,7 @@ foreach (['maharashtra'=>12,'cbse'=>12,'telangana'=>10,'nios'=>12] as $board=>$m
     for ($grade=1;$grade<=$max;$grade++) {
         [$status,$library]=call_api('GET','/curriculum-library?curriculum='.$board.'&grade='.$grade);
         expect($status,200,'Public library '.$board.' '.$grade);
-        if ($library['curriculum']!==$board||$library['grade']!==$grade||$library['tutor_available']!==false||!count($library['pending'])) throw new RuntimeException('Library provenance/availability mismatch');
+        if ($library['curriculum']!==$board||$library['grade']!==$grade||$library['tutor_available']!==($board==='maharashtra'&&$grade===3)||!count($library['pending'])) throw new RuntimeException('Library provenance/availability mismatch');
     }
 }
 foreach (['curriculum=evil&grade=3','curriculum=cbse&grade=13','curriculum=telangana&grade=11','grade=3abc','grade=../3'] as $query) {[$status]=call_api('GET','/curriculum-library?'.$query);expect($status,422,'Reject invalid library selector');}
@@ -42,6 +42,27 @@ if(($chat['error']??'')!=='textbook_retrieval_unavailable')throw new RuntimeExce
 [$status]=call_api('POST','/chat',['student_id'=>$sid,'session_id'=>$session,'message'=>'4','subject'=>'math','curriculum'=>'nios'],$ta);expect($status,403,'Cross-curriculum session denied');
 [$status]=call_api('POST','/end-session',['student_id'=>$sid,'session_id'=>$session],$ta);expect($status,200,'Close session');
 [$status]=call_api('POST','/chat',['student_id'=>$sid,'session_id'=>$session,'message'=>'4','subject'=>'math','curriculum'=>'maharashtra'],$ta);expect($status,403,'Closed session denied');
+// Grounded page reading: fixture text only, no real provider calls.
+$manifest=json_decode(file_get_contents(dirname(__DIR__).'/data/textbook_manifest.json'),true)['books'];
+$book=current(array_filter($manifest,fn($b)=>str_ends_with($b['url'],'/303060004.pdf')));
+$pageBody=['student_id'=>$sid,'book_id'=>$book['id'],'page'=>13,'action'=>'quiz'];
+[$status]=call_api('POST','/book-tutor',$pageBody);expect($status,401,'Page tutor needs authentication');
+[$status]=call_api('POST','/book-tutor',$pageBody,$tb);expect($status,403,'Page tutor family isolation');
+[$status]=call_api('POST','/book-tutor',array_replace($pageBody,['book_id'=>'../../etc/passwd']),$ta);expect($status,422,'Page tutor rejects arbitrary source');
+[$status]=call_api('POST','/book-tutor',array_replace($pageBody,['page'=>9999]),$ta);expect($status,422,'Page tutor bounds pages');
+[$status,$pageLesson]=call_api('POST','/book-tutor',$pageBody,$ta);expect($status,200,'Grounded page question');
+if(isset($pageLesson['answer'])||$pageLesson['sources'][0]['pdf_page']!==13)throw new RuntimeException('Page answer leaked or wrong citation');
+$answerBody=array_replace($pageBody,['action'=>'answer','session_id'=>$pageLesson['session_id'],'answer'=>'wrong']);
+[$status,$hint]=call_api('POST','/book-tutor',$answerBody,$ta);expect($status,200,'Reading hint');
+if($hint['complete']||!str_contains($hint['text'],'Hint:'))throw new RuntimeException('First wrong reading answer should retain question');
+[$status]=call_api('POST','/book-tutor',array_replace($answerBody,['page'=>14]),$ta);expect($status,409,'Reading page scope');
+[$status,$correct]=call_api('POST','/book-tutor',array_replace($answerBody,['answer'=>'sides']),$ta);expect($status,200,'Server validates reading word');
+if(!$correct['complete']||$correct['assessment']!=='correct')throw new RuntimeException('Reading exact word should match');
+$q=db()->prepare('SELECT COUNT(*) FROM student_progress WHERE student_id=?');$q->execute([$sid]);if((int)$q->fetchColumn()!==0)throw new RuntimeException('Reading must not award subject mastery');
+$bookRoot=dirname(__DIR__).'/runtime/book_sessions';$filesBefore=count(glob($bookRoot.'/*.json')?:[]);
+[$status,$newCheck]=call_api('POST','/book-tutor',$pageBody,$ta);expect($status,200,'Replace child reading check');
+[$status]=call_api('POST','/book-tutor',array_replace($answerBody,['answer'=>'sides']),$ta);expect($status,409,'Replaced reading token rejected');
+if(count(glob($bookRoot.'/*.json')?:[])!==$filesBefore)throw new RuntimeException('Reading retries must not grow storage');
 // Browsers cannot forge board mastery by sending assessment or score counts.
 $defs=lesson_defs('maharashtra',3,'math');
 $lesson=['student_id'=>$sid,'curriculum'=>'maharashtra','subject'=>'math','lesson_id'=>$defs[0]['id']];

@@ -7,12 +7,13 @@ final class RequestFailure extends RuntimeException {
 }
 // Files live outside public_html. flock serializes updates across PHP workers.
 // No browser-supplied path is used, and deploys never replace this directory.
-function private_state(string $namespace, string $key, callable $update): mixed {
+function private_state(string $namespace, string $key, callable $update, bool $existingOnly=false): mixed {
     $root=dirname(__DIR__).'/runtime/'.$namespace;
     if (!preg_match('/^[a-z_]+$/',$namespace)) throw new RuntimeException('Invalid storage namespace');
     if (!is_dir($root) && !@mkdir($root,0700,true) && !is_dir($root)) throw new RequestFailure(503,'Learning storage is temporarily unavailable');
     $path=$root.'/'.hash('sha256',$key).'.json';
-    if (!is_file($path) && $namespace==='limits' && count(glob($root.'/*.json')?:[])>=10000) throw new RequestFailure(503,'Please try again later');
+    if ($existingOnly && !is_file($path)) throw new RequestFailure(409,'This reading check expired. Start a new check');
+    if (!is_file($path) && in_array($namespace,['limits','book_sessions'],true) && count(glob($root.'/*.json.lock')?:[])>=10000) throw new RequestFailure(503,'Please try again later');
     if (is_link($path) || is_link($path.'.lock')) throw new RequestFailure(503,'Learning storage is temporarily unavailable');
     $file=@fopen($path.'.lock','c+');
     if (!$file) throw new RequestFailure(503,'Learning storage is temporarily unavailable');

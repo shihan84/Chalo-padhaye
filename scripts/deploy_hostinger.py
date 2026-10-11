@@ -17,6 +17,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 from zipfile import ZipFile
 from build_hostinger import build
+from build_textbook_corpus import build_corpus
 
 
 PROGRESS={'phase':'configuration'}
@@ -114,7 +115,10 @@ def deploy(env):
     domain,port,dotenv=configuration(env)
     import paramiko
     with tempfile.TemporaryDirectory() as temp:
-        archive_path=build(Path(temp)/'release.zip')
+        stage('Verifying publisher PDFs and building private page index')
+        corpus=Path(temp)/'corpus'
+        build_corpus(corpus)
+        archive_path=build(Path(temp)/'release.zip',corpus)
         stage('Connecting to SSH server')
         sock=socket.create_connection((env['HOSTINGER_SSH_HOST'],port),timeout=20)
         transport=paramiko.Transport(sock)

@@ -161,6 +161,10 @@ try {
     if ($method==='POST' && $path==='/lessons/start') {
         $b=request_json();$sid=(string)($b['student_id']??'');$c=(string)($b['curriculum']??'');$subject=(string)($b['subject']??'');$lid=(string)($b['lesson_id']??'');if(!in_array($c,CURRICULA,true))json_response(['error'=>'Unknown curriculum'],400);$student=require_student_access($sid);[$lesson,$defs]=lesson_definition($student,$c,$subject,$lid);$p=ensure_progress($student,$c,$subject,$lesson,$defs);json_response(['ok'=>true,'lesson'=>$lesson,'progress'=>$p]);
     }
+    if ($method==='POST' && $path==='/book-tutor') {
+        $b=request_json();$student=require_student_access((string)($b['student_id']??''));
+        json_response(textbook_turn($student,$b));
+    }
     if ($method==='POST' && $path==='/chat') {
         $b=request_json();$sid=(string)($b['student_id']??'');$message=trim((string)($b['message']??''));
         if($message===''||strlen($message)>12000)json_response(['error'=>'Message must be 1-12000 bytes'],422);
