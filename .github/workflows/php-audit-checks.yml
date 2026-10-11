@@ -1,7 +1,7 @@
 name: PHP audit checks
 on:
   pull_request:
-    branches: [hostinger-php]
+    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10]
   push:
     branches: [hostinger-php]
 permissions:
@@ -11,6 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node --test tests/hostinger_frontend.test.cjs
+      - run: python tests/test_hostinger_package.py
+      - run: python tests/test_hostinger_deploy.py
+      - run: php -l deploy/hostinger/index.php
       - run: php -v
       - run: find php tests -name '*.php' -print0 | xargs -0 -n1 php -l
       - run: php tests/php_regressions.php
@@ -35,7 +42,12 @@ jobs:
       DB_PASSWORD: audit-fixture-only
     steps:
       - uses: actions/checkout@v4
-      - run: mysql -h 127.0.0.1 -u root -paudit-fixture-only audit_test < database/mysql/schema.sql
+      - run: php php/initialize_database.php database/mysql/schema.sql
+      - run: |
+          if php php/initialize_database.php database/mysql/schema.sql; then
+            echo "Initializer must refuse an existing database"
+            exit 1
+          fi
       - run: |
           php -S 127.0.0.1:8080 php/api/index.php > /tmp/chalo-php-test.log 2>&1 &
           server_pid=$!

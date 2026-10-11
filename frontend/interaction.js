@@ -48,11 +48,11 @@ async function sendText(value,opts={}){
   try{
     let backend=v;if(activeLesson)backend=`[Current structured chapter: ${activeLesson.title}. Current step: ${stepLabel(activeLesson.current_step)}. Stay strictly inside this chapter.]\n${v}`;
     const r=await authFetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:backend,student_id:p.id,subject:$('#subject').value,curriculum,activity,session_id:sessionId})});
-    const j=await r.json();if(!r.ok)throw new Error(j.detail||'Tutor request failed');sessionId=j.session_id||sessionId;lastStudentState=j.student_state||'neutral';lastDelivery=j.delivery||'normal';
+    const j=await r.json();if(!r.ok)throw new Error(j.error||j.detail||'Tutor request failed');sessionId=j.session_id||sessionId;lastStudentState=j.student_state||'neutral';lastDelivery=j.delivery||'normal';
     let spoken=cleanTutorText(j.text||'');const sync=await syncLessonStep(j);if(sync.testFinished)spoken=spoken.replace(/[^.!?।]*\?\s*$/,'').trim()||`Test saved: ${sync.score}%.`;
     if(!spoken)spoken='I could not finish that response. Please tap “Explain simpler” and I will retry this step.';
     lastTutorText=spoken;add(spoken,'bot');renderInteraction(j.interaction);$('#replay').disabled=!lastTutorText;
-    $('#status').textContent=(j.sources&&j.sources[0]?`Source: ${j.sources[0]}`:'Learning saved.')+(j.supplemental?' • supplemental':'');
+    $('#status').textContent=(j.sources&&j.sources[0]?`Source: ${j.sources[0]}`:j.error==='textbook_retrieval_unavailable'?'Lesson sources unavailable.':'Learning saved.')+(j.supplemental?' • supplemental':'');
     if(j.assessment!=='not_answer')$('#assessment').textContent=`${j.assessment==='correct'?'✅ Correct':j.assessment==='partial'?'🟡 Partly correct':'🧩 Keep trying'} • ${j.topic||'Topic'} • ${String(j.student_state||'neutral').replace('_',' ')}`;
     if(lastTutorText)speakTutor(lastTutorText,lastStudentState,lastDelivery);
   }catch(e){add(e.message,'system');renderInteraction({type:'none'})}
