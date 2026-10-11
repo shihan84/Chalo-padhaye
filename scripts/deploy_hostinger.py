@@ -153,7 +153,7 @@ def deploy(env):
                 if channel.recv_exit_status()==0:
                     try:
                         readiness=json.loads(output)
-                        print('Server readiness: '+json.dumps({key:readiness.get(key) for key in ('php','pdo_mysql','curl','database','schema','missing_tables','existing_tables','database_error_code')}),flush=True)
+                        print('Server readiness: '+json.dumps({key:readiness.get(key) for key in ('php','pdo_mysql','curl','database','schema','missing_tables','existing_tables','database_error_code','database_error_kind','configured_host_is_localhost','local_tcp_database','local_tcp_existing_tables','local_tcp_error_code')}),flush=True)
                     except Exception:
                         print('Server CLI check did not return readiness JSON',flush=True)
                 else:
