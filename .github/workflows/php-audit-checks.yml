@@ -1,7 +1,7 @@
 name: PHP audit checks
 on:
   pull_request:
-    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus, test/hostinger-functional-validation, feature/hostinger-learning-foundation, feature/hostinger-class5-fractions, feature/hostinger-curriculum-library, feature/hostinger-grounded-textbooks, audit/hostinger-textbooks-2026-10-11]
+    branches: [hostinger-php, audit/hostinger-php-security-2026-10-10, feature/hostinger-family-login, feature/hostinger-telangana-syllabus, test/hostinger-functional-validation, feature/hostinger-learning-foundation, feature/hostinger-class5-fractions, feature/hostinger-curriculum-library, feature/hostinger-grounded-textbooks, audit/hostinger-textbooks-2026-10-11, feature/hostinger-maths-teaching-loop]
   push:
     branches: [hostinger-php]
 permissions:

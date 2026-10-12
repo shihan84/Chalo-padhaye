@@ -22,7 +22,12 @@ function curriculum_library(string $curriculum, int $grade): ?array {
             $book['tutor_available']=textbook_index($source)!==null;if($book['tutor_available'])$ready++;
         }
     }unset($book);
-    return ['curriculum'=>$curriculum,'board'=>$board['label'],'grade'=>$grade,
+    $profiles=[];
+    if($curriculum==='telangana'&&$grade===10){
+        $profileData=json_decode((string)file_get_contents(dirname(__DIR__).'/data/telangana_study_profiles.json'),true,512,JSON_THROW_ON_ERROR);
+        $profiles=$profileData['profiles'];
+    }
+    return ['curriculum'=>$curriculum,'board'=>$board['label'],'grade'=>$grade,'study_profiles'=>$profiles,
         'grades'=>array_keys($board['grades']),'reviewed_on'=>$data['reviewed_on'],'notice'=>$data['notice'],
         'coverage'=>$coverage,'tutor_available'=>$ready>0,'indexed_books'=>$ready]+$entry;
 }

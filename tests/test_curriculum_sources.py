@@ -34,4 +34,13 @@ class SourcesTests(unittest.TestCase):
   grades=DATA['boards']['telangana']['grades'];self.assertEqual(len(grades['10']['outlines']),3)
   self.assertTrue(all(b['status']=='archived_reference' for b in grades['10']['books']))
   self.assertTrue(all(not g['syllabi'] for g in grades.values()))
+ def test_ssc_family_language_combination_does_not_invent_textbook_sources(self):
+  data=json.loads((Path(__file__).parents[1]/'data/telangana_study_profiles.json').read_text())
+  self.assertEqual(data['curriculum'],'telangana');self.assertEqual(data['grade'],10)
+  profile=data['profiles'][0];self.assertEqual(profile['medium'],'English')
+  self.assertEqual(profile['first_language'],'Urdu');self.assertEqual(profile['second_language'],'Telugu')
+  self.assertEqual(len(profile['subjects']),7)
+  self.assertEqual({s['subject'] for s in profile['subjects']},{'Urdu','Telugu','English','Mathematics','Physical Science','Biological Science','Social Studies'})
+  self.assertTrue(all(s['pending'] and 'url' not in s for s in profile['subjects']))
+  self.assertIn('not verification',profile['notice']);self.assertIn('502',profile['notice'])
 if __name__=='__main__':unittest.main()

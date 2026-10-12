@@ -12,8 +12,16 @@ const fs=require('node:fs');
   await page.locator('#createChild').waitFor({state:'visible'});await page.locator('#childName').fill('Browser Child');await page.locator('#childGrade').fill('3');await page.locator('#childBoard').selectOption({label:'Telangana SSC'});await page.locator('#createChild').click();
   // All boards are browsable independently of the child's school and tutor availability.
   await page.locator('#syllabusNotice').filter({hasText:/Telangana/}).waitFor();
+  await page.locator('#syllabusGrade').selectOption('10');await page.locator('#syllabusNotice').filter({hasText:/Telangana.*Class 10/}).waitFor();
+  await page.locator('#libraryProfile').selectOption('english-urdu-first-telugu-second');
+  assert.equal(await page.locator('.study-profile .librarybook').count(),7,'SSC combination must expose every required subject');
+  await page.locator('.study-profile').getByText('Urdu — First language',{exact:true}).waitFor();
+  await page.locator('.study-profile').getByText('Telugu — Second language',{exact:true}).waitFor();
+  assert.equal(await page.locator('.study-profile [data-library-book]').count(),0,'Pending mappings must not start unverified lessons');
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),'SSC combination overflows mobile');
   await page.locator('#syllabusBoard').selectOption('cbse');await page.locator('#syllabusGrade').selectOption('5');
   await page.locator('#syllabusNotice').filter({hasText:/CBSE.*Class 5/}).waitFor();
+  assert.ok(await page.locator('#libraryProfileFilter').isHidden(),'SSC profile must not appear under CBSE');
   await page.locator('#librarySearch').fill('Santoor');await page.getByText('Santoor',{exact:true}).waitFor();
   await page.locator('#librarySearch').fill('');await page.locator('#libraryLanguage').selectOption('all');
   assert.ok(await page.locator('.librarybook').count()>50,'NCERT translations missing');

@@ -153,3 +153,14 @@ test('reload restores only a child belonging to the signed-in account',async()=>
   await c.loadStudents();assert.equal(el('#student').value,saved==='b'?'b':'a');
  }
 });
+test('SSC language profile shows seven subjects without substituting wrong language books',async()=>{
+ const {c,el}=syllabusSetup();await c.loadSyllabus();
+ const p=JSON.parse(fs.readFileSync('data/telangana_study_profiles.json','utf8')).profiles[0];
+ const book={subject:'Urdu',language_role:'second_language',title:'Wrong Urdu course',url:'https://scert.telangana.gov.in/wrong.pdf',format:'pdf',medium:'Urdu'};
+ c.fixtureProfile=p;c.fixtureBook=book;
+ vm.runInContext('libraryData.study_profiles=[fixtureProfile];libraryData.books=[fixtureBook]',c);
+ el('#libraryProfile').value=p.id;c.renderLibrary();const html=el('#syllabusList').innerHTML,profileHtml=html.split('</section>')[0];
+ for(const s of p.subjects)assert.ok(profileHtml.includes(s.label));
+ assert.ok(!profileHtml.includes('wrong.pdf'));assert.match(profileHtml,/mapping and lessons pending/);assert.match(profileHtml,/not a saved change/);
+ el('#libraryProfile').value='unknown';c.renderLibrary();assert.ok(!el('#syllabusList').innerHTML.includes('class="study-profile"'));
+});

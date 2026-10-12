@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "curriculum": "telangana",
+  "grade": 10,
+  "reviewed_on": "2026-10-12",
+  "profiles": [
+    {
+      "id": "english-urdu-first-telugu-second",
+      "label": "English medium · Urdu first language · Telugu second language",
+      "medium": "English",
+      "first_language": "Urdu",
+      "second_language": "Telugu",
+      "notice": "Family-selected subject combination, not verification of the current SSC examination syllabus. Match the language course and edition to your school-prescribed books. SCERT live directory and PDF checks returned HTTP 502 on 2026-10-12; new direct book mappings and chapter lessons remain pending.",
+      "subjects": [
+        {"id": "urdu_first", "label": "Urdu — First language", "subject": "Urdu", "medium": "Urdu", "role": "first_language", "pending": "Verify the school-prescribed Urdu first-language course (including any composite-course requirement), title, edition and official PDF. Do not substitute Urdu second-language material."},
+        {"id": "telugu_second", "label": "Telugu — Second language", "subject": "Telugu", "medium": "Telugu", "role": "second_language", "pending": "Verify the Telugu second-language / other-media book, title, edition and official PDF. Do not substitute Telugu first-language material."},
+        {"id": "english", "label": "English", "subject": "English", "medium": "English", "pending": "Only an archived reference is mapped; confirm the current school-prescribed edition. Verified page lessons remain pending."},
+        {"id": "math", "label": "Mathematics", "subject": "Mathematics", "medium": "English", "pending": "Only an archived reference is mapped; confirm the current school-prescribed edition. Class 10 teaching and checkpoints remain pending."},
+        {"id": "physical_science", "label": "Physical Science", "subject": "Physical Science", "medium": "English", "pending": "Verify the English-medium Physical Science book and all prescribed parts, contents, edition and official PDFs. Chapter lessons remain pending."},
+        {"id": "biological_science", "label": "Biological Science", "subject": "Biological Science", "medium": "English", "pending": "Verify the English-medium Biological Science book, contents, edition and official PDF. Chapter lessons remain pending."},
+        {"id": "social", "label": "Social Studies", "subject": "Social Studies", "medium": "English", "pending": "Only an archived reference is mapped; confirm the current school-prescribed edition. Verified page lessons remain pending."}
+      ]
+    }
+  ]
+}
