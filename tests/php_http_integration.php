@@ -21,6 +21,11 @@ foreach (['maharashtra'=>12,'cbse'=>12,'telangana'=>10,'nios'=>12] as $board=>$m
         [$status,$library]=call_api('GET','/curriculum-library?curriculum='.$board.'&grade='.$grade);
         expect($status,200,'Public library '.$board.' '.$grade);
         if ($library['curriculum']!==$board||$library['grade']!==$grade||$library['tutor_available']!==($board==='maharashtra'&&$grade===3)||!count($library['pending'])) throw new RuntimeException('Library provenance/availability mismatch');
+        $profiles=$library['study_profiles']??[];
+        if($board==='telangana'&&$grade===10){
+            if(count($profiles)!==1||count($profiles[0]['subjects'])!==7||$profiles[0]['first_language']!=='Urdu'||$profiles[0]['second_language']!=='Telugu')throw new RuntimeException('SSC family-selected language profile missing');
+            if($library['tutor_available']||count($library['books'])!==3)throw new RuntimeException('Pending profile must not invent ready books or teaching');
+        }elseif($profiles)throw new RuntimeException('SSC profile leaked into another board/class');
     }
 }
 foreach (['curriculum=evil&grade=3','curriculum=cbse&grade=13','curriculum=telangana&grade=11','grade=3abc','grade=../3'] as $query) {[$status]=call_api('GET','/curriculum-library?'.$query);expect($status,422,'Reject invalid library selector');}

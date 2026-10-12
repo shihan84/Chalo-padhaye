@@ -12,6 +12,8 @@ def build(output,corpus=None):
         entries.append((ROOT/'frontend'/name,'public_html/'+name))
     for name in ('index.php','.htaccess'):
         entries.append((ROOT/'deploy/hostinger'/name,'public_html/'+name))
+    # Upload the new dependency before the library helper starts reading it.
+    entries.append((ROOT/'data/telangana_study_profiles.json','chalo-private/data/telangana_study_profiles.json'))
     for name in ('bootstrap.php','auth.php','private_state.php','fractions.php','practice.php','learning.php','lessons.php','textbook.php','tutor.php','curriculum_library.php','maths_questions.php','maths_course.php','deployment_check.php','initialize_database.php','api/index.php'):
         entries.append((ROOT/'php'/name,'chalo-private/php/'+name))
     entries.extend([(ROOT/'data/curriculum_sources.json','chalo-private/data/curriculum_sources.json'),
